@@ -1,13 +1,15 @@
 package Data;
+
 import Entity.Staff;
-import Util.DBConnection;
 import java.sql.*;
 import java.util.*;
+
+import Util.DBConnection;
 
 public class StaffData {
     public List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM staff WHERE status = 'active'";
+        String sql = "SELECT * FROM Staff WHERE status = 'Active'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -31,7 +33,7 @@ public class StaffData {
     }
 
     public boolean addStaff(Staff s) {
-        String sql = "INSERT INTO staff (phone, full_name, username, pass_word, position, hire_date) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Staff (phone, full_name, username, pass_word, position, hire_date) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -53,7 +55,7 @@ public class StaffData {
     }
 
     public boolean resignStaff(int id) {
-        String sql = "UPDATE staff SET status = 'inactive' WHERE id_nhan_vien = ?";
+        String sql = "UPDATE Staff SET status = 'Inactive' WHERE id_nhan_vien = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -70,7 +72,7 @@ public class StaffData {
     }
 
     public boolean updateStaff(Staff s) {
-        String sql = "UPDATE staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
+        String sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -93,7 +95,7 @@ public class StaffData {
 
     public List<Staff> searchStaff(String keyword) {
         List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM staff WHERE status = 'active' AND " +
+        String sql = "SELECT * FROM Staff WHERE status = 'Active' AND " +
                 "(phone LIKE ? OR full_name LIKE ? OR username LIKE ? OR position LIKE ? OR hire_date LIKE ?)";
 
         try (Connection conn = DBConnection.getConnection();
@@ -124,5 +126,27 @@ public class StaffData {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public static int checkLogin(String user, String pass) {
+        String sql = "SELECT pass_word FROM Staff WHERE username = ? OR phone = ?";
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setString(1, user);
+            stmt.setString(2, user);
+            try(ResultSet rs = stmt.executeQuery()){
+                if (rs.next()){
+                    if (rs.getString("pass_word").equals(pass)){
+                        return 1;
+                    }
+                    else return 2;
+                }
+                else return 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 }

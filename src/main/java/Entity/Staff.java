@@ -1,7 +1,8 @@
 package Entity;
+
 import java.sql.*;
 
-public class Staff extends Person{
+public class Staff extends Person {
     private String user;
     private String password;
     private String role;
