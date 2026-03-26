@@ -7,18 +7,18 @@ public class Customer extends Person {
 
     public Customer() {}
 
-    public Customer(int id, String phone, String name, String user, String password) {
+    public Customer(int id, String phone, String name, String user, String password, int point) {
         super(id, phone, name);
         this.user = user;
         this.password = password;
-        this.point = 0;
+        this.point = point;
     }
 
-    public Customer(String phone, String name, String user, String password ) {
+    public Customer(String phone, String name, String user, String password, int point ) {
         super(phone, name);
         this.user = user;
         this.password = password;
-        this.point = 0;
+        this.point = point;
     }
 
     public String getUser() {
