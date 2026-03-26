@@ -1,14 +1,23 @@
 package Entity;
-import java.time.*;
+import java.sql.*;
 
 public class Staff extends Person{
     private String user;
     private String password;
     private String role;
-    private LocalDateTime hire_date;
+    private Date hire_date;
 
     public Staff() {}
-    public Staff(String phone, String name, String user, String password, String role, LocalDateTime hire_date) {
+
+    public Staff(int id, String phone, String name, String user, String password, String role, Date hire_date) {
+        super(id, phone, name);
+        this.user = user;
+        this.password = password;
+        this.role = role;
+        this.hire_date = hire_date;
+    }
+
+    public Staff(String phone, String name, String user, String password, String role, Date hire_date) {
         super(phone, name);
         this.user = user;
         this.password = password;
@@ -40,11 +49,11 @@ public class Staff extends Person{
         this.role = role;
     }
 
-    public LocalDateTime getHire_date() {
+    public Date getHire_date() {
         return hire_date;
     }
 
-    public void setHire_date(LocalDateTime hire_date) {
+    public void setHire_date(Date hire_date) {
         this.hire_date = hire_date;
     }
 }
