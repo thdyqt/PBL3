@@ -1,14 +1,17 @@
 package GUI;
 
 import javafx.fxml.*;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.animation.*;
 import javafx.event.*;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.*;
 import javafx.scene.layout.*;
+import javafx.stage.*;
 import javafx.util.*;
 import javafx.geometry.*;
+import javafx.scene.*;
 
 import java.net.*;
 import java.util.*;
@@ -50,8 +53,8 @@ public class LoginForm implements Initializable {
 
     @FXML
     void btnLoginClick(ActionEvent event) {
-        String user = txtUser.getText();
-        String pass = txtPass.getText();
+        String user = txtUser.getText().trim();
+        String pass = txtPass.getText().trim();
 
         if (user.isEmpty() && pass.isEmpty()) {
             showAlert("Vui lòng nhập đầy đủ tài khoản và mật khẩu!", true);
@@ -68,6 +71,19 @@ public class LoginForm implements Initializable {
         else if (pass.isEmpty()){
             showAlert("Vui lòng nhập mật khẩu!", true);
             txtPass.requestFocus();
+            return;
+        }
+
+        else if (!user.matches("^[a-zA-Z0-9]+$") || !pass.matches("^[a-zA-Z0-9]+$")) {
+            showAlert("Tài khoản hoặc mật khẩu không được chứa khoảng trắng hay kí tự đặc biệt!", true);
+            txtUser.requestFocus();
+            return;
+        }
+
+        else if (user.length() < 6 || pass.length() < 6) {
+            showAlert("Tài khoản hoặc mật khẩu phải chứa ít nhất 6 kí tự!", true);
+            txtUser.requestFocus();
+            return;
         }
 
         else {
@@ -99,11 +115,6 @@ public class LoginForm implements Initializable {
                         txtUser.requestFocus();
                         return;
                     }
-                    else if (loginStatus == -2){
-                        showAlert("Tài khoản hoặc mật khẩu không được chứa khoảng trắng hay kí tự đặc biệt!", true);
-                        txtUser.requestFocus();
-                        return;
-                    }
                     else {
                         showAlert("Lỗi kết nối máy chủ dữ liệu!", true);
                     }
@@ -112,6 +123,24 @@ public class LoginForm implements Initializable {
         }
     }
 
+    @FXML
+    void btnRegisterClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("GUI/register.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.setMaximized(true);
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Không thể mở màn hình đăng ký!", true);
+        }
+    }
     //EFFECTS
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -133,7 +162,17 @@ public class LoginForm implements Initializable {
     }
 
     private void showAlert(String message, boolean isError) {
+        // DỌN DẸP THÔNG BÁO CŨ (NẾU CÓ)
+        if (currentToast != null) {
+            if (currentToastAnimation != null) {
+                currentToastAnimation.stop();
+            }
+            rootPane.getChildren().remove(currentToast);
+        }
+
+        // TẠO THÔNG BÁO MỚI
         Label toast = new Label(message);
+        currentToast = toast; // Lưu lại cái mới này vào biến toàn cục để quản lý
 
         String bgColor = isError ? "#E53935" : "#43A047";
         toast.setStyle("-fx-background-color: " + bgColor + "; " +
@@ -165,10 +204,13 @@ public class LoginForm implements Initializable {
 
         // Đợi 2.5 giây rồi mới chạy hiệu ứng biến mất
         hideAnim.setDelay(Duration.seconds(2.5));
-        hideAnim.setOnFinished(e -> rootPane.getChildren().remove(toast));
+        hideAnim.setOnFinished(e -> {
+            rootPane.getChildren().remove(toast);
+            currentToast = null; // Dọn dẹp xong thì reset biến
+        });
 
-        SequentialTransition sequence = new SequentialTransition(showAnim, hideAnim);
-        sequence.play();
+        currentToastAnimation = new SequentialTransition(showAnim, hideAnim);
+        currentToastAnimation.play();
     }
 
     private void handleFailedLogin(String message) {

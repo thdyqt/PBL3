@@ -148,7 +148,7 @@
                                                 <Cursor fx:constant="HAND" />
                                             </cursor>
                                         </Button>
-                                        <Button fx:id="btnRegister" maxWidth="Infinity" mnemonicParsing="false" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: #1565C0; -fx-border-radius: 25; -fx-text-fill: #1565C0; -fx-font-weight: bold; -fx-font-size: 14px;" text="ĐĂNG KÝ">
+                                        <Button fx:id="btnRegister" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnRegisterClick" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: #1565C0; -fx-border-radius: 25; -fx-text-fill: #1565C0; -fx-font-weight: bold; -fx-font-size: 14px;" text="ĐĂNG KÝ">
                                             <cursor>
                                                 <Cursor fx:constant="HAND" />
                                             </cursor>

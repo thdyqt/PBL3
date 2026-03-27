@@ -14,6 +14,7 @@ public class LoadingApp extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
         stage.setTitle("Login!");
         stage.setScene(scene);
+        stage.centerOnScreen();
         stage.setMaximized(true);
         stage.show();
     }
