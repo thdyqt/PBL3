@@ -1,10 +1,12 @@
 package Data;
 
-import Entity.Customer;
 import java.sql.*;
 import java.util.*;
+import org.mindrot.jbcrypt.BCrypt;
 
+import Entity.Customer;
 import Util.DBConnection;
+import Util.UserSession;
 
 public class CustomerData {
     public List<Customer> getAllCustomers() {
@@ -107,7 +109,7 @@ public class CustomerData {
     }
 
     public static int checkLogin(String user, String pass) {
-        String sql = "SELECT pass_word FROM Customer WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_khach_hang, pass_word FROM Customer WHERE username = ? OR phone = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -115,7 +117,11 @@ public class CustomerData {
             stmt.setString(2, user);
             try(ResultSet rs = stmt.executeQuery()){
                 if (rs.next()){
-                    if (rs.getString("pass_word").equals(pass)){
+                    String dbPasswordHash = rs.getString("pass_word");
+
+                    if (BCrypt.checkpw(pass, dbPasswordHash)){
+                        int dbId = rs.getInt("id_khach_hang");
+                        UserSession.getInstance().setUser(dbId, user, "Customer");
                         return 1;
                     }
                     else return 2;
@@ -124,6 +130,9 @@ public class CustomerData {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return -1;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Lỗi BCrypt: Mật khẩu dưới DB chưa được mã hóa đúng chuẩn!");
             return -1;
         }
     }

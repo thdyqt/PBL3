@@ -5,6 +5,8 @@ import java.sql.*;
 import java.util.*;
 
 import Util.DBConnection;
+import Util.UserSession;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class StaffData {
     public List<Staff> getAllStaff() {
@@ -129,7 +131,7 @@ public class StaffData {
     }
 
     public static int checkLogin(String user, String pass) {
-        String sql = "SELECT pass_word FROM Staff WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_nhan_vien, pass_word, position FROM Staff WHERE username = ? OR phone = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -137,7 +139,12 @@ public class StaffData {
             stmt.setString(2, user);
             try(ResultSet rs = stmt.executeQuery()){
                 if (rs.next()){
-                    if (rs.getString("pass_word").equals(pass)){
+                    String dbPasswordHash = rs.getString("pass_word");
+
+                    if (BCrypt.checkpw(pass, dbPasswordHash)){
+                        int dbId = rs.getInt("id_nhan_vien");
+                        String dbPosition = rs.getString("position");
+                        UserSession.getInstance().setUser(dbId, user, dbPosition);
                         return 1;
                     }
                     else return 2;
@@ -146,6 +153,9 @@ public class StaffData {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return -1;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Lỗi BCrypt: Mật khẩu dưới DB chưa được mã hóa đúng chuẩn!");
             return -1;
         }
     }

@@ -44,6 +44,10 @@ public class LoginForm implements Initializable {
     @FXML
     private TextField txtUser;
 
+    private Label currentToast;
+    private SequentialTransition currentToastAnimation;
+    private int failedAttempts = 0;
+
     @FXML
     void btnLoginClick(ActionEvent event) {
         String user = txtUser.getText();
@@ -67,68 +71,39 @@ public class LoginForm implements Initializable {
         }
 
         else {
-            if (rbStaff.isSelected()){
-                btnLogin.setDisable(true);
-                btnRegister.setDisable(true);
-                showAlert("Đang kết nối máy chủ...", false);
+            btnLogin.setDisable(true);
+            btnRegister.setDisable(true);
+            showAlert("Đang kết nối máy chủ...", false);
 
-                new Thread(() -> {
-                    int loginStatus = StaffBusiness.login(user, pass);
+            new Thread(() -> {
+                int loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
 
-                    javafx.application.Platform.runLater(() -> {
-                        btnLogin.setDisable(false);
-                        btnRegister.setDisable(false);
+                javafx.application.Platform.runLater(() -> {
+                    btnLogin.setDisable(false);
+                    btnRegister.setDisable(false);
 
-                        if (loginStatus == 1){
-                            showAlert("Đăng nhập thành công!", false);
-                        }
-                        else if (loginStatus == 2){
-                            showAlert("Mật khẩu không chính xác!", true);
-                            txtPass.clear();
-                            txtPass.requestFocus();
-                        }
-                        else if (loginStatus == 0){
-                            showAlert("Tài khoản này không tồn tại!", true);
-                            txtUser.clear();
-                            txtUser.requestFocus();
-                        }
-                        else {
-                            showAlert("Lỗi kết nối máy chủ dữ liệu!", true);
-                        }
-                    });
-                }).start();
-            }
-            else if(rbCustomer.isSelected()){
-                btnLogin.setDisable(true);
-                btnRegister.setDisable(true);
-                showAlert("Đang kết nối máy chủ...", false);
-
-                new Thread(() -> {
-                    int loginStatus = CustomerBusiness.login(user, pass);
-
-                    javafx.application.Platform.runLater(() -> {
-                        btnLogin.setDisable(false);
-                        btnRegister.setDisable(false);
-
-                        if (loginStatus == 1){
-                            showAlert("Đăng nhập thành công!", false);
-                        }
-                        else if (loginStatus == 2){
-                            showAlert("Mật khẩu không chính xác!", true);
-                            txtPass.clear();
-                            txtPass.requestFocus();
-                        }
-                        else if (loginStatus == 0){
-                            showAlert("Tài khoản này không tồn tại!", true);
-                            txtUser.clear();
-                            txtUser.requestFocus();
-                        }
-                        else {
-                            showAlert("Lỗi kết nối máy chủ dữ liệu!", true);
-                        }
-                    });
-                }).start();
-            }
+                    if (loginStatus == 1){
+                        failedAttempts = 0;
+                        showAlert("Đăng nhập thành công!", false);
+                        return;
+                    }
+                    else if (loginStatus == 2){
+                        handleFailedLogin("Mật khẩu không chính xác!");
+                        txtPass.clear();
+                        txtPass.requestFocus();
+                        return;
+                    }
+                    else if (loginStatus == 0){
+                        handleFailedLogin("Tài khoản không tồn tại!");
+                        txtUser.clear();
+                        txtUser.requestFocus();
+                        return;
+                    }
+                    else {
+                        showAlert("Lỗi kết nối máy chủ dữ liệu!", true);
+                    }
+                });
+            }).start();
         }
     }
 
@@ -189,5 +164,24 @@ public class LoginForm implements Initializable {
 
         SequentialTransition sequence = new SequentialTransition(showAnim, hideAnim);
         sequence.play();
+    }
+
+    private void handleFailedLogin(String message) {
+        failedAttempts++;
+
+        if (failedAttempts >= 5) {
+            btnLogin.setDisable(true);
+            showAlert("Tài khoản bị khóa tạm thời 60 giây do nhập sai quá 5 lần!", true);
+
+            PauseTransition lockTimer = new PauseTransition(Duration.seconds(60));
+            lockTimer.setOnFinished(e -> {
+                failedAttempts = 0;
+                btnLogin.setDisable(false);
+                showAlert("Đã mở khóa đăng nhập. Vui lòng thử lại.", false);
+            });
+            lockTimer.play();
+        } else {
+            showAlert(message + " (Sai " + failedAttempts + "/5 lần)", true);
+        }
     }
 }
