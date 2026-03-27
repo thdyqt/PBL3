@@ -2,24 +2,24 @@ package Entity;
 
 public class OrderDetail {
     //attributes
-    private int id;
+    private int orderId;
     private Product product;
     private int quantity;
     private double price;
 
     //constructors
     public OrderDetail(){};
-    public OrderDetail(int id, Product product, int quantity, double price){
-        this.id = id;
+    public OrderDetail(int orderId, Product product, int quantity, double price){
+        this.orderId = orderId;
         this.product = product;
         this.quantity = quantity;
         this.price = price;
     }
 
     //get-set
-    public int getId(){return id;}
-    public void setId(int id){
-        this.id = id;
+    public int getId(){return orderId;}
+    public void setId(int orderId){
+        this.orderId = orderId;
     }
 
     public Product getProduct(){return product;}
