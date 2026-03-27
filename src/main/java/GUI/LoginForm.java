@@ -99,6 +99,11 @@ public class LoginForm implements Initializable {
                         txtUser.requestFocus();
                         return;
                     }
+                    else if (loginStatus == -2){
+                        showAlert("Tài khoản hoặc mật khẩu không được chứa khoảng trắng hay kí tự đặc biệt!", true);
+                        txtUser.requestFocus();
+                        return;
+                    }
                     else {
                         showAlert("Lỗi kết nối máy chủ dữ liệu!", true);
                     }
