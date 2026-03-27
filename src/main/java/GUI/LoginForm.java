@@ -14,6 +14,7 @@ import java.net.*;
 import java.util.*;
 
 import Business.StaffBusiness;
+import Business.CustomerBusiness;
 
 public class LoginForm implements Initializable {
     @FXML
@@ -73,6 +74,37 @@ public class LoginForm implements Initializable {
 
                 new Thread(() -> {
                     int loginStatus = StaffBusiness.login(user, pass);
+
+                    javafx.application.Platform.runLater(() -> {
+                        btnLogin.setDisable(false);
+                        btnRegister.setDisable(false);
+
+                        if (loginStatus == 1){
+                            showAlert("Đăng nhập thành công!", false);
+                        }
+                        else if (loginStatus == 2){
+                            showAlert("Mật khẩu không chính xác!", true);
+                            txtPass.clear();
+                            txtPass.requestFocus();
+                        }
+                        else if (loginStatus == 0){
+                            showAlert("Tài khoản này không tồn tại!", true);
+                            txtUser.clear();
+                            txtUser.requestFocus();
+                        }
+                        else {
+                            showAlert("Lỗi kết nối máy chủ dữ liệu!", true);
+                        }
+                    });
+                }).start();
+            }
+            if(rbCustomer.isSelected()){
+                btnLogin.setDisable(true);
+                btnRegister.setDisable(true);
+                showAlert("Đang kết nối máy chủ...", false);
+
+                new Thread(() -> {
+                    int loginStatus = CustomerBusiness.login(user, pass);
 
                     javafx.application.Platform.runLater(() -> {
                         btnLogin.setDisable(false);
