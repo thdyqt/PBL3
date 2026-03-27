@@ -1,11 +1,9 @@
 package GUI;
 
 import javafx.fxml.*;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.animation.*;
 import javafx.event.*;
-import javafx.scene.control.*;
 import javafx.scene.control.Alert.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
@@ -129,36 +127,18 @@ public class LoginForm implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("register.fxml"));
             Parent root = loader.load();
 
-            Stage stage = (Stage) btnRegister.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
-            stage.setTitle("Register!");
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
+            btnRegister.getScene().setRoot(root);
 
         } catch (Exception e) {
             e.printStackTrace();
             showAlert("Không thể mở màn hình đăng ký!", true);
         }
     }
+
     //EFFECTS
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mainForm.setOpacity(0);
-        mainForm.setTranslateY(50);
-
-        // Hiệu ứng hiển thị rõ dần
-        FadeTransition fade = new FadeTransition(Duration.millis(1500), mainForm);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-
-        // Hiệu ứng dịch chuyển từ dưới lên
-        TranslateTransition translate = new TranslateTransition(Duration.millis(1500), mainForm);
-        translate.setFromY(80);
-        translate.setToY(0);
-
-        ParallelTransition pt = new ParallelTransition(fade, translate);
-        pt.play();
+        Util.Others.playFormAnimation(mainForm);
     }
 
     private void showAlert(String message, boolean isError) {

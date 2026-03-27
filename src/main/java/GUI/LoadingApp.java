@@ -12,7 +12,7 @@ public class LoadingApp extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(LoadingApp.class.getResource("login.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
-        stage.setTitle("Login!");
+        stage.setTitle("DUT Bakery!");
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();

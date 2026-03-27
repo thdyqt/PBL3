@@ -6,8 +6,10 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
+import java.net.*;
+import java.util.*;
 
-public class RegisterForm {
+public class RegisterForm implements Initializable{
     @FXML
     private Button btnBackToLogin;
 
@@ -37,11 +39,24 @@ public class RegisterForm {
 
     @FXML
     void btnBackToLoginClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            Parent root = loader.load();
 
+            btnBackToLogin.getScene().setRoot(root);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     void btnSubmitRegisterClick(ActionEvent event) {
 
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Util.Others.playFormAnimation(mainForm);
     }
 }
