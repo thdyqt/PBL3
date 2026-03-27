@@ -126,13 +126,13 @@ public class LoginForm implements Initializable {
     @FXML
     void btnRegisterClick(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("GUI/register.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("register.fxml"));
             Parent root = loader.load();
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Stage stage = (Stage) btnRegister.getScene().getWindow();
+            Scene scene = new Scene(root, 1200, 800);
+            stage.setTitle("Register!");
             stage.setScene(scene);
-            stage.centerOnScreen();
             stage.setMaximized(true);
             stage.show();
 
