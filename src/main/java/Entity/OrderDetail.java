@@ -1,20 +1,39 @@
 package Entity;
 
-import java.util.List;
-
 public class OrderDetail {
     //attributes
-    private List<Product> product_list;
+    private int id;
+    private Product product;
+    private int quantity;
+    private double price;
 
     //constructors
     public OrderDetail(){};
-    public OrderDetail(List<Product> product_list){
-        this.product_list = product_list;
+    public OrderDetail(int id, Product product, int quantity, double price){
+        this.id = id;
+        this.product = product;
+        this.quantity = quantity;
+        this.price = price;
     }
 
     //get-set
-    public List<Product> getProduct_list() {return product_list;}
-    public void setProduct_list(List<Product> product_list){
-        this.product_list = product_list;
+    public int getId(){return id;}
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public Product getProduct(){return product;}
+    public void setProduct(Product product){
+        this.product = product;
+    }
+
+    public int getQuantity(){return quantity;}
+    public void setQuantity(int quantity){
+        this.quantity = quantity;
+    }
+
+    public double getPrice(){return price;}
+    public void setPrice(double price){
+        this.price = price;
     }
 }

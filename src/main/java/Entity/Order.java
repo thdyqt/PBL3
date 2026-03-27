@@ -1,6 +1,8 @@
 package Entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Order {
     //attributes
@@ -8,17 +10,17 @@ public class Order {
     private LocalDateTime process_time;
     private Staff staff;
     private Customer customer;
-    private OrderDetail orderDetail;
+    private List<OrderDetail> orderDetail;
 
     //constructors
-    public Order(){};
+    public Order(){this.orderDetail = new ArrayList<>();};
 
     public Order(int id, LocalDateTime process_time, Staff staff, Customer customer, OrderDetail detail){
         this.id = id;
         this.process_time = process_time;
         this.staff = staff;
         this.customer = customer;
-        this.orderDetail = detail;
+        this.orderDetail = orderDetail;
     }
 
     //get-set
@@ -42,8 +44,8 @@ public class Order {
         this.customer = customer;
     }
 
-    public OrderDetail getOrderDetail(){return orderDetail;}
-    public void setOrderDetail(OrderDetail orderDetail){
+    public List<OrderDetail> getOrderDetail(){return orderDetail;}
+    public void setOrderDetail(List<OrderDetail> orderDetail){
         this.orderDetail = orderDetail;
     }
 }
