@@ -4,12 +4,10 @@ import Entity.Customer;
 import java.sql.*;
 import java.util.*;
 
-import Entity.Staff;
 import Util.DBConnection;
 
 public class CustomerData {
-
-    public List<Customer> getAllCustomer() {
+    public List<Customer> getAllCustomers() {
         List<Customer> list = new ArrayList<>();
         String sql = "SELECT * FROM Customer WHERE status = 'Active'";
 
@@ -33,7 +31,7 @@ public class CustomerData {
         return list;
     }
 
-    public boolean addStaff(Customer c) {
+    public boolean addCustomer(Customer c) {
         String sql = "INSERT INTO Customer (phone, full_name, username, pass_word, point) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
@@ -45,7 +43,6 @@ public class CustomerData {
             stmt.setString(4, c.getPassword());
             stmt.setInt(5, c.getPoint());
 
-
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
@@ -55,24 +52,7 @@ public class CustomerData {
         }
     }
 
-    public boolean resignStaff(int id) {
-        String sql = "UPDATE Customer SET status = 'Inactive' WHERE id_khach_hang = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean updateStaff(Customer c) {
+    public boolean updateCustomer(Customer c) {
         String sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, point = ? WHERE id_khach_hang = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -147,6 +127,4 @@ public class CustomerData {
             return -1;
         }
     }
-
-
 }
