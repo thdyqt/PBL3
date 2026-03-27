@@ -8,7 +8,7 @@ public class Order {
     private LocalDateTime process_time;
     private Staff staff;
     private Customer customer;
-    private OrderDetail detail;
+    private OrderDetail orderDetail;
 
     //constructors
     public Order(){};
@@ -18,9 +18,32 @@ public class Order {
         this.process_time = process_time;
         this.staff = staff;
         this.customer = customer;
-        this.detail = detail;
+        this.orderDetail = detail;
     }
 
+    //get-set
+    public int getId(){return id;}
+    public void setId(int id) {
+        this.id = id;
+    }
 
+    public LocalDateTime getProcess_time(){return process_time;}
+    public void setProcess_time(LocalDateTime process_time) {
+        this.process_time = process_time;
+    }
 
+    public Staff getStaff(){return staff;}
+    public void setStaff(Staff staff){
+        this.staff = staff;
+    }
+
+    public Customer getCustomer(){return customer;}
+    public void setCustomer(Customer customer){
+        this.customer = customer;
+    }
+
+    public OrderDetail getOrderDetail(){return orderDetail;}
+    public void setOrderDetail(OrderDetail orderDetail){
+        this.orderDetail = orderDetail;
+    }
 }
