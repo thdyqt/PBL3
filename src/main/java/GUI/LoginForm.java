@@ -98,7 +98,7 @@ public class LoginForm implements Initializable {
                     });
                 }).start();
             }
-            if(rbCustomer.isSelected()){
+            else if(rbCustomer.isSelected()){
                 btnLogin.setDisable(true);
                 btnRegister.setDisable(true);
                 showAlert("Đang kết nối máy chủ...", false);
