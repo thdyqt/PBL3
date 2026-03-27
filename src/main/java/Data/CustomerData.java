@@ -1,31 +1,30 @@
 package Data;
 
-import Entity.Staff;
 import java.sql.*;
 import java.util.*;
-
-import Util.DBConnection;
-import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
-public class StaffData {
-    public List<Staff> getAllStaff() {
-        List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM Staff WHERE status = 'Active'";
+import Entity.Customer;
+import Util.DBConnection;
+import Util.UserSession;
+
+public class CustomerData {
+    public List<Customer> getAllCustomers() {
+        List<Customer> list = new ArrayList<>();
+        String sql = "SELECT * FROM Customer WHERE status = 'Active'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                list.add(new Staff(
-                        rs.getInt("id_nhan_vien"),
+                list.add(new Customer(
+                        rs.getInt("id_khach_hang"),
                         rs.getString("phone"),
                         rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("pass_word"),
-                        rs.getString("position"),
-                        rs.getDate("hire_date")
+                        rs.getInt("point")
                 ));
             }
         } catch (SQLException e) {
@@ -34,18 +33,17 @@ public class StaffData {
         return list;
     }
 
-    public boolean addStaff(Staff s) {
-        String sql = "INSERT INTO Staff (phone, full_name, username, pass_word, position, hire_date) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean addCustomer(Customer c) {
+        String sql = "INSERT INTO Customer (phone, full_name, username, pass_word, point) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, s.getPhone());
-            stmt.setString(2, s.getName());
-            stmt.setString(3, s.getUser());
-            stmt.setString(4, s.getPassword());
-            stmt.setString(5, s.getRole());
-            stmt.setDate(6, s.getHire_date());
+            stmt.setString(1, c.getPhone());
+            stmt.setString(2, c.getName());
+            stmt.setString(3, c.getUser());
+            stmt.setString(4, c.getPassword());
+            stmt.setInt(5, c.getPoint());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -56,13 +54,17 @@ public class StaffData {
         }
     }
 
-    public boolean resignStaff(int id) {
-        String sql = "UPDATE Staff SET status = 'Inactive' WHERE id_nhan_vien = ?";
-
+    public boolean updateCustomer(Customer c) {
+        String sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, point = ? WHERE id_khach_hang = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, id);
+            stmt.setString(1, c.getPhone());
+            stmt.setString(2, c.getName());
+            stmt.setString(3, c.getUser());
+            stmt.setString(4, c.getPassword());
+            stmt.setInt(5, c.getPoint());
+            stmt.setInt(6, c.getId());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -73,32 +75,10 @@ public class StaffData {
         }
     }
 
-    public boolean updateStaff(Staff s) {
-        String sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, s.getPhone());
-            stmt.setString(2, s.getName());
-            stmt.setString(3, s.getUser());
-            stmt.setString(4, s.getPassword());
-            stmt.setString(5, s.getRole());
-            stmt.setDate(6, s.getHire_date());
-            stmt.setInt(7, s.getId());
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public List<Staff> searchStaff(String keyword) {
-        List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM Staff WHERE status = 'Active' AND " +
-                "(phone LIKE ? OR full_name LIKE ? OR username LIKE ? OR position LIKE ? OR hire_date LIKE ?)";
+    public List<Customer> searchCustomer(String keyword) {
+        List<Customer> list = new ArrayList<>();
+        String sql = "SELECT * FROM Customer WHERE status = 'Active' AND " +
+                "(phone LIKE ? OR full_name LIKE ? OR username LIKE ? OR point LIKE ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -108,18 +88,16 @@ public class StaffData {
             stmt.setString(2, searchPattern);
             stmt.setString(3, searchPattern);
             stmt.setString(4, searchPattern);
-            stmt.setString(5, searchPattern);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new Staff(
-                            rs.getInt("id_nhan_vien"),
+                    list.add(new Customer(
+                            rs.getInt("id_khach_hang"),
                             rs.getString("phone"),
                             rs.getString("full_name"),
                             rs.getString("username"),
                             rs.getString("pass_word"),
-                            rs.getString("position"),
-                            rs.getDate("hire_date")
+                            rs.getInt("point")
                     ));
                 }
             }
@@ -131,7 +109,7 @@ public class StaffData {
     }
 
     public static int checkLogin(String user, String pass) {
-        String sql = "SELECT id_nhan_vien, pass_word, position FROM Staff WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_khach_hang, pass_word FROM Customer WHERE username = ? OR phone = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -142,9 +120,8 @@ public class StaffData {
                     String dbPasswordHash = rs.getString("pass_word");
 
                     if (BCrypt.checkpw(pass, dbPasswordHash)){
-                        int dbId = rs.getInt("id_nhan_vien");
-                        String dbPosition = rs.getString("position");
-                        UserSession.getInstance().setUser(dbId, user, dbPosition);
+                        int dbId = rs.getInt("id_khach_hang");
+                        UserSession.getInstance().setUser(dbId, user, "Customer");
                         return 1;
                     }
                     else return 2;

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="rootPane" prefHeight="650.0" prefWidth="900.0" style="-fx-background-color: #F0F4F8;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.LoginForm">
+    <children>
+
+        <HBox fx:id="mainForm" alignment="CENTER" maxHeight="500.0" maxWidth="800.0" style="-fx-background-radius: 20; -fx-background-color: transparent;">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" height="70.0" radius="34.5" width="70.0">
+                    <color>
+                        <Color opacity="0.15" />
+                    </color>
+                </DropShadow>
+            </effect>
+            <children>
+
+                <VBox alignment="CENTER" prefHeight="500.0" prefWidth="380.0" spacing="15.0" style="-fx-background-color: linear-gradient(to bottom right, #0D47A1, #1976D2); -fx-background-radius: 20 0 0 20;">
+                    <children>
+
+                        <StackPane maxHeight="100.0" maxWidth="100.0" prefHeight="61.0" prefWidth="100.0" style="-fx-background-color: white; -fx-background-radius: 50;">
+                            <children>
+                                <SVGPath content="M12 2 L12 5 L8 5 L8 12 L4 12 L4 22 L20 22 L20 12 L16 12 L16 5 L12 5 Z M12 6.5 C13 6.5 14 7 14 8 C14 9 13 9.5 12 9.5 C11 9.5 10 9 10 8 C10 7 11 6.5 12 6.5 Z M8 13.5 C9 13.5 10 14 10 15 C10 16 9 16.5 8 16.5 C7 16.5 6 16 6 15 C6 14 7 13.5 8 13.5 Z M16 13.5 C17 13.5 18 14 18 15 C18 16 17 16.5 16 16.5 C15 16.5 14 16 14 15 C14 14 15 13.5 16 13.5 Z" fill="#1565C0" scaleX="2.5" scaleY="2.5" />
+                            </children>
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </StackPane>
+
+                        <Label text="DUT BAKERY" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="32.0" />
+                            </font>
+                        </Label>
+                        <Label text="Premium Patisserie" textFill="#BBDEFB">
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Label>
+                        <Label text="🎂 🍩 🥐 " textFill="#82B1FF">
+                            <font>
+                                <Font size="18.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets top="10.0" />
+                            </VBox.margin>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <StackPane prefHeight="500.0" prefWidth="420.0" style="-fx-background-color: white; -fx-background-radius: 0 20 20 0;">
+                    <children>
+
+                        <SVGPath content="M 0 0 L 420 0 L 420 20 Q 385 50 350 20 Q 315 -10 280 20 Q 245 50 210 20 Q 175 -10 140 20 Q 105 50 70 20 Q 35 -10 0 20 Z" fill="#E3F2FD" StackPane.alignment="TOP_CENTER" />
+
+                        <VBox alignment="CENTER" spacing="18.0" style="-fx-padding: 50 40 30 40;">
+                            <children>
+
+                                <Label text="ĐĂNG NHẬP" textFill="#0D47A1">
+                                    <font>
+                                        <Font name="System Bold" size="26.0" />
+                                    </font>
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" />
+                                    </VBox.margin>
+                                </Label>
+
+                                <HBox alignment="CENTER" spacing="20.0">
+                                    <children>
+                                        <Label text="Bạn là:" textFill="#555555">
+                                            <font>
+                                                <Font name="System Bold" size="13.0" />
+                                            </font>
+                                        </Label>
+                                        <RadioButton fx:id="rbCustomer" mnemonicParsing="false" selected="true" text="Khách hàng" textFill="#333333">
+                                            <font>
+                                                <Font size="13.0" />
+                                            </font>
+                                            <toggleGroup>
+                                                <ToggleGroup fx:id="roleGroup" />
+                                            </toggleGroup>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </RadioButton>
+                                        <RadioButton fx:id="rbStaff" mnemonicParsing="false" text="Nhân viên" textFill="#333333" toggleGroup="$roleGroup">
+                                            <font>
+                                                <Font size="13.0" />
+                                            </font>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </RadioButton>
+                                    </children>
+                                </HBox>
+
+                                <VBox spacing="8.0">
+                                    <children>
+                                        <Label text="Tên đăng nhập / Số điện thoại" textFill="#444444">
+                                            <font>
+                                                <Font name="System Bold" size="12.0" />
+                                            </font>
+                                        </Label>
+                                        <TextField fx:id="txtUser" prefHeight="45.0" promptText="Nhập username hoặc số điện thoại..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 25; -fx-border-color: #BBDEFB; -fx-border-radius: 25; -fx-padding: 0 20;">
+                                            <font>
+                                                <Font size="13.0" />
+                                            </font>
+                                        </TextField>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="8.0">
+                                    <children>
+                                        <Label text="Mật khẩu" textFill="#444444">
+                                            <font>
+                                                <Font name="System Bold" size="12.0" />
+                                            </font>
+                                        </Label>
+                                        <PasswordField fx:id="txtPass" prefHeight="45.0" promptText="Nhập mật khẩu..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 25; -fx-border-color: #BBDEFB; -fx-border-radius: 25; -fx-padding: 0 20;">
+                                            <font>
+                                                <Font size="13.0" />
+                                            </font>
+                                        </PasswordField>
+                                    </children>
+                                </VBox>
+
+                                <HBox alignment="CENTER" spacing="15.0">
+                                    <VBox.margin>
+                                        <Insets top="15.0" />
+                                    </VBox.margin>
+                                    <children>
+                                        <Button fx:id="btnLogin" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnLoginClick" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: #1565C0; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 14px;" text="ĐĂNG NHẬP">
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </Button>
+                                        <Button fx:id="btnRegister" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnRegisterClick" prefHeight="45.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: #1565C0; -fx-border-radius: 25; -fx-text-fill: #1565C0; -fx-font-weight: bold; -fx-font-size: 14px;" text="ĐĂNG KÝ">
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </Button>
+                                    </children>
+                                </HBox>
+
+                            </children>
+                        </VBox>
+                    </children>
+                </StackPane>
+            </children>
+        </HBox>
+    </children>
+</StackPane>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="rootPane" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #F0F4F8;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.RegisterForm">
+    <children>
+
+        <HBox fx:id="mainForm" alignment="CENTER" maxHeight="600.0" maxWidth="900.0" style="-fx-background-radius: 20; -fx-background-color: transparent;">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" height="80.0" radius="39.5" width="80.0">
+                    <color>
+                        <Color opacity="0.15" />
+                    </color>
+                </DropShadow>
+            </effect>
+            <children>
+
+                <VBox alignment="CENTER" prefHeight="600.0" prefWidth="380.0" spacing="15.0" style="-fx-background-color: linear-gradient(to bottom right, #0D47A1, #1976D2); -fx-background-radius: 20 0 0 20;">
+                    <children>
+                        <StackPane maxHeight="100.0" maxWidth="100.0" prefHeight="80.0" prefWidth="100.0" style="-fx-background-color: white; -fx-background-radius: 50;">
+                            <children>
+                                <SVGPath content="M12 2 L12 5 L8 5 L8 12 L4 12 L4 22 L20 22 L20 12 L16 12 L16 5 L12 5 Z M12 6.5 C13 6.5 14 7 14 8 C14 9 13 9.5 12 9.5 C11 9.5 10 9 10 8 C10 7 11 6.5 12 6.5 Z M8 13.5 C9 13.5 10 14 10 15 C10 16 9 16.5 8 16.5 C7 16.5 6 16 6 15 C6 14 7 13.5 8 13.5 Z M16 13.5 C17 13.5 18 14 18 15 C18 16 17 16.5 16 16.5 C15 16.5 14 16 14 15 C14 14 15 13.5 16 13.5 Z" fill="#1565C0" scaleX="2.5" scaleY="2.5" />
+                            </children>
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </StackPane>
+
+                        <Label text="DUT BAKERY" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="32.0" />
+                            </font>
+                        </Label>
+                        <Label text="Premium Patisserie" textFill="#BBDEFB">
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Label>
+
+                        <VBox alignment="CENTER" spacing="5.0">
+                            <VBox.margin>
+                                <Insets top="30.0" />
+                            </VBox.margin>
+                            <Label text="Đăng ký tài khoản mới" textFill="WHITE">
+                                <font>
+                                    <Font name="System Bold" size="15.0" />
+                                </font>
+                            </Label>
+                            <Label text="Tích điểm ngay - Nhận quà liền tay!" textFill="#E3F2FD">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                        </VBox>
+                    </children>
+                </VBox>
+
+                <StackPane prefHeight="600.0" prefWidth="520.0" style="-fx-background-color: white; -fx-background-radius: 0 20 20 0;">
+                    <children>
+                        <SVGPath content="M 0 0 L 520 0 L 520 20 Q 455 50 390 20 Q 325 -10 260 20 Q 195 50 130 20 Q 65 -10 0 20 Z" fill="#E3F2FD" StackPane.alignment="TOP_CENTER" />
+
+                        <VBox alignment="CENTER_LEFT" spacing="15.0" style="-fx-padding: 40 50 30 50;">
+                            <children>
+
+                                <VBox alignment="CENTER">
+                                    <children>
+                                        <Label text="TẠO TÀI KHOẢN" textFill="#0D47A1">
+                                            <font>
+                                                <Font name="System Bold" size="26.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Vui lòng điền đầy đủ thông tin bên dưới" textFill="#777777">
+                                            <font>
+                                                <Font size="13.0" />
+                                            </font>
+                                            <VBox.margin>
+                                                <Insets bottom="15.0" top="5.0" />
+                                            </VBox.margin>
+                                        </Label>
+                                    </children>
+                                </VBox>
+
+                                <HBox spacing="15.0">
+                                    <children>
+                                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Họ và tên" textFill="#444444">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <TextField fx:id="txtFullName" prefHeight="42.0" promptText="Ví dụ: Nguyễn Văn A" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                    <font><Font size="13.0" /></font>
+                                                </TextField>
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Số điện thoại" textFill="#444444">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <TextField fx:id="txtPhone" prefHeight="42.0" promptText="Ví dụ: 0905..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                    <font><Font size="13.0" /></font>
+                                                </TextField>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <VBox spacing="8.0">
+                                    <children>
+                                        <Label text="Tên đăng nhập" textFill="#444444">
+                                            <font><Font name="System Bold" size="12.0" /></font>
+                                        </Label>
+                                        <TextField fx:id="txtUsername" prefHeight="42.0" promptText="Viết liền không dấu (VD: nguyenva)" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                            <font><Font size="13.0" /></font>
+                                        </TextField>
+                                    </children>
+                                </VBox>
+
+                                <HBox spacing="15.0">
+                                    <children>
+                                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Mật khẩu" textFill="#444444">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <PasswordField fx:id="txtPassword" prefHeight="42.0" promptText="Nhập mật khẩu" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                    <font><Font size="13.0" /></font>
+                                                </PasswordField>
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="Xác nhận mật khẩu" textFill="#444444">
+                                                    <font><Font name="System Bold" size="12.0" /></font>
+                                                </Label>
+                                                <PasswordField fx:id="txtConfirmPassword" prefHeight="42.0" promptText="Nhập lại mật khẩu" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                    <font><Font size="13.0" /></font>
+                                                </PasswordField>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <VBox alignment="CENTER" spacing="12.0">
+                                    <VBox.margin>
+                                        <Insets top="15.0" />
+                                    </VBox.margin>
+                                    <children>
+                                        <Button fx:id="btnSubmitRegister" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnSubmitRegisterClick" prefHeight="45.0" style="-fx-background-color: #43A047; -fx-text-fill: white; -fx-background-radius: 25; -fx-font-weight: bold; -fx-font-size: 15px;" text="ĐĂNG KÝ NGAY">
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                            <effect>
+                                                <DropShadow blurType="GAUSSIAN" color="#43a04766" height="20.0" offsetY="5.0" radius="9.5" width="20.0" />
+                                            </effect>
+                                        </Button>
+
+                                        <Button fx:id="btnBackToLogin" mnemonicParsing="false" onAction="#btnBackToLoginClick" style="-fx-background-color: transparent; -fx-text-fill: #1565C0; -fx-underline: true;" text="Đã có tài khoản? Quay lại đăng nhập">
+                                            <font>
+                                                <Font size="13.0" />
+                                            </font>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </Button>
+                                    </children>
+                                </VBox>
+
+                            </children>
+                        </VBox>
+                    </children>
+                </StackPane>
+            </children>
+        </HBox>
+    </children>
+</StackPane>

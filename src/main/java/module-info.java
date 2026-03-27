@@ -9,6 +9,7 @@ module com.example.pbl3 {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires java.sql;
+    requires jbcrypt;
 
     opens GUI to javafx.fxml;
     exports GUI;
