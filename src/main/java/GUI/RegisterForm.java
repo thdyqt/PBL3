@@ -61,7 +61,7 @@ public class RegisterForm implements Initializable{
     void btnSubmitRegisterClick(ActionEvent event) {
         String phone = txtPhone.getText().trim();
         String user = txtUser.getText().trim();
-        String name = txtName.getText().trim();
+        String name = Util.Others.standardizeName(txtName.getText());
         String pass = txtPass.getText().trim();
         String confirmPass = txtConfirmPass.getText().trim();
 
@@ -70,26 +70,20 @@ public class RegisterForm implements Initializable{
             return;
         }
 
-        else if (!phone.matches("^[0-9]+$") || phone.length() != 10) {
-            Others.showAlert(rootPane, "Số điện thoại phải bao gồm đúng 10 chữ số!", true);
+        else if (!phone.matches("^0[0-9]{9}$")) {
+            Others.showAlert(rootPane, "Số điện thoại không hợp lệ!", true);
             txtPhone.requestFocus();
             return;
         }
 
-        else if (((user.length() < 6) || user.contains (" ")) && !user.isEmpty()) {
-            Others.showAlert(rootPane, "Tài khoản phải từ 6 kí tự và không chứa khoảng trắng!", true);
+        else if (user.length() < 6 && !user.isEmpty()) {
+            Others.showAlert(rootPane, "Tài khoản phải từ 6 kí tự!", true);
             txtUser.requestFocus();
             return;
         }
 
-        else if (!name.matches("^[\\p{L} .'-]+$")) {
-            Others.showAlert(rootPane, "Họ tên không hợp lệ (không chứa số hoặc kí tự lạ)!", true);
-            txtName.requestFocus();
-            return;
-        }
-
-        else if (pass.length() < 6 || pass.contains (" ")) {
-            Others.showAlert(rootPane, "Mật khẩu phải từ 6 kí tự và không chứa khoảng trắng!", true);
+        else if (pass.length() < 6) {
+            Others.showAlert(rootPane, "Mật khẩu phải từ 6 kí tự!", true);
             txtPass.requestFocus();
             return;
         }
@@ -114,13 +108,18 @@ public class RegisterForm implements Initializable{
 
                     if (registerStatus == 1){
                         Others.showAlert(rootPane,"Đăng ký tài khoản thành công! Vui lòng đăng nhập.", false);
+                        txtPhone.clear();
+                        txtUser.clear();
+                        txtName.clear();
+                        txtPass.clear();
+                        txtConfirmPass.clear();
+
                         javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.5));
                         delay.setOnFinished(e -> btnBackToLoginClick(null));
                         delay.play();
                     }
                     else if (registerStatus == -1){
                         Others.showAlert(rootPane, "Tên đăng nhập hoặc Số điện thoại đã được sử dụng!", true);
-                        return;
                     }
                     else {
                         Others.showAlert(rootPane, "Lỗi kết nối máy chủ dữ liệu!", true);
@@ -133,5 +132,41 @@ public class RegisterForm implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Others.playFormAnimation(mainForm);
+
+        Util.Others.setMaxLength(txtPhone, 10);
+        Util.Others.setMaxLength(txtUser, 20);
+        Util.Others.setMaxLength(txtName, 100);
+        Util.Others.setMaxLength(txtPass, 20);
+        Util.Others.setMaxLength(txtConfirmPass, 20);
+
+        txtPhone.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtPhone.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        txtUser.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains(" ")) {
+                txtUser.setText(newValue.replaceAll(" ", ""));
+            }
+        });
+
+        txtName.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("^[\\p{L} .'-]*$")) {
+                txtName.setText(newValue.replaceAll("[^\\p{L} .'-]", ""));
+            }
+        });
+
+        txtPass.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains(" ")) {
+                txtPass.setText(newValue.replaceAll(" ", ""));
+            }
+        });
+
+        txtConfirmPass.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains(" ")) {
+                txtConfirmPass.setText(newValue.replaceAll(" ", ""));
+            }
+        });
     }
 }

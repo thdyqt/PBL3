@@ -68,12 +68,6 @@ public class LoginForm implements Initializable {
             return;
         }
 
-        else if (user.contains(" ") || pass.contains(" ")) {
-            Others.showAlert(rootPane, "Tài khoản hoặc mật khẩu không được chứa khoảng trắng!", true);
-            txtUser.requestFocus();
-            return;
-        }
-
         else if (user.length() < 6 || pass.length() < 6) {
             Others.showAlert(rootPane, "Tài khoản hoặc mật khẩu phải từ 6 kí tự!", true);
             txtUser.requestFocus();
@@ -95,19 +89,16 @@ public class LoginForm implements Initializable {
                     if (loginStatus == 1){
                         failedAttempts = 0;
                         Others.showAlert(rootPane,"Đăng nhập thành công!", false);
-                        return;
                     }
                     else if (loginStatus == 2){
                         handleFailedLogin("Mật khẩu không chính xác!");
                         txtPass.clear();
                         txtPass.requestFocus();
-                        return;
                     }
                     else if (loginStatus == 0){
                         handleFailedLogin("Tài khoản không tồn tại!");
                         txtUser.clear();
                         txtUser.requestFocus();
-                        return;
                     }
                     else {
                         Others.showAlert(rootPane, "Lỗi kết nối máy chủ dữ liệu!", true);
@@ -135,18 +126,35 @@ public class LoginForm implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Others.playFormAnimation(mainForm);
+
+        Util.Others.setMaxLength(txtUser, 20);
+        Util.Others.setMaxLength(txtPass, 20);
+
+        txtUser.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains(" ")) {
+                txtUser.setText(newValue.replaceAll(" ", ""));
+            }
+        });
+
+        txtPass.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains(" ")) {
+                txtPass.setText(newValue.replaceAll(" ", ""));
+            }
+        });
     }
 
     private void handleFailedLogin(String message) {
         failedAttempts++;
         if (failedAttempts >= 5) {
             btnLogin.setDisable(true);
+            btnRegister.setDisable(true);
             Others.showAlert(rootPane, "Khóa tạm thời 60 giây do nhập sai quá 5 lần!", true);
 
             javafx.animation.PauseTransition lockTimer = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(60));
             lockTimer.setOnFinished(e -> {
                 failedAttempts = 0;
                 btnLogin.setDisable(false);
+                btnRegister.setDisable(false);
                 Others.showAlert(rootPane, "Đã mở khóa. Vui lòng thử lại!", false);
             });
             lockTimer.play();

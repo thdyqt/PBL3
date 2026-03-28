@@ -9,6 +9,34 @@ import javafx.scene.control.Label;
 import javafx.util.Duration;
 
 public class Others {
+    public static void setMaxLength(javafx.scene.control.TextField textField, int maxLength) {
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.length() > maxLength) {
+                textField.setText(oldValue);
+            }
+        });
+    }
+
+    // =========================================================================
+    public static String standardizeName(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "";
+        }
+
+        String cleanedString = fullName.trim().replaceAll("\\s+", " ");
+        String[] words = cleanedString.split(" ");
+        StringBuilder result = new StringBuilder();
+
+        for (String word : words) {
+            String firstLetter = word.substring(0, 1).toUpperCase();
+            String remainingLetters = word.substring(1).toLowerCase();
+            result.append(firstLetter).append(remainingLetters).append(" ");
+        }
+
+        return result.toString().trim();
+    }
+
+    // =========================================================================
     public static void playFormAnimation(Node formNode) {
         formNode.setOpacity(0);
         formNode.setTranslateY(50);
