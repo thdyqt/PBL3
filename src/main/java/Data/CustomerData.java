@@ -23,8 +23,7 @@ public class CustomerData {
                         rs.getString("phone"),
                         rs.getString("full_name"),
                         rs.getString("username"),
-                        rs.getString("pass_word"),
-                        rs.getInt("point")
+                        rs.getString("pass_word")
                 ));
             }
         } catch (SQLException e) {
@@ -96,8 +95,7 @@ public class CustomerData {
                             rs.getString("phone"),
                             rs.getString("full_name"),
                             rs.getString("username"),
-                            rs.getString("pass_word"),
-                            rs.getInt("point")
+                            rs.getString("pass_word")
                     ));
                 }
             }

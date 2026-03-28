@@ -5,14 +5,14 @@ public class Customer extends Person {
 
     public Customer() {}
 
-    public Customer(int id, String phone, String name, String user, String password, int point) {
+    public Customer(int id, String phone, String name, String user, String password) {
         super(id, phone, name, user, password);
-        this.point = point;
+        this.point = 0;
     }
 
-    public Customer(String phone, String name, String user, String password, int point ) {
+    public Customer(String phone, String name, String user, String password ) {
         super(phone, name, user, password);
-        this.point = point;
+        this.point = 0;
     }
 
     public int getPoint() {
