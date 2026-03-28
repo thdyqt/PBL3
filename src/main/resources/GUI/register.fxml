@@ -14,7 +14,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="rootPane" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #F0F4F8;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.RegisterForm">
+<StackPane fx:id="rootPane" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #F0F4F8;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.RegisterForm">
     <children>
 
         <HBox fx:id="mainForm" alignment="CENTER" maxHeight="600.0" maxWidth="900.0" style="-fx-background-radius: 20; -fx-background-color: transparent;">
@@ -53,7 +53,7 @@
                             <VBox.margin>
                                 <Insets top="30.0" />
                             </VBox.margin>
-                            <Label text="Đăng ký tài khoản mới" textFill="WHITE">
+                            <Label text="Đăng ký tài khoản mới (Khách hàng)" textFill="WHITE">
                                 <font>
                                     <Font name="System Bold" size="15.0" />
                                 </font>
@@ -96,56 +96,66 @@
                                     <children>
                                         <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label text="Họ và tên" textFill="#444444">
+                                                <Label text="Số điện thoại*" textFill="#444444">
                                                     <font><Font name="System Bold" size="12.0" /></font>
                                                 </Label>
-                                                <TextField fx:id="txtFullName" prefHeight="42.0" promptText="Ví dụ: Nguyễn Văn A" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
-                                                    <font><Font size="13.0" /></font>
+                                                <TextField fx:id="txtPhone" prefHeight="43.0" prefWidth="165.0" promptText="Ví dụ: 0905..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                    <font>
+                                          <Font size="13.0" />
+                                       </font>
                                                 </TextField>
                                             </children>
                                         </VBox>
-                                        <VBox spacing="8.0" HBox.hgrow="ALWAYS">
-                                            <children>
-                                                <Label text="Số điện thoại" textFill="#444444">
-                                                    <font><Font name="System Bold" size="12.0" /></font>
-                                                </Label>
-                                                <TextField fx:id="txtPhone" prefHeight="42.0" promptText="Ví dụ: 0905..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
-                                                    <font><Font size="13.0" /></font>
-                                                </TextField>
-                                            </children>
-                                        </VBox>
+      
+                                      <VBox spacing="8.0">
+                                          <children>
+                                              <Label text="Tên đăng nhập" textFill="#444444">
+                                                  <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                              </Label>
+                                              <TextField fx:id="txtUser" prefHeight="43.0" prefWidth="240.0" promptText="Viết liền không dấu (VD: nguyenva)" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                  <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                              </TextField>
+                                          </children>
+                                      </VBox>
                                     </children>
                                 </HBox>
-
-                                <VBox spacing="8.0">
-                                    <children>
-                                        <Label text="Tên đăng nhập" textFill="#444444">
-                                            <font><Font name="System Bold" size="12.0" /></font>
-                                        </Label>
-                                        <TextField fx:id="txtUsername" prefHeight="42.0" promptText="Viết liền không dấu (VD: nguyenva)" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
-                                            <font><Font size="13.0" /></font>
-                                        </TextField>
-                                    </children>
-                                </VBox>
+                                  <VBox spacing="8.0">
+                                      <children>
+                                          <Label text="Họ và tên*" textFill="#444444">
+                                              <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                                          </Label>
+                                          <TextField fx:id="txtName" prefHeight="42.0" promptText="Ví dụ: Nguyễn Văn A" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                              <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                          </TextField>
+                                      </children>
+                                  </VBox>
 
                                 <HBox spacing="15.0">
                                     <children>
                                         <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label text="Mật khẩu" textFill="#444444">
+                                                <Label text="Mật khẩu*" textFill="#444444">
                                                     <font><Font name="System Bold" size="12.0" /></font>
                                                 </Label>
-                                                <PasswordField fx:id="txtPassword" prefHeight="42.0" promptText="Nhập mật khẩu" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                <PasswordField fx:id="txtPass" prefHeight="42.0" promptText="Nhập mật khẩu" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
                                                     <font><Font size="13.0" /></font>
                                                 </PasswordField>
                                             </children>
                                         </VBox>
                                         <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <Label text="Xác nhận mật khẩu" textFill="#444444">
+                                                <Label text="Xác nhận mật khẩu*" textFill="#444444">
                                                     <font><Font name="System Bold" size="12.0" /></font>
                                                 </Label>
-                                                <PasswordField fx:id="txtConfirmPassword" prefHeight="42.0" promptText="Nhập lại mật khẩu" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
+                                                <PasswordField fx:id="txtConfirmPass" prefHeight="42.0" promptText="Nhập lại mật khẩu" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #BBDEFB; -fx-border-radius: 20; -fx-padding: 0 15;">
                                                     <font><Font size="13.0" /></font>
                                                 </PasswordField>
                                             </children>

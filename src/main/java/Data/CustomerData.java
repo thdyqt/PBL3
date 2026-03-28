@@ -1,15 +1,19 @@
 package Data;
 
-import java.sql.*;
-import java.util.*;
-import org.mindrot.jbcrypt.BCrypt;
-
 import Entity.Customer;
 import Util.DBConnection;
 import Util.UserSession;
 
+import org.mindrot.jbcrypt.BCrypt;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class CustomerData {
-    public List<Customer> getAllCustomers() {
+    public static List<Customer> getAllCustomers() {
         List<Customer> list = new ArrayList<>();
         String sql = "SELECT * FROM Customer WHERE status = 'Active'";
 
@@ -32,7 +36,24 @@ public class CustomerData {
         return list;
     }
 
-    public boolean addCustomer(Customer c) {
+    public static boolean isAccountExist(String username, String phone){
+        String sql = "SELECT id_khach_hang FROM Customer WHERE username = ? OR phone = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, phone);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    public static boolean addCustomer(Customer c) {
         String sql = "INSERT INTO Customer (phone, full_name, username, pass_word, point) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
@@ -53,7 +74,7 @@ public class CustomerData {
         }
     }
 
-    public boolean updateCustomer(Customer c) {
+    public static boolean updateCustomer(Customer c) {
         String sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, point = ? WHERE id_khach_hang = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -74,7 +95,7 @@ public class CustomerData {
         }
     }
 
-    public List<Customer> searchCustomer(String keyword) {
+    public static List<Customer> searchCustomer(String keyword) {
         List<Customer> list = new ArrayList<>();
         String sql = "SELECT * FROM Customer WHERE status = 'Active' AND " +
                 "(phone LIKE ? OR full_name LIKE ? OR username LIKE ? OR point LIKE ?)";

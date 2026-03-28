@@ -3,7 +3,7 @@ CREATE TABLE Customer (
 	id_khach_hang INT AUTO_INCREMENT PRIMARY KEY,
 	phone VARCHAR(10) UNIQUE NOT NULL,
     full_name NVARCHAR(100) NOT NULL,
-    username VARCHAR(20) UNIQUE NOT NULL,
+    username VARCHAR(20) UNIQUE,
     pass_word VARCHAR(255) NOT NULL,
     point int NOT NULL,
     status ENUM('Active', 'Inactive') DEFAULT 'Active'

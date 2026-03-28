@@ -1,15 +1,19 @@
 package Data;
 
 import Entity.Staff;
-import java.sql.*;
-import java.util.*;
-
 import Util.DBConnection;
 import Util.UserSession;
+
 import org.mindrot.jbcrypt.BCrypt;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StaffData {
-    public List<Staff> getAllStaff() {
+    public static List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();
         String sql = "SELECT * FROM Staff WHERE status = 'Active'";
 
@@ -34,7 +38,7 @@ public class StaffData {
         return list;
     }
 
-    public boolean addStaff(Staff s) {
+    public static boolean addStaff(Staff s) {
         String sql = "INSERT INTO Staff (phone, full_name, username, pass_word, position, hire_date) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
@@ -56,7 +60,7 @@ public class StaffData {
         }
     }
 
-    public boolean resignStaff(int id) {
+    public static boolean resignStaff(int id) {
         String sql = "UPDATE Staff SET status = 'Inactive' WHERE id_nhan_vien = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -73,7 +77,7 @@ public class StaffData {
         }
     }
 
-    public boolean updateStaff(Staff s) {
+    public static boolean updateStaff(Staff s) {
         String sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -95,7 +99,7 @@ public class StaffData {
         }
     }
 
-    public List<Staff> searchStaff(String keyword) {
+    public static List<Staff> searchStaff(String keyword) {
         List<Staff> list = new ArrayList<>();
         String sql = "SELECT * FROM Staff WHERE status = 'Active' AND " +
                 "(phone LIKE ? OR full_name LIKE ? OR username LIKE ? OR position LIKE ? OR hire_date LIKE ?)";

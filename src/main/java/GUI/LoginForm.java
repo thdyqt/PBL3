@@ -1,21 +1,19 @@
 package GUI;
 
-import javafx.fxml.*;
-import javafx.scene.control.*;
-import javafx.animation.*;
-import javafx.event.*;
-import javafx.scene.control.Alert.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
-import javafx.util.*;
-import javafx.geometry.*;
-import javafx.scene.*;
-
-import java.net.*;
-import java.util.*;
-
-import Business.StaffBusiness;
 import Business.CustomerBusiness;
+import Business.StaffBusiness;
+import Util.Others;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class LoginForm implements Initializable {
     @FXML
@@ -45,8 +43,6 @@ public class LoginForm implements Initializable {
     @FXML
     private TextField txtUser;
 
-    private Label currentToast;
-    private SequentialTransition currentToastAnimation;
     private int failedAttempts = 0;
 
     @FXML
@@ -55,31 +51,31 @@ public class LoginForm implements Initializable {
         String pass = txtPass.getText().trim();
 
         if (user.isEmpty() && pass.isEmpty()) {
-            showAlert("Vui lòng nhập đầy đủ tài khoản và mật khẩu!", true);
+            Others.showAlert(rootPane, "Vui lòng điền đầy đủ tài khoản và mật khẩu!", true);
             txtUser.requestFocus();
             return;
         }
 
         else if (user.isEmpty()){
-            showAlert("Vui lòng nhập tài khoản!", true);
+            Others.showAlert(rootPane, "Vui lòng điền tài khoản!", true);
             txtUser.requestFocus();
             return;
         }
 
         else if (pass.isEmpty()){
-            showAlert("Vui lòng nhập mật khẩu!", true);
+            Others.showAlert(rootPane, "Vui lòng điền mật khẩu!", true);
             txtPass.requestFocus();
             return;
         }
 
-        else if (!user.matches("^[a-zA-Z0-9]+$") || !pass.matches("^[a-zA-Z0-9]+$")) {
-            showAlert("Tài khoản hoặc mật khẩu không được chứa khoảng trắng hay kí tự đặc biệt!", true);
+        else if (user.contains(" ") || pass.contains(" ")) {
+            Others.showAlert(rootPane, "Tài khoản hoặc mật khẩu không được chứa khoảng trắng!", true);
             txtUser.requestFocus();
             return;
         }
 
         else if (user.length() < 6 || pass.length() < 6) {
-            showAlert("Tài khoản hoặc mật khẩu phải chứa ít nhất 6 kí tự!", true);
+            Others.showAlert(rootPane, "Tài khoản hoặc mật khẩu phải từ 6 kí tự!", true);
             txtUser.requestFocus();
             return;
         }
@@ -87,7 +83,7 @@ public class LoginForm implements Initializable {
         else {
             btnLogin.setDisable(true);
             btnRegister.setDisable(true);
-            showAlert("Đang kết nối máy chủ...", false);
+            Others.showAlert(rootPane, "Đang kết nối máy chủ...", false);
 
             new Thread(() -> {
                 int loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
@@ -98,7 +94,7 @@ public class LoginForm implements Initializable {
 
                     if (loginStatus == 1){
                         failedAttempts = 0;
-                        showAlert("Đăng nhập thành công!", false);
+                        Others.showAlert(rootPane,"Đăng nhập thành công!", false);
                         return;
                     }
                     else if (loginStatus == 2){
@@ -114,7 +110,7 @@ public class LoginForm implements Initializable {
                         return;
                     }
                     else {
-                        showAlert("Lỗi kết nối máy chủ dữ liệu!", true);
+                        Others.showAlert(rootPane, "Lỗi kết nối máy chủ dữ liệu!", true);
                     }
                 });
             }).start();
@@ -131,84 +127,32 @@ public class LoginForm implements Initializable {
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Không thể mở màn hình đăng ký!", true);
+            Others.showAlert(rootPane, "Không thể mở màn hình đăng ký!", true);
         }
     }
 
     //EFFECTS
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Util.Others.playFormAnimation(mainForm);
-    }
-
-    private void showAlert(String message, boolean isError) {
-        // DỌN DẸP THÔNG BÁO CŨ (NẾU CÓ)
-        if (currentToast != null) {
-            if (currentToastAnimation != null) {
-                currentToastAnimation.stop();
-            }
-            rootPane.getChildren().remove(currentToast);
-        }
-
-        // TẠO THÔNG BÁO MỚI
-        Label toast = new Label(message);
-        currentToast = toast; // Lưu lại cái mới này vào biến toàn cục để quản lý
-
-        String bgColor = isError ? "#E53935" : "#43A047";
-        toast.setStyle("-fx-background-color: " + bgColor + "; " +
-                "-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold; " +
-                "-fx-padding: 12 25; -fx-background-radius: 25; " +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);");
-
-        // Đưa thông báo vào góc trên cùng ở giữa màn hình
-        rootPane.getChildren().add(toast);
-        StackPane.setAlignment(toast, Pos.TOP_CENTER);
-        StackPane.setMargin(toast, new Insets(40, 0, 0, 0));
-
-        toast.setTranslateY(-50);
-        toast.setOpacity(0);
-
-        // Hiệu ứng Hiện ra (Trượt xuống + Rõ dần)
-        TranslateTransition slideIn = new TranslateTransition(Duration.millis(400), toast);
-        slideIn.setToY(0);
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), toast);
-        fadeIn.setToValue(1);
-        ParallelTransition showAnim = new ParallelTransition(slideIn, fadeIn);
-
-        // Hiệu ứng Biến mất (Trượt lên + Mờ dần)
-        TranslateTransition slideOut = new TranslateTransition(Duration.millis(400), toast);
-        slideOut.setToY(-50);
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(400), toast);
-        fadeOut.setToValue(0);
-        ParallelTransition hideAnim = new ParallelTransition(slideOut, fadeOut);
-
-        // Đợi 2.5 giây rồi mới chạy hiệu ứng biến mất
-        hideAnim.setDelay(Duration.seconds(2.5));
-        hideAnim.setOnFinished(e -> {
-            rootPane.getChildren().remove(toast);
-            currentToast = null; // Dọn dẹp xong thì reset biến
-        });
-
-        currentToastAnimation = new SequentialTransition(showAnim, hideAnim);
-        currentToastAnimation.play();
+        Others.playFormAnimation(mainForm);
     }
 
     private void handleFailedLogin(String message) {
         failedAttempts++;
-
         if (failedAttempts >= 5) {
             btnLogin.setDisable(true);
-            showAlert("Tài khoản bị khóa tạm thời 60 giây do nhập sai quá 5 lần!", true);
+            Others.showAlert(rootPane, "Khóa tạm thời 60 giây do nhập sai quá 5 lần!", true);
 
-            PauseTransition lockTimer = new PauseTransition(Duration.seconds(60));
+            javafx.animation.PauseTransition lockTimer = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(60));
             lockTimer.setOnFinished(e -> {
                 failedAttempts = 0;
                 btnLogin.setDisable(false);
-                showAlert("Đã mở khóa đăng nhập. Vui lòng thử lại.", false);
+                Others.showAlert(rootPane, "Đã mở khóa. Vui lòng thử lại!", false);
             });
             lockTimer.play();
+
         } else {
-            showAlert(message + " (Sai " + failedAttempts + "/5 lần)", true);
+            Others.showAlert(rootPane, message + " (Sai " + failedAttempts + "/5 lần)", true);
         }
     }
 }
