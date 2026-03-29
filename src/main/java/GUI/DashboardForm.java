@@ -2,11 +2,12 @@ package GUI;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class DashboardForm {
     @FXML
@@ -14,6 +15,12 @@ public class DashboardForm {
 
     @FXML
     private Button btnCustomer;
+
+    @FXML
+    private Button btnExit;
+
+    @FXML
+    private Button btnHome;
 
     @FXML
     private Button btnOnline;
@@ -28,7 +35,19 @@ public class DashboardForm {
     private Button btnStaff;
 
     @FXML
+    private Button btnStatistic;
+
+    @FXML
+    private Button btnToggleSidebar;
+
+    @FXML
     private StackPane contentArea;
+
+    @FXML
+    private Label lblPageTitle;
+
+    @FXML
+    private Label lblProfile;
 
     @FXML
     private Label lblTime;
@@ -37,11 +56,14 @@ public class DashboardForm {
     private BorderPane mainBorderPane;
 
     @FXML
-    private MenuItem menuChangePass;
+    private MenuButton menuAcc;
 
     @FXML
-    private MenuItem menuEdit;
+    private CustomMenuItem menuEditAcc;
 
     @FXML
-    private MenuButton profileMenu;
+    private CustomMenuItem menuInfo;
+
+    @FXML
+    private VBox sidebar;
 }
