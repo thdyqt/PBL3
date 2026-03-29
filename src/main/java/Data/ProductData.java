@@ -1,0 +1,119 @@
+package Data;
+import  Entity.Product;
+
+import Util.DBConnection;
+import Util.UserSession;
+
+import org.mindrot.jbcrypt.BCrypt;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductData {
+    private static Connection connection = DBConnection.getConnection();
+
+    private static Product mapResultSet(ResultSet rs) throws SQLException {
+        return new Product(
+                rs.getInt("ProductID"),
+                rs.getString("ProductName"),
+                rs.getInt("CategoryID"),
+                rs.getInt("ProductPrice"),
+                rs.getInt("quantity"),
+                rs.getBoolean("isAvailable")
+        );
+    }
+
+    public List<Product> getAllProduct(){
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM Product WHERE status = 'Active'";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getAll Product: " + e.getMessage());
+        }
+        return list;
+    }
+//====THÊM SẢN PHẨM===
+    public static boolean addProduct(Product product) {
+        String sql = "INSERT INTO Product (ProductName, CategoryID, ProductPrice, quantity) "
+                + "VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql,
+                Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, product.getProductName());
+            stmt.setInt(2, product.getCategoryID());
+            stmt.setInt(3, product.getProductPrice());
+            stmt.setInt(4, product.getQuantity());
+
+
+            int rows = stmt.executeUpdate();
+
+            // Gán lại ID do DB tự sinh
+            if (rows > 0) {
+                ResultSet keys = stmt.getGeneratedKeys();
+                if (keys.next()) product.setProductID(keys.getInt(1));
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi addProduct: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // ===== UPDATE =====
+    public static boolean updateProduct(Product product) {
+        String sql = "UPDATE Product SET ProductName = ?, CategoryID = ?, "
+                + "ProductPrice = ?, quantity = ? "  // ← bỏ isAvailable
+                + "WHERE ProductID = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, product.getProductName());
+            stmt.setInt(2, product.getCategoryID());
+            stmt.setInt(3, product.getProductPrice());
+            stmt.setInt(4, product.getQuantity());
+            stmt.setInt(5, product.getProductID());  // ← index từ 5 thay vì 6
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi updateProduct: " + e.getMessage());
+        }
+        return false;
+    }
+    // ===== NGỪNG KINH DOANH =====
+    public static boolean stopBusiness(int productID) {
+        String sql = "UPDATE Product SET status = 'Inactive' WHERE ProductID = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, productID);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi stopBusiness Product: " + e.getMessage());
+        }
+        return false;
+    }
+    // ===== MỞ LẠI KINH DOANH =====
+    public static boolean restartBusiness(int productID) {
+        String sql = "UPDATE Product SET status = 'Active' WHERE ProductID = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, productID);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi restartBusiness Product: " + e.getMessage());
+        }
+        return false;
+    }
+
+}
