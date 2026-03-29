@@ -89,6 +89,23 @@ public class LoginForm implements Initializable {
                     if (loginStatus == 1){
                         failedAttempts = 0;
                         Others.showAlert(rootPane,"Đăng nhập thành công!", false);
+                        txtPass.clear();
+
+                        javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.5));
+                        delay.setOnFinished(actionEvent -> {
+                            try {
+                                FXMLLoader loader = null;
+                                if (rbStaff.isSelected()) loader = new FXMLLoader(getClass().getResource("dashboard.fxml"));
+                                Parent root = loader.load();
+
+                                btnLogin.getScene().setRoot(root);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Others.showAlert(rootPane, "Không thể chuyển sang giao diện chính!", true);
+                            }
+                        });
+                        delay.play();
                     }
                     else if (loginStatus == 2){
                         handleFailedLogin("Mật khẩu không chính xác!");
