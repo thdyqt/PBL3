@@ -5,12 +5,17 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Order {
+    public enum orderStatus{
+        Waiting_for_validation, Processing, Delivering, Finished, Cancelled;
+    }
+
     //attributes
     private int id;
     private LocalDateTime process_time;
     private Staff staff;
     private Customer customer;
     private List<OrderDetail> orderDetail;
+    private orderStatus status;
 
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();};
@@ -21,6 +26,7 @@ public class Order {
         this.staff = staff;
         this.customer = customer;
         this.orderDetail = orderDetail;
+        this.status = orderStatus.Waiting_for_validation;
     }
 
     //get-set
@@ -48,4 +54,7 @@ public class Order {
     public void setOrderDetail(List<OrderDetail> orderDetail){
         this.orderDetail = orderDetail;
     }
+
+    public orderStatus getStatus(){return status;}
+    public void setStatus(orderStatus status){this.status = status;}
 }
