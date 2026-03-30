@@ -137,13 +137,12 @@ public class ProductData {
         }
         return list;
     }
-    public static List<Product> getByCategory(String categoryName) {
+    public static List<Product> getByCategory(int categoryID) {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM Product WHERE categoryName = ?";
+        String sql = "SELECT * FROM Product WHERE CategoryID = ? AND status = 'Active'";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setString(1, categoryName);
+            stmt.setInt(1, categoryID);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) list.add(mapResultSet(rs));
