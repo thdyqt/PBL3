@@ -14,6 +14,12 @@ public class Staff extends Person {
         this.hire_date = hire_date;
     }
 
+    public Staff(int id, String phone, String name, String user, String role, Date hire_date) {
+        super(id, phone, name, user);
+        this.role = role;
+        this.hire_date = hire_date;
+    }
+
     public Staff(String phone, String name, String user, String password, String role, Date hire_date) {
         super(phone, name, user, password);
         this.role = role;

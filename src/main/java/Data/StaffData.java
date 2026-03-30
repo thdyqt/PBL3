@@ -28,7 +28,6 @@ public class StaffData {
                         rs.getString("phone"),
                         rs.getString("full_name"),
                         rs.getString("username"),
-                        rs.getString("pass_word"),
                         rs.getString("position"),
                         rs.getDate("hire_date")
                 ));
