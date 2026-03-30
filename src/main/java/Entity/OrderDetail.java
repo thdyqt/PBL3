@@ -1,19 +1,22 @@
 package Entity;
 
+//ok this might sounds counterintuitive
+//but OrderDetail is like, fucking how many of a product is there
+//thus the Order contain many OrderDetail
 public class OrderDetail {
     //attributes
     private int orderId;
     private Product product;
     private int quantity;
-    private double price;
+    private double totalPrice;
 
     //constructors
     public OrderDetail(){};
-    public OrderDetail(int orderId, Product product, int quantity, double price){
+    public OrderDetail(int orderId, Product product, int quantity, double totalPrice){
         this.orderId = orderId;
         this.product = product;
         this.quantity = quantity;
-        this.price = price;
+        this.totalPrice = totalPrice;
     }
 
     //get-set
@@ -32,8 +35,8 @@ public class OrderDetail {
         this.quantity = quantity;
     }
 
-    public double getPrice(){return price;}
-    public void setPrice(double price){
-        this.price = price;
+    public double getPrice(){return totalPrice;}
+    public void setPrice(double totalPrice){
+        this.totalPrice = this.quantity * this.product.getProductPrice();
     }
 }

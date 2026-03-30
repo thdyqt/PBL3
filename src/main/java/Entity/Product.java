@@ -8,8 +8,10 @@ public class Product {
     private int quantity;
     private boolean isAvailable;
 
-//Constructor
-         public Product(int id,String name,int cateid,int price,int quantity,boolean isA){
+    //Constructor
+    public Product() {}
+
+    public Product(int id,String name,int cateid,int price,int quantity,boolean isA){
              this.CategoryID = id;
              this.ProductName = name;
              this.CategoryID = cateid;
@@ -18,14 +20,14 @@ public class Product {
              this.isAvailable = isA;
          }
 
-         public Product(String name,int cateid,int price,int quantity,boolean isA){
-             this.ProductName = name;
-             this.CategoryID = cateid;
-             this.ProductPrice = price;
-             this.quantity = quantity;
-             this.isAvailable = isA;
+    public Product(String name,int cateid,int price,int quantity,boolean isA){
+         this.ProductName = name;
+         this.CategoryID = cateid;
+         this.ProductPrice = price;
+         this.quantity = quantity;
+         this.isAvailable = isA;
     }
-//get;set;
+    //get;set;
     public int getProductID(){return this.ProductID;}
     public void setProductID(int productID) {
         this.ProductID = productID;

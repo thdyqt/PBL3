@@ -3,23 +3,24 @@ package Data;
 import Entity.Customer;
 import Entity.Order;
 import Entity.Staff;
+
 import Util.DBConnection;
-
-import org.mindrot.jbcrypt.BCrypt;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//CRUD operations
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Order WHERE status = 'active'";
+        String sql = "SELECT * FROM `Order` WHERE status = 'active'";
 
         //open connection (conn) -> load sql query (stmt) -> return result (rs)
-        try (Connection conn = DBConnection.getConnection();
+        try (
+            Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             ResultSet rs = stmt.executeQuery()
+        ) {
 
             //get everything
             while (rs.next()) {
@@ -43,8 +44,10 @@ public class OrderData {
         //process_time is an exclusive attribute to Order so there's that
         String sql = "INSERT INTO `Order` (process_time, id_Staff, id_Customer) VALUES (?, ?, ?)";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (
+            Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
 
             //data loading
             //1,2,3 corresponding to the order in sql
@@ -66,8 +69,10 @@ public class OrderData {
         String sql = "SELECT * FROM `Order` WHERE id = ?";
         Order foundOrder = null;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (
+            Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
 
             stmt.setInt(1, id);
 
@@ -96,13 +101,16 @@ public class OrderData {
     public static boolean updateOrder(Order order){
         String sql = "UPDATE `Order` SET process_time = ?, id_nhan_vien = ?, id_khach_hang = ? WHERE id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try (
+            Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            //foreign keys
             stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
             stmt.setInt(2, order.getStaff().getId());
             stmt.setInt(3, order.getCustomer().getId());
 
+            //the id of the Order that need to be updated
             stmt.setInt(4, order.getId());
 
             int rowsAffected = stmt.executeUpdate();
