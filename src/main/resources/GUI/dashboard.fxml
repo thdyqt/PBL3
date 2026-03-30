@@ -140,7 +140,7 @@
 
                 <Region VBox.vgrow="ALWAYS" />
 
-                <Button fx:id="btnExit" alignment="CENTER" maxWidth="Infinity" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: linear-gradient(to right, #EF4444, #DC2626); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.5), 10, 0, 0, 4);" text="🚪 Kết thúc ca trực">
+                <Button fx:id="btnExit" alignment="CENTER" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnExitClick" prefHeight="50.0" style="-fx-background-color: linear-gradient(to right, #EF4444, #DC2626); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.5), 10, 0, 0, 4);" text="🚪 Kết thúc ca trực">
                     <cursor><Cursor fx:constant="HAND" /></cursor>
                     <VBox.margin><Insets bottom="20.0" left="20.0" right="20.0" /></VBox.margin>
                 </Button>
@@ -242,7 +242,7 @@
                 </HBox>
             </top>
          <center>
-            <StackPane fx:id="contentArea" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <StackPane fx:id="contentArea" onDragDetected="#btnExitClick" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
 
         </BorderPane>

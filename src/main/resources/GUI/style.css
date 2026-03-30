@@ -1,6 +1,70 @@
+/* ======================================================= */
+/* CUSTOM BUTTONS CUA SIDEBAR         */
+/* ======================================================= */
+
 .active-menu {
     -fx-background-color: rgba(255, 255, 255, 0.2) !important;
     -fx-border-color: rgba(255, 255, 255, 0.4) !important;
     -fx-border-radius: 12 !important;
     -fx-border-width: 1px !important;
+}
+
+/* ======================================================= */
+/* CUSTOM HỘP THOẠI XÁC NHẬN (MODERN ALERT DIALOG)         */
+/* ======================================================= */
+
+/* Khung viền và nền của hộp thoại */
+.modern-alert {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 10);
+}
+
+/* Ẩn dải màu xám mặc định ở phần Header */
+.modern-alert .header-panel {
+    -fx-background-color: white;
+}
+
+/* Chữ Tiêu đề (Header) */
+.modern-alert .header-panel .label {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* Chữ Nội dung (Content) */
+.modern-alert .content.label {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 14px;
+    -fx-padding: 10 0 10 0;
+}
+
+/* ==================== STYLE CHO NÚT BẤM ==================== */
+
+/* Nút Hủy bỏ (Nút thường) */
+.modern-alert .button {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+}
+
+.modern-alert .button:hover {
+    -fx-background-color: #E2E8F0;
+}
+
+/* Nút Đăng xuất (Nút được chọn làm Default - Màu đỏ nguy hiểm) */
+.modern-alert .button:default {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: white;
+}
+
+.modern-alert .button:default:hover {
+    -fx-background-color: #DC2626;
 }
