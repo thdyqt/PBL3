@@ -1,15 +1,25 @@
 package GUI;
 
+import Business.StaffBusiness;
+import javafx.animation.*;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CustomMenuItem;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
-public class DashboardForm {
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
+public class DashboardForm implements Initializable {
     @FXML
     private Button btnBill;
 
@@ -66,4 +76,128 @@ public class DashboardForm {
 
     @FXML
     private VBox sidebar;
+
+    private Button[] menuButtons;
+    private boolean isSidebarVisible = true;
+    private Timeline sidebarTimeline;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnStatistic};
+        startClock();
+        btnHomeClick(null);
+    }
+
+    private void setActiveMenu(Button activeButton) {
+        if (menuButtons == null) return;
+
+        for (Button btn : menuButtons) {
+            if (btn != null) {
+                btn.getStyleClass().remove("active-menu");
+            }
+        }
+
+        if (activeButton != null) {
+            activeButton.getStyleClass().add("active-menu");
+        }
+    }
+
+    @FXML
+    void btnToggleSidebarClick(ActionEvent event) {
+        if (sidebarTimeline != null && sidebarTimeline.getStatus() == javafx.animation.Animation.Status.RUNNING) {
+            return;
+        }
+        sidebarTimeline = new Timeline();
+
+        if (isSidebarVisible) {
+            KeyValue kvWidth = new KeyValue(sidebar.prefWidthProperty(), 0, Interpolator.EASE_BOTH);
+            KeyValue kvMinWidth = new KeyValue(sidebar.minWidthProperty(), 0, Interpolator.EASE_BOTH);
+            KeyValue kvOpacity = new KeyValue(sidebar.opacityProperty(), 0, Interpolator.EASE_BOTH);
+
+            KeyFrame kf = new KeyFrame(Duration.millis(350), kvWidth, kvMinWidth, kvOpacity);
+            sidebarTimeline.getKeyFrames().add(kf);
+
+            sidebarTimeline.setOnFinished(e -> {
+                sidebar.setVisible(false);
+                sidebar.setManaged(false);
+            });
+
+            isSidebarVisible = false;
+        } else {
+            sidebar.setVisible(true);
+            sidebar.setManaged(true);
+
+            KeyValue kvWidth = new KeyValue(sidebar.prefWidthProperty(), 270, Interpolator.EASE_BOTH);
+            KeyValue kvMinWidth = new KeyValue(sidebar.minWidthProperty(), 270, Interpolator.EASE_BOTH);
+            KeyValue kvOpacity = new KeyValue(sidebar.opacityProperty(), 1, Interpolator.EASE_BOTH);
+
+            KeyFrame kf = new KeyFrame(Duration.millis(350), kvWidth, kvMinWidth, kvOpacity);
+            sidebarTimeline.getKeyFrames().add(kf);
+
+            isSidebarVisible = true;
+        }
+
+        sidebarTimeline.play();
+    }
+
+    private void startClock() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a   |   dd/MM/yyyy");
+
+        Timeline clock = new Timeline(
+                new KeyFrame(Duration.ZERO, e -> {
+                    lblTime.setText(LocalDateTime.now().format(formatter));
+                }),
+                new KeyFrame(Duration.seconds(1))
+        );
+
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
+    }
+
+    @FXML
+    void btnHomeClick(ActionEvent event) {
+        setActiveMenu(btnHome);
+    }
+
+    @FXML
+    void btnExitClick(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Kết thúc ca trực");
+        alert.setHeaderText(null);
+        alert.setContentText(" Bạn đang yêu cầu đăng xuất khỏi hệ thống POS.\n Bạn có chắc chắn muốn thoát không?");
+
+        StackPane iconPane = new StackPane();
+        Circle bg = new Circle(22, javafx.scene.paint.Color.web("#FEF3C7"));
+        Label exclamation = new Label("!");
+        exclamation.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #D97706;");
+        iconPane.getChildren().addAll(bg, exclamation);
+        alert.setGraphic(iconPane);
+
+        ButtonType buttonYes = new ButtonType("Đăng xuất", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonNo = new ButtonType("Hủy bỏ", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonYes, buttonNo);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        try {
+            dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            dialogPane.getStyleClass().add("modern-alert");
+        } catch (Exception e) {
+            System.out.println("Không tìm thấy file CSS cho Alert!");
+        }
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == buttonYes) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+                mainBorderPane.getScene().setRoot(loader.load());
+
+                StaffBusiness.logout();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
+

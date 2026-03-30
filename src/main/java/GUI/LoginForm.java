@@ -139,7 +139,6 @@ public class LoginForm implements Initializable {
         }
     }
 
-    //EFFECTS
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Others.playFormAnimation(mainForm);

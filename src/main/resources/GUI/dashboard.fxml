@@ -22,7 +22,7 @@
 <BorderPane fx:id="mainBorderPane" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.DashboardForm">
 
     <left>
-        <VBox fx:id="sidebar" prefWidth="270.0" style="-fx-background-color: linear-gradient(to bottom right, #1E1B4B, #2563EB); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 20, 0, 8, 0);" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" prefWidth="270.0" style="-fx-background-color: linear-gradient(to bottom right, #1E1B4B, #2563EB); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 20, 0, 8, 0);" stylesheets="@style.css" BorderPane.alignment="CENTER">
             <children>
                 <Pane prefHeight="0.0" prefWidth="0.0">
                     <children>
@@ -55,7 +55,7 @@
 
                 <VBox spacing="5.0">
                     <children>
-                        <Button fx:id="btnHome" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Trang chủ Tổng quan">
+                        <Button fx:id="btnHome" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnHomeClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Trang chủ Tổng quan">
                             <graphic>
                                 <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #3B82F6; -fx-background-radius: 10;">
                                     <children><Label text="🏠" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
@@ -140,7 +140,7 @@
 
                 <Region VBox.vgrow="ALWAYS" />
 
-                <Button fx:id="btnExit" alignment="CENTER" maxWidth="Infinity" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: linear-gradient(to right, #EF4444, #DC2626); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.5), 10, 0, 0, 4);" text="🚪 Kết thúc ca trực">
+                <Button fx:id="btnExit" alignment="CENTER" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnExitClick" prefHeight="50.0" style="-fx-background-color: linear-gradient(to right, #EF4444, #DC2626); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.5), 10, 0, 0, 4);" text="🚪 Kết thúc ca trực">
                     <cursor><Cursor fx:constant="HAND" /></cursor>
                     <VBox.margin><Insets bottom="20.0" left="20.0" right="20.0" /></VBox.margin>
                 </Button>
@@ -160,7 +160,7 @@
                     <padding><Insets left="20.0" right="30.0" /></padding>
                     <children>
 
-                        <Button fx:id="btnToggleSidebar" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-padding: 5 15 5 10;">
+                        <Button fx:id="btnToggleSidebar" mnemonicParsing="false" onAction="#btnToggleSidebarClick" style="-fx-background-color: transparent; -fx-padding: 5 15 5 10;">
                             <graphic><Label text="☰" textFill="#475569"><font><Font name="System Bold" size="28.0" /></font></Label></graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                         </Button>
@@ -177,7 +177,7 @@
 
                         <Region HBox.hgrow="ALWAYS" />
 
-                        <Label fx:id="lblTime" minWidth="-Infinity" text="12:45 PM   |   29/03/2026" textFill="#64748B">
+                        <Label fx:id="lblTime" minWidth="-Infinity" text="00:00:00 AM   |   29/03/2026" textFill="#64748B">
                             <font><Font name="System Bold" size="14.0" /></font>
                             <graphic>
                                 <Label text="🕒" textFill="#2563EB"><font><Font size="18.0" /></font></Label>
@@ -241,9 +241,9 @@
                     </children>
                 </HBox>
             </top>
-         <bottom>
-                <StackPane fx:id="contentArea" style="-fx-padding: 30; -fx-background-color: #F8FAFC;" BorderPane.alignment="CENTER" />
-         </bottom>
+         <center>
+            <StackPane fx:id="contentArea" onDragDetected="#btnExitClick" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </center>
 
         </BorderPane>
     </center>
