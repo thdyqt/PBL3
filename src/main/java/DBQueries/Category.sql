@@ -10,3 +10,5 @@ USE PBL3;
     (4,'Đồ uống');
 USE PBL3;
 DROP TABLE Category;
+ALTER TABLE Category
+    ADD COLUMN status ENUM('Active', 'Inactive') DEFAULT 'Active';

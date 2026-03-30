@@ -32,6 +32,22 @@ public class CategoryData {
         }
         return list;
     }
+    // ===== GET BY ID =====
+    public static Category getByID(int categoryID) {
+        String sql = "SELECT * FROM Category WHERE category_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, categoryID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getByID Category: " + e.getMessage());
+        }
+        return null;
+    }
     // ===== ADD =====
     public static boolean addCategory(Category category) {
         String sql = "INSERT INTO Category (category_name) VALUES (?)";
@@ -53,6 +69,7 @@ public class CategoryData {
         }
         return false;
     }
+    //====== UPDATE ====
     public static boolean updateCategory(Category category) {
         String sql = "UPDATE Category SET category_name = ? WHERE category_id = ?";
 
@@ -68,16 +85,82 @@ public class CategoryData {
         return false;
     }
 
-    // ===== DELETE =====
-    public static boolean deleteCategory(int categoryID) {
-        String sql = "DELETE FROM Category WHERE category_id = ?";
+
+    // ===== GHI LOG =====
+    public static void addLog(int categoryID, String categoryName,
+                              String action, String note) {
+        String sql = "INSERT INTO CategoryLog (CategoryID, CategoryName, Action, Note) "
+                + "VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, categoryID);
+            stmt.setString(2, categoryName);
+            stmt.setString(3, action);
+            stmt.setString(4, note);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi addLog Category: " + e.getMessage());
+        }
+    }
+
+    // ===== KIỂM TRA TỒN TẠI =====
+    public static boolean isCategoryExist(String categoryName) {
+        String sql = "SELECT 1 FROM Category WHERE category_name = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, categoryName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi isCategoryExist: " + e.getMessage());
+        }
+        return false;
+    }
+    // ===== NGỪNG KINH DOANH =====
+    public static boolean stopBusiness(int categoryID) {
+        String sql = "UPDATE Category SET status = 'Inactive' WHERE category_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, categoryID);
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("Lỗi deleteCategory: " + e.getMessage());
+            System.err.println("Lỗi stopBusiness Category: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // ===== MỞ LẠI KINH DOANH =====
+    public static boolean restartBusiness(int categoryID) {
+        String sql = "UPDATE Category SET status = 'Active' WHERE category_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, categoryID);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi restartBusiness Category: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // ===== KIỂM TRA TRẠNG THÁI =====
+    public static boolean isInactive(int categoryID) {
+        String sql = "SELECT 1 FROM Category WHERE category_id = ? AND status = 'Inactive'";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, categoryID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi isInactive Category: " + e.getMessage());
         }
         return false;
     }

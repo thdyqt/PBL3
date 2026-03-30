@@ -153,5 +153,67 @@ public class ProductData {
         }
         return list;
     }
+    public static Product getByID(int productID) {
+        String sql = "SELECT * FROM Product WHERE ProductID = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, productID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getByID Product: " + e.getMessage());
+        }
+        return null;
+    }
+    public static boolean isProductExist(String productName) {
+        String sql = "SELECT 1 FROM Product WHERE ProductName = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, productName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi isProductExist: " + e.getMessage());
+        }
+        return false;
+    }
+    // ===== GHI LOG =====
+    public static void addLog(int productID, String productName,
+                               String action, String note) {
+        String sql = "INSERT INTO ProductLog (ProductID, ProductName, Action, Note) "
+                + "VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, productID);
+            stmt.setString(2, productName);
+            stmt.setString(3, action);
+            stmt.setString(4, note);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi addLog: " + e.getMessage());
+        }
+    }
+    public static boolean isInactive(int productID) {
+        String sql = "SELECT 1 FROM Product WHERE ProductID = ? AND status = 'Inactive'";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, productID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi isInactive Product: " + e.getMessage());
+        }
+        return false;
+    }
 
 }
