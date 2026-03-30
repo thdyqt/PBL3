@@ -3,13 +3,14 @@ package Data;
 import Entity.Staff;
 import Util.DBConnection;
 import Util.UserSession;
-
 import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class StaffData {
@@ -135,7 +136,7 @@ public class StaffData {
     }
 
     public static int checkLogin(String user, String pass) {
-        String sql = "SELECT id_nhan_vien, pass_word, position FROM Staff WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE username = ? OR phone = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -147,8 +148,12 @@ public class StaffData {
 
                     if (BCrypt.checkpw(pass, dbPasswordHash)){
                         int dbId = rs.getInt("id_nhan_vien");
+                        String dbPhone = rs.getString("phone");
+                        String dbFullName = rs.getString("full_name");
+                        String dbUsername = rs.getString("username");
                         String dbPosition = rs.getString("position");
-                        UserSession.getInstance().setUser(dbId, user, dbPosition);
+                        Date dbHireDate = rs.getDate("hire_date");
+                        UserSession.getInstance().setStaff(dbId, dbPhone, dbFullName, dbUsername, pass, dbPosition, dbHireDate);
                         return 1;
                     }
                     else return 2;

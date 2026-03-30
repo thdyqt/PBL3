@@ -13,7 +13,7 @@ public class StaffBusiness {
     }
 
     public static void logout() {
-        if (UserSession.getInstance().getStaffId() != -1) LogBusiness.saveLogoutLog();
+        if (UserSession.getInstance().getId() != -1) LogBusiness.saveLogoutLog();
         UserSession.getInstance().clearSession();
     }
 }

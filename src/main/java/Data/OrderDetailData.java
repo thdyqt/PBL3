@@ -1,13 +1,11 @@
 package Data;
 
 import Entity.OrderDetail;
-import Entity.Product;
-import Entity.Order;
-
 import Util.DBConnection;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 //CRUD operations on the Product into Order
 //basically adding/deleting items from a grocery bag
@@ -34,7 +32,4 @@ public class OrderDetailData {
             return false;
         }
     }
-
-    public static boolean
-
 }
