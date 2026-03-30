@@ -8,11 +8,11 @@ public class OrderDetail {
     private int orderId;
     private Product product;
     private int quantity;
-    private double totalPrice;
+    private int totalPrice;
 
     //constructors
     public OrderDetail(){};
-    public OrderDetail(int orderId, Product product, int quantity, double totalPrice){
+    public OrderDetail(int orderId, Product product, int quantity, int totalPrice){
         this.orderId = orderId;
         this.product = product;
         this.quantity = quantity;
@@ -35,8 +35,8 @@ public class OrderDetail {
         this.quantity = quantity;
     }
 
-    public double getPrice(){return totalPrice;}
-    public void setPrice(double totalPrice){
+    public int getTotalPrice(){return totalPrice;}
+    public void setTotalPrice(double totalPrice){
         this.totalPrice = this.quantity * this.product.getProductPrice();
     }
 }

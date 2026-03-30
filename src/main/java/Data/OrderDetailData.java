@@ -14,7 +14,7 @@ import java.util.List;
 public class OrderDetailData {
     //CRUD operations
     public static boolean addProduct_OrderDetail(int id_Order, OrderDetail orderDetail){
-        String sql = "INSERT INTO `OrderDetail` (id_Order, id_Product, quanity, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO `OrderDetail` (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -22,7 +22,9 @@ public class OrderDetailData {
         ) {
 
             stmt.setInt(1, id_Order);
-
+            stmt.setInt(2, orderDetail.getProduct().getProductID());
+            stmt.setInt(3, orderDetail.getProduct().getQuantity());
+            stmt.setInt(4, orderDetail.getTotalPrice());
 
             int rowsAffected = stmt.executeUpdate();
             //it added something -> return true
@@ -32,4 +34,7 @@ public class OrderDetailData {
             return false;
         }
     }
+
+    public static boolean
+
 }
