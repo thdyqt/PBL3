@@ -16,7 +16,7 @@ import java.util.List;
 public class StaffData {
     public static List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM Staff WHERE status = 'Active'";
+        String sql = "SELECT id_nhan_vien, phone, full_name, username, position, hire_date FROM Staff WHERE status = 'Active'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -44,11 +44,12 @@ public class StaffData {
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt());
 
             stmt.setString(1, s.getPhone());
             stmt.setString(2, s.getName());
             stmt.setString(3, s.getUser());
-            stmt.setString(4, s.getPassword());
+            stmt.setString(4, hashedPassword);
             stmt.setString(5, s.getRole());
             stmt.setDate(6, s.getHire_date());
 
@@ -82,11 +83,12 @@ public class StaffData {
         String sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt());
 
             stmt.setString(1, s.getPhone());
             stmt.setString(2, s.getName());
             stmt.setString(3, s.getUser());
-            stmt.setString(4, s.getPassword());
+            stmt.setString(4, hashedPassword);
             stmt.setString(5, s.getRole());
             stmt.setDate(6, s.getHire_date());
             stmt.setInt(7, s.getId());

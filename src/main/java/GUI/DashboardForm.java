@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -87,6 +88,23 @@ public class DashboardForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        mainBorderPane.setOpacity(0);
+        mainBorderPane.setScaleX(0.95);
+        mainBorderPane.setScaleY(0.95);
+
+        // Tạo hiệu ứng rõ dần (Fade)
+        FadeTransition fade = new FadeTransition(Duration.millis(500), mainBorderPane);
+        fade.setToValue(1);
+
+        // Tạo hiệu ứng phóng to về kích thước chuẩn (Scale)
+        ScaleTransition scale = new ScaleTransition(Duration.millis(500), mainBorderPane);
+        scale.setToX(1.0);
+        scale.setToY(1.0);
+
+        ParallelTransition pt = new ParallelTransition(fade, scale);
+        pt.setInterpolator(Interpolator.EASE_OUT);
+        pt.play();
+
         menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnStatistic};
         loadUserProfile();
         startClock();
@@ -181,9 +199,28 @@ public class DashboardForm implements Initializable {
         }
     }
 
+    private void switchForm(String fxmlFileName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
+            Node node = loader.load();
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(node);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi tải trang: " + fxmlFileName);
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     void btnHomeClick(ActionEvent event) {
         setActiveMenu(btnHome);
+    }
+
+    @FXML
+    void btnStaffClick(ActionEvent event) {
+        setActiveMenu(btnStaff);
+        switchForm("staffManagement.fxml");
     }
 
     @FXML
