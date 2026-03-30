@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/src/main/java/DBQueries/Category.sql" value="9802c3fc-29df-4f82-87a6-ed8fa18d70a7" />
+    <file url="file://$PROJECT_DIR$/src/main/java/DBQueries/Customer.sql" value="9802c3fc-29df-4f82-87a6-ed8fa18d70a7" />
+    <file url="file://$PROJECT_DIR$/src/main/java/DBQueries/Product.sql" value="9802c3fc-29df-4f82-87a6-ed8fa18d70a7" />
+  </component>
+</project>
