@@ -22,7 +22,7 @@ public class ProductData {
                 rs.getBoolean("isAvailable")
         );
     }
-
+//====Lấy tất cả====
     public List<Product> getAllProduct(){
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE status = 'Active'";
@@ -80,7 +80,7 @@ public class ProductData {
             stmt.setInt(2, product.getCategoryID());
             stmt.setInt(3, product.getProductPrice());
             stmt.setInt(4, product.getQuantity());
-            stmt.setInt(5, product.getProductID());  // ← index từ 5 thay vì 6
+            stmt.setInt(5, product.getProductID());  //
 
             return stmt.executeUpdate() > 0;
 
@@ -114,6 +114,45 @@ public class ProductData {
             System.err.println("Lỗi restartBusiness Product: " + e.getMessage());
         }
         return false;
+    }
+
+    public static List<Product> searchProduct(String keyword, int minPrice, int maxPrice) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM Product " +
+                "WHERE ProductName LIKE ? " +
+                "AND ProductPrice BETWEEN ? AND ? " +
+                "AND status = 'Active'";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, "%" + keyword + "%");
+            stmt.setInt(2, minPrice);
+            stmt.setInt(3, maxPrice);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi search Product: " + e.getMessage());
+        }
+        return list;
+    }
+    public static List<Product> getByCategory(String categoryName) {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM Product WHERE categoryName = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, categoryName);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getByCategory Product: " + e.getMessage());
+        }
+        return list;
     }
 
 }
