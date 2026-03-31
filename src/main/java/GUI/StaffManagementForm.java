@@ -3,6 +3,7 @@ package GUI;
 import Data.StaffData;
 import Entity.Staff;
 import Util.Others;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,7 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
