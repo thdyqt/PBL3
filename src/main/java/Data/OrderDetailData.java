@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class OrderDetailData {
     //CRUD operations
     public static boolean addProduct_OrderDetail(int id_Order, OrderDetail orderDetail){
-        String sql = "INSERT INTO `OrderDetail` (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO OrderDetail (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();

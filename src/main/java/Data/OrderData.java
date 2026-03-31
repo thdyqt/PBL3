@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM `Order` WHERE status = 'active'";
+        String sql = "SELECT * FROM Order WHERE status = 'active'";
 
         //open connection (conn) -> load sql query (stmt) -> return result (rs)
         try (
@@ -42,7 +42,7 @@ public class OrderData {
         //foreign keys are in here
         //specifically id_Staff and id_Customer
         //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO `Order` (process_time, id_Staff, id_Customer) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Order (process_time, id_Staff, id_Customer) VALUES (?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -66,7 +66,7 @@ public class OrderData {
     }
 
     public static Order searchOrder(int id){
-        String sql = "SELECT * FROM `Order` WHERE id = ?";
+        String sql = "SELECT * FROM Order WHERE id = ?";
         Order foundOrder = null;
 
         try (
@@ -99,7 +99,7 @@ public class OrderData {
 
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
-        String sql = "UPDATE `Order` SET process_time = ?, id_nhan_vien = ?, id_khach_hang = ? WHERE id = ?";
+        String sql = "UPDATE Order SET process_time = ?, id_nhan_vien = ?, id_khach_hang = ? WHERE id = ?";
 
         try (
             Connection conn = DBConnection.getConnection();

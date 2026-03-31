@@ -49,6 +49,8 @@ public class StaffManagementForm implements Initializable {
     @FXML
     private TextField txtSearch;
 
+    private boolean saveSuccess = false;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableStyles();
@@ -112,9 +114,34 @@ public class StaffManagementForm implements Initializable {
         tblStaff.setItems(staffList);
     }
 
+    private void openStaffDialog() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("staff_dialog.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            StaffDialogController controller = loader.getController();
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.setTitle("Thêm nhân viên mới");
+            stage.setScene(new javafx.scene.Scene(root));
+
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+
+            if (controller.isSaveSuccess()) {
+                loadTable();
+                Others.animateTableRows(tblStaff);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     void btnAddClick(ActionEvent event) {
-
+        openStaffDialog();
     }
 
     @FXML
