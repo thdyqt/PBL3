@@ -3,15 +3,19 @@ package GUI;
 import Data.StaffData;
 import Entity.Staff;
 import Util.Others;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -116,14 +120,14 @@ public class StaffManagementForm implements Initializable {
 
     private void openStaffDialog() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("staff_dialog.fxml"));
-            javafx.scene.Parent root = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("staffDialog.fxml"));
+            Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();
 
-            javafx.stage.Stage stage = new javafx.stage.Stage();
+            Stage stage = new Stage();
             stage.setTitle("Thêm nhân viên mới");
-            stage.setScene(new javafx.scene.Scene(root));
+            stage.setScene(new Scene(root));
 
             stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             stage.setResizable(false);

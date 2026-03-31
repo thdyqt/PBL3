@@ -2,6 +2,7 @@ package GUI;
 
 import Business.StaffBusiness;
 import Util.Others;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.sql.Date;
@@ -85,10 +87,14 @@ public class StaffDialogController implements Initializable {
         return saveSuccess;
     }
 
-    @FXML
-    void btnCancelClick(ActionEvent event) {
+    void closeForm(){
         Stage stage = (Stage) txtName.getScene().getWindow();
         stage.close();
+    }
+
+    @FXML
+    void btnCancelClick(ActionEvent event) {
+        closeForm();
     }
 
     @FXML
@@ -138,8 +144,10 @@ public class StaffDialogController implements Initializable {
 
                 if (registerStatus == 1){
                     Others.showAlert(mainPanel,"Đăng ký tài khoản thành công!", false);
-                    Stage stage = (Stage) txtName.getScene().getWindow();
-                    stage.close();
+                    saveSuccess = true;
+                    var delay = new PauseTransition(Duration.seconds(2.5));
+                    delay.setOnFinished(e -> closeForm());
+                    delay.play();
                 }
                 else if (registerStatus == -1){
                     Others.showAlert(mainPanel, "Tên đăng nhập hoặc Số điện thoại đã được sử dụng!", true);
@@ -150,5 +158,4 @@ public class StaffDialogController implements Initializable {
             });
         }).start();
     }
-
 }
