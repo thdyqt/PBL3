@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.util.Duration;
 
 public class Others {
+    // SET ĐỘ DÀI TỐI ĐA CHO TEXTFIELD
     public static void setMaxLength(javafx.scene.control.TextField textField, int maxLength) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() > maxLength) {
@@ -17,7 +18,7 @@ public class Others {
         });
     }
 
-    // =========================================================================
+    // CHUẨN HÓA HỌ VÀ TÊN (KHI THÊM NHÂN VIÊN HOẶC KHÁCH HÀNG)
     public static String standardizeName(String fullName) {
         if (fullName == null || fullName.trim().isEmpty()) {
             return "";
@@ -36,7 +37,7 @@ public class Others {
         return result.toString().trim();
     }
 
-    // =========================================================================
+    // ANIMATION KHI FORM HIỂN THỊ
     public static void playFormAnimation(Node formNode) {
         formNode.setOpacity(0);
         formNode.setTranslateY(50);
@@ -55,7 +56,7 @@ public class Others {
         pt.play();
     }
 
-    // =========================================================================
+    // HIỂN THỊ THÔNG BÁO (NOTIFICATIONS)
     private static Label currentToast;
     private static SequentialTransition currentToastAnimation;
 

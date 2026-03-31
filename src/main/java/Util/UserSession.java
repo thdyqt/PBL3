@@ -2,6 +2,7 @@ package Util;
 
 import java.util.Date;
 
+// LẤY THÔNG TIN NGƯỜI DÙNG ĐĂNG NHẬP HIỆN TẠI
 public class UserSession {
     private static UserSession instance;
 
