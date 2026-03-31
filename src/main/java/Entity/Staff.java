@@ -3,8 +3,6 @@ package Entity;
 import java.sql.*;
 
 public class Staff extends Person {
-    private String user;
-    private String password;
     private String role;
     private Date hire_date;
 
@@ -12,6 +10,12 @@ public class Staff extends Person {
 
     public Staff(int id, String phone, String name, String user, String password, String role, Date hire_date) {
         super(id, phone, name, user, password);
+        this.role = role;
+        this.hire_date = hire_date;
+    }
+
+    public Staff(int id, String phone, String name, String user, String role, Date hire_date) {
+        super(id, phone, name, user);
         this.role = role;
         this.hire_date = hire_date;
     }

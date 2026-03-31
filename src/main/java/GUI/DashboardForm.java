@@ -1,11 +1,13 @@
 package GUI;
 
 import Business.StaffBusiness;
+import Util.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -54,7 +56,10 @@ public class DashboardForm implements Initializable {
     private StackPane contentArea;
 
     @FXML
-    private Label lblPageTitle;
+    private Label lblName;
+
+    @FXML
+    private Label lblRole;
 
     @FXML
     private Label lblProfile;
@@ -83,22 +88,47 @@ public class DashboardForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        mainBorderPane.setOpacity(0);
+        mainBorderPane.setScaleX(0.95);
+        mainBorderPane.setScaleY(0.95);
+
+        // Tạo hiệu ứng rõ dần (Fade)
+        FadeTransition fade = new FadeTransition(Duration.millis(500), mainBorderPane);
+        fade.setToValue(1);
+
+        // Tạo hiệu ứng phóng to về kích thước chuẩn (Scale)
+        ScaleTransition scale = new ScaleTransition(Duration.millis(500), mainBorderPane);
+        scale.setToX(1.0);
+        scale.setToY(1.0);
+
+        ParallelTransition pt = new ParallelTransition(fade, scale);
+        pt.setInterpolator(Interpolator.EASE_OUT);
+        pt.play();
+
         menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnStatistic};
+        loadUserProfile();
         startClock();
         btnHomeClick(null);
     }
 
-    private void setActiveMenu(Button activeButton) {
-        if (menuButtons == null) return;
+    // TOPBAR
+    private void loadUserProfile() {
+        String fullName = UserSession.getInstance().getName();
+        String username = UserSession.getInstance().getUsername();
+        String role = UserSession.getInstance().getPosition();
 
-        for (Button btn : menuButtons) {
-            if (btn != null) {
-                btn.getStyleClass().remove("active-menu");
-            }
+        if (fullName != null && !fullName.trim().isEmpty()) {
+            lblName.setText(fullName + " (" + username + ")");
+
+            String[] parts = fullName.trim().split("\\s+");
+            String firstName = parts[parts.length - 1];
+            String initial = String.valueOf(firstName.charAt(0)).toUpperCase();
+
+            lblProfile.setText(initial);
         }
 
-        if (activeButton != null) {
-            activeButton.getStyleClass().add("active-menu");
+        if (role != null) {
+            lblRole.setText(role);
         }
     }
 
@@ -154,9 +184,43 @@ public class DashboardForm implements Initializable {
         clock.play();
     }
 
+    // SIDEBAR
+    private void setActiveMenu(Button activeButton) {
+        if (menuButtons == null) return;
+
+        for (Button btn : menuButtons) {
+            if (btn != null) {
+                btn.getStyleClass().remove("active-menu");
+            }
+        }
+
+        if (activeButton != null) {
+            activeButton.getStyleClass().add("active-menu");
+        }
+    }
+
+    private void switchForm(String fxmlFileName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
+            Node node = loader.load();
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(node);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi tải trang: " + fxmlFileName);
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     void btnHomeClick(ActionEvent event) {
         setActiveMenu(btnHome);
+    }
+
+    @FXML
+    void btnStaffClick(ActionEvent event) {
+        setActiveMenu(btnStaff);
+        switchForm("staffManagement.fxml");
     }
 
     @FXML

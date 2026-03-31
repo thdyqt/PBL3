@@ -140,7 +140,11 @@ public class CustomerData {
 
                     if (BCrypt.checkpw(pass, dbPasswordHash)){
                         int dbId = rs.getInt("id_khach_hang");
-                        UserSession.getInstance().setUser(dbId, user, "Customer");
+                        String dbPhone = rs.getString("phone");
+                        String dbFullName = rs.getString("full_name");
+                        String dbUsername = rs.getString("username");
+                        int dbPoint = rs.getInt("point");
+                        UserSession.getInstance().setCustomer(dbId, dbPhone, dbFullName, dbUsername, pass, dbPoint);
                         return 1;
                     }
                     else return 2;

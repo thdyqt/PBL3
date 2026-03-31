@@ -11,6 +11,7 @@ module com.example.pbl3 {
     requires java.sql;
     requires jbcrypt;
 
+    opens Entity to javafx.base;
     opens GUI to javafx.fxml;
     exports GUI;
 }

@@ -3,19 +3,20 @@ package Data;
 import Entity.Staff;
 import Util.DBConnection;
 import Util.UserSession;
-
 import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class StaffData {
     public static List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM Staff WHERE status = 'Active'";
+        String sql = "SELECT id_nhan_vien, phone, full_name, username, position, hire_date FROM Staff WHERE status = 'Active'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -27,7 +28,6 @@ public class StaffData {
                         rs.getString("phone"),
                         rs.getString("full_name"),
                         rs.getString("username"),
-                        rs.getString("pass_word"),
                         rs.getString("position"),
                         rs.getDate("hire_date")
                 ));
@@ -43,11 +43,12 @@ public class StaffData {
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt());
 
             stmt.setString(1, s.getPhone());
             stmt.setString(2, s.getName());
             stmt.setString(3, s.getUser());
-            stmt.setString(4, s.getPassword());
+            stmt.setString(4, hashedPassword);
             stmt.setString(5, s.getRole());
             stmt.setDate(6, s.getHire_date());
 
@@ -81,11 +82,12 @@ public class StaffData {
         String sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt());
 
             stmt.setString(1, s.getPhone());
             stmt.setString(2, s.getName());
             stmt.setString(3, s.getUser());
-            stmt.setString(4, s.getPassword());
+            stmt.setString(4, hashedPassword);
             stmt.setString(5, s.getRole());
             stmt.setDate(6, s.getHire_date());
             stmt.setInt(7, s.getId());
@@ -135,7 +137,7 @@ public class StaffData {
     }
 
     public static int checkLogin(String user, String pass) {
-        String sql = "SELECT id_nhan_vien, pass_word, position FROM Staff WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE username = ? OR phone = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -147,8 +149,12 @@ public class StaffData {
 
                     if (BCrypt.checkpw(pass, dbPasswordHash)){
                         int dbId = rs.getInt("id_nhan_vien");
+                        String dbPhone = rs.getString("phone");
+                        String dbFullName = rs.getString("full_name");
+                        String dbUsername = rs.getString("username");
                         String dbPosition = rs.getString("position");
-                        UserSession.getInstance().setUser(dbId, user, dbPosition);
+                        Date dbHireDate = rs.getDate("hire_date");
+                        UserSession.getInstance().setStaff(dbId, dbPhone, dbFullName, dbUsername, pass, dbPosition, dbHireDate);
                         return 1;
                     }
                     else return 2;
