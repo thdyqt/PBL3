@@ -2,6 +2,8 @@ package GUI;
 
 import Business.CustomerBusiness;
 import Util.Others;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +14,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -61,7 +64,7 @@ public class RegisterForm implements Initializable{
     void btnSubmitRegisterClick(ActionEvent event) {
         String phone = txtPhone.getText().trim();
         String user = txtUser.getText().trim();
-        String name = Util.Others.standardizeName(txtName.getText());
+        String name = Others.standardizeName(txtName.getText());
         String pass = txtPass.getText().trim();
         String confirmPass = txtConfirmPass.getText().trim();
 
@@ -102,7 +105,7 @@ public class RegisterForm implements Initializable{
             new Thread(() -> {
                 int registerStatus = CustomerBusiness.register(phone, name, user, pass);
 
-                javafx.application.Platform.runLater(() -> {
+                Platform.runLater(() -> {
                     btnSubmitRegister.setDisable(false);
                     btnBackToLogin.setDisable(false);
 
@@ -114,7 +117,7 @@ public class RegisterForm implements Initializable{
                         txtPass.clear();
                         txtConfirmPass.clear();
 
-                        javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.5));
+                        var delay = new PauseTransition(Duration.seconds(2.5));
                         delay.setOnFinished(e -> btnBackToLoginClick(null));
                         delay.play();
                     }
@@ -133,11 +136,11 @@ public class RegisterForm implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         Others.playFormAnimation(mainForm);
 
-        Util.Others.setMaxLength(txtPhone, 10);
-        Util.Others.setMaxLength(txtUser, 20);
-        Util.Others.setMaxLength(txtName, 100);
-        Util.Others.setMaxLength(txtPass, 20);
-        Util.Others.setMaxLength(txtConfirmPass, 20);
+        Others.setMaxLength(txtPhone, 10);
+        Others.setMaxLength(txtUser, 20);
+        Others.setMaxLength(txtName, 100);
+        Others.setMaxLength(txtPass, 20);
+        Others.setMaxLength(txtConfirmPass, 20);
 
         txtPhone.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {

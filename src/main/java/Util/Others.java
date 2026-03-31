@@ -1,11 +1,10 @@
 package Util;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 public class Others {
@@ -56,11 +55,40 @@ public class Others {
         pt.play();
     }
 
+    // ANIMATION KHI BẢNG HIỂN THỊ
+    public static <T> void animateTableRows(TableView<T> tableView) {
+        tableView.setRowFactory(tv -> {
+            javafx.scene.control.TableRow<T> row = new javafx.scene.control.TableRow<>();
+
+            row.itemProperty().addListener((obs, oldItem, newItem) -> {
+                if (newItem != null && oldItem == null) {
+                    row.setOpacity(0);
+                    row.setTranslateX(50);
+
+                    FadeTransition fade = new FadeTransition(Duration.millis(500), row);
+                    fade.setToValue(1);
+
+                    TranslateTransition slide = new TranslateTransition(Duration.millis(500), row);
+                    slide.setToX(0);
+
+                    ParallelTransition pt = new ParallelTransition(fade, slide);
+                    pt.setInterpolator(Interpolator.EASE_OUT);
+
+                    long delay = Math.min(row.getIndex() * 70, 800);
+                    pt.setDelay(Duration.millis(delay));
+
+                    pt.play();
+                }
+            });
+            return row;
+        });
+    }
+
     // HIỂN THỊ THÔNG BÁO (NOTIFICATIONS)
     private static Label currentToast;
     private static SequentialTransition currentToastAnimation;
 
-    public static void showAlert(javafx.scene.layout.Pane rootPane, String message, boolean isError) {
+    public static void showAlert(Pane rootPane, String message, boolean isError) {
 
         // Dọn dẹp thông báo cũ
         if (currentToast != null) {
