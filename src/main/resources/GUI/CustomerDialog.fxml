@@ -10,7 +10,7 @@
             <children>
                 <VBox spacing="5.0">
                     <children>
-                        <Label text="THÊM KHÁCH HÀNG MỚI" textFill="#0F172A">
+                        <Label fx:id="lblTitle" text="THÊM KHÁCH HÀNG MỚI" textFill="#0F172A">
                             <font>
                                 <Font name="System Bold" size="22.0" />
                             </font>
