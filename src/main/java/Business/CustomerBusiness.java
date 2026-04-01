@@ -2,7 +2,6 @@ package Business;
 
 import Data.CustomerData;
 import Entity.Customer;
-import org.mindrot.jbcrypt.BCrypt;
 
 public class CustomerBusiness {
     public static int login(String username, String password) {
@@ -12,8 +11,7 @@ public class CustomerBusiness {
     public static int register(String phone, String name, String username, String password) {
         if (CustomerData.isAccountExist(username, phone)) return -1;
 
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
-        if (CustomerData.addCustomer(new Customer(phone, name, username, hashedPassword))){
+        if (CustomerData.addCustomer(new Customer(phone, name, username, password))){
             return 1;
         }
         return 0;

@@ -59,10 +59,12 @@ public class CustomerData {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            String hashedPassword = BCrypt.hashpw(c.getPassword(), BCrypt.gensalt(12));
+
             stmt.setString(1, c.getPhone());
             stmt.setString(2, c.getName());
             stmt.setString(3, c.getUser());
-            stmt.setString(4, c.getPassword());
+            stmt.setString(4, hashedPassword);
             stmt.setInt(5, c.getPoint());
 
             int rowsAffected = stmt.executeUpdate();

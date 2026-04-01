@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -23,6 +24,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class StaffManagementForm implements Initializable {
+    @FXML
+    private BorderPane mainPane;
+
     @FXML
     private Button btnAdd;
 
@@ -118,15 +122,17 @@ public class StaffManagementForm implements Initializable {
         tblStaff.setItems(staffList);
     }
 
-    private void openStaffDialog() {
+    private void openStaffDialog(Staff staffToEdit) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("staffDialog.fxml"));
             Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();
 
+            controller.setStaffData(staffToEdit);
+
             Stage stage = new Stage();
-            stage.setTitle("Thêm nhân viên mới");
+            stage.setTitle(staffToEdit == null ? "Thêm nhân viên mới" : "Chỉnh sửa nhân viên");
             stage.setScene(new Scene(root));
 
             stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -145,12 +151,17 @@ public class StaffManagementForm implements Initializable {
 
     @FXML
     void btnAddClick(ActionEvent event) {
-        openStaffDialog();
+        openStaffDialog(null);
     }
 
     @FXML
     void btnEditClick(ActionEvent event) {
-
+        Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
+        if (selectedStaff == null){
+            Others.showAlert(mainPane, "Vui lòng chọn nhân viên cần chỉnh sửa", true);
+            return;
+        }
+        openStaffDialog(selectedStaff);
     }
 
     @FXML

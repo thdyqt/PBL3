@@ -38,14 +38,15 @@ public class StaffData {
         return list;
     }
 
-    public static boolean isAccountExist(String username, String phone){
-        String sql = "SELECT id_nhan_vien FROM Staff WHERE username = ? OR phone = ?";
+    public static boolean isAccountExist(String username, String phone, int idToIgnore){
+        String sql = "SELECT id_nhan_vien FROM Staff WHERE (username = ? OR phone = ?) AND id_nhan_vien != ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
             stmt.setString(2, phone);
+            stmt.setInt(3, idToIgnore);
             ResultSet rs = stmt.executeQuery();
             return rs.next();
 
@@ -60,7 +61,8 @@ public class StaffData {
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt());
+
+            String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt(12));
 
             stmt.setString(1, s.getPhone());
             stmt.setString(2, s.getName());
@@ -96,21 +98,30 @@ public class StaffData {
     }
 
     public static boolean updateStaff(Staff s) {
-        String sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
+        String sql;
+        boolean isChangePass = s.getPassword() != null && !s.getPassword().trim().isEmpty();
+
+        if (isChangePass) sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, pass_word = ?, position = ?, hire_date = ? WHERE id_nhan_vien = ?";
+        else sql = "UPDATE Staff SET phone = ?, full_name = ?, username = ?, position = ?, hire_date = ? WHERE id_nhan_vien=?";
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt());
 
             stmt.setString(1, s.getPhone());
             stmt.setString(2, s.getName());
             stmt.setString(3, s.getUser());
-            stmt.setString(4, hashedPassword);
-            stmt.setString(5, s.getRole());
-            stmt.setDate(6, s.getHire_date());
-            stmt.setInt(7, s.getId());
 
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+            int index = 4;
+            if (isChangePass) {
+                String hashedPassword = BCrypt.hashpw(s.getPassword(), BCrypt.gensalt());
+                stmt.setString(index++, hashedPassword);
+            }
+
+            stmt.setString(index++, s.getRole());
+            stmt.setDate(index++, s.getHire_date());
+            stmt.setInt(index, s.getId());
+
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
