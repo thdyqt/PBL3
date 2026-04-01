@@ -28,6 +28,9 @@ public class CustomerManagementForm {
     private Button btnAdd;
 
     @FXML
+    private Button btnEdit;
+
+    @FXML
     private ComboBox<String> cbbSort;
 
     @FXML
@@ -37,6 +40,9 @@ public class CustomerManagementForm {
     private TableView<Customer> tableCustomer;
 
     // Khai báo các cột
+    @FXML
+    private TableColumn<Customer, Void> colSTT; // Cột STT mới thêm
+
     @FXML
     private TableColumn<Customer, Integer> colId;
 
@@ -52,10 +58,8 @@ public class CustomerManagementForm {
     @FXML
     private TableColumn<Customer, Customer.rank> colRank;
 
-    // Danh sách gốc chứa toàn bộ dữ liệu
-    private ObservableList<Customer> customerList;
 
-    // Danh sách đã được lọc dùng để hiển thị lên bảng
+    private ObservableList<Customer> customerList;
     private FilteredList<Customer> filteredData;
 
     @FXML
@@ -65,6 +69,19 @@ public class CustomerManagementForm {
         colName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         colPhone.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
         colPoint.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPoint()));
+
+        // TỰ ĐỘNG ĐÁNH SỐ THỨ TỰ CHO CỘT STT
+        colSTT.setCellFactory(column -> new TableCell<Customer, Void>() {
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(String.valueOf(getIndex() + 1));
+                }
+            }
+        });
 
         // 2. Cấu hình ComboBox sắp xếp
         ObservableList<String> sortOptions = FXCollections.observableArrayList(
@@ -80,7 +97,7 @@ public class CustomerManagementForm {
         // 3. Cấu hình cột hiển thị Hạng
         setupRankColumn();
 
-        // 4. Tải dữ liệu và cài đặt chức năng tìm kiếm
+        // 4. Tải dữ liệu
         loadData();
     }
 
@@ -88,34 +105,21 @@ public class CustomerManagementForm {
         List<Customer> listCustomers = CustomerData.getAllCustomers();
         customerList = FXCollections.observableArrayList(listCustomers);
 
-        // Bọc danh sách gốc vào một FilteredList (mặc định cho hiển thị tất cả)
         filteredData = new FilteredList<>(customerList, b -> true);
 
-        // LẮNG NGHE SỰ KIỆN GÕ PHÍM TRONG Ô TÌM KIẾM
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(customer -> {
-                // Nếu ô tìm kiếm trống, hiển thị toàn bộ khách hàng
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
+                if (newValue == null || newValue.isEmpty()) return true;
 
-                // Chuyển từ khóa về chữ thường để tìm kiếm không phân biệt hoa/thường
                 String lowerCaseFilter = newValue.toLowerCase();
+                if (customer.getName().toLowerCase().contains(lowerCaseFilter)) return true;
+                else if (customer.getPhone().contains(lowerCaseFilter)) return true;
+                else if (String.valueOf(customer.getId()).contains(lowerCaseFilter)) return true;
 
-                // Kiểm tra xem Tên, Số điện thoại hoặc Mã khách có chứa từ khóa không
-                if (customer.getName().toLowerCase().contains(lowerCaseFilter)) {
-                    return true; // Khớp tên
-                } else if (customer.getPhone().contains(lowerCaseFilter)) {
-                    return true; // Khớp SĐT
-                } else if (String.valueOf(customer.getId()).contains(lowerCaseFilter)) {
-                    return true; // Khớp mã ID
-                }
-
-                return false; // Không khớp tiêu chí nào thì ẩn dòng này đi
+                return false;
             });
         });
 
-        // GÁN FILTERED_LIST VÀO BẢNG THAY VÌ DANH SÁCH GỐC
         tableCustomer.setItems(filteredData);
     }
 
@@ -129,14 +133,12 @@ public class CustomerManagementForm {
                 @Override
                 protected void updateItem(Customer.rank item, boolean empty) {
                     super.updateItem(item, empty);
-
                     if (item == null || empty) {
                         setGraphic(null);
                         setText(null);
                     } else {
                         Label badge = new Label();
                         badge.setStyle("-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-weight: bold; -fx-font-size: 12px;");
-
                         switch (item) {
                             case Bronze:
                                 badge.setText("Đồng");
@@ -159,7 +161,6 @@ public class CustomerManagementForm {
                                 badge.setStyle(badge.getStyle() + "-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF;");
                                 break;
                         }
-
                         setGraphic(badge);
                         setText(null);
                     }
@@ -169,47 +170,55 @@ public class CustomerManagementForm {
     }
 
     @FXML
-    void Search(ActionEvent event) {
-        // Bỏ trống hàm này vì chúng ta đã dùng Listener real-time ở trên.
-        // Giữ lại hàm này để file FXML không báo lỗi khi bạn nhấn Enter trong ô Text.
-    }
+    void Search(ActionEvent event) { }
 
     @FXML
     void btnAddClick(ActionEvent event) {
+        openDialog(null);
+    }
+
+    @FXML
+    void btnEditClick(ActionEvent event) {
+        Customer selected = tableCustomer.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            new Alert(Alert.AlertType.WARNING, "Vui lòng chọn một khách hàng trong bảng để sửa!").showAndWait();
+            return;
+        }
+        openDialog(selected);
+    }
+
+    // Hàm mở Dialog dùng chung cho cả Thêm và Sửa
+    private void openDialog(Customer customer) {
         try {
-            // Tải file giao diện của cửa sổ Thêm Khách Hàng
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/CustomerDialog.fxml"));
             Parent root = loader.load();
 
-            // Tạo một Stage (cửa sổ) mới
+            CustomerDialogController controller = loader.getController();
+
+            // Nếu có đối tượng truyền vào tức là đang Sửa
+            if (customer != null) {
+                controller.setCustomerData(customer);
+            }
+
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Thêm khách hàng mới");
+            dialogStage.setTitle(customer == null ? "Thêm khách hàng" : "Sửa khách hàng");
             dialogStage.setScene(new Scene(root));
-
-            // Thiết lập chế độ Modal: Bắt buộc người dùng phải đóng cửa sổ này thì mới thao tác được với cửa sổ chính
             dialogStage.initModality(Modality.APPLICATION_MODAL);
-
-            // Ngăn chặn việc thay đổi kích thước cửa sổ
             dialogStage.setResizable(false);
-
-            // Hiển thị cửa sổ và chờ cho đến khi nó bị đóng
             dialogStage.showAndWait();
 
-            // Ngay sau khi cửa sổ thêm đóng lại, ta gọi lại hàm loadData()
-            // để bảng tự động cập nhật nếu có khách hàng mới vừa được thêm vào Database
+            // Load lại bảng
             loadData();
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Không thể mở cửa sổ CustomerDialog.fxml. Hãy kiểm tra lại đường dẫn!");
+            System.out.println("Lỗi mở form!");
         }
     }
 
     @FXML
     void btnSortClick(ActionEvent event) {
-        if (customerList == null || customerList.isEmpty()) {
-            return;
-        }
+        if (customerList == null || customerList.isEmpty()) return;
 
         String selectedOption = cbbSort.getValue();
         if (selectedOption == null) return;
@@ -235,8 +244,6 @@ public class CustomerManagementForm {
         }
 
         if (comparator != null) {
-            // Sắp xếp trên danh sách gốc. FilteredList bọc bên ngoài sẽ tự động nhận diện
-            // sự thay đổi vị trí này và cập nhật giao diện ngay lập tức.
             FXCollections.sort(customerList, comparator);
         }
     }
