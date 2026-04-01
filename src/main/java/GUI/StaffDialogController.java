@@ -1,6 +1,7 @@
 package GUI;
 
 import Business.StaffBusiness;
+import Entity.Staff;
 import Util.Others;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -18,6 +19,9 @@ import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class StaffDialogController implements Initializable {
+    @FXML
+    private Label lblTitle;
+
     @FXML
     private Button btnCancel;
 
@@ -45,6 +49,7 @@ public class StaffDialogController implements Initializable {
     @FXML
     private TextField txtUsername;
 
+    private Staff currentStaff = null;
     private boolean saveSuccess;
 
     @Override
@@ -97,6 +102,22 @@ public class StaffDialogController implements Initializable {
         closeForm();
     }
 
+    public void setStaffData(Staff staff) {
+        this.currentStaff = staff;
+
+        if (staff != null) {
+            lblTitle.setText("CHỈNH SỬA NHÂN VIÊN");
+            txtName.setText(staff.getName());
+            txtPhone.setText(staff.getPhone());
+            txtUsername.setText(staff.getUser());
+            cbRole.setValue(staff.getRole());
+            if (staff.getHire_date() != null) {
+                dpHireDate.setValue(staff.getHire_date().toLocalDate());
+            }
+            txtPassword.setPromptText("Để trống nếu không đổi mật khẩu");
+        }
+    }
+
     @FXML
     void btnSaveClick(ActionEvent event) {
         String name = Others.standardizeName(txtName.getText());
@@ -106,7 +127,7 @@ public class StaffDialogController implements Initializable {
         String role = cbRole.getValue();
         Date hire_date = dpHireDate.getValue() != null ? Date.valueOf(dpHireDate.getValue()) : new Date(System.currentTimeMillis());
 
-        if (name.isEmpty() || phone.isEmpty() || user.isEmpty() || pass.isEmpty()){
+        if (name.isEmpty() || phone.isEmpty() || user.isEmpty() || (currentStaff == null && pass.isEmpty())){
             Others.showAlert(mainPanel, "Vui lòng điền đầy đủ thông tin bắt buộc!", true);
             return;
         }
@@ -123,9 +144,9 @@ public class StaffDialogController implements Initializable {
             return;
         }
 
-        else if (pass.length() < 6) {
-            Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự!", true);
-            txtUsername.requestFocus();
+        else if ((currentStaff == null && pass.length() < 6) || (currentStaff != null && pass.length() > 0 && pass.length() < 6)) {
+            Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự trở lên!", true);
+            txtPassword.requestFocus();
             return;
         }
 
@@ -136,20 +157,22 @@ public class StaffDialogController implements Initializable {
         }
 
         new Thread(() -> {
-            int registerStatus = StaffBusiness.register(phone, name, user, pass, role, hire_date);
+            int status = (currentStaff == null) ? StaffBusiness.register(phone, name, user, pass, role, hire_date)
+                : StaffBusiness.updateStaff(currentStaff.getId(), phone, name, user, pass, role, hire_date);
 
             Platform.runLater(() -> {
                 btnCancel.setDisable(false);
                 btnSave.setDisable(false);
 
-                if (registerStatus == 1){
-                    Others.showAlert(mainPanel,"Đăng ký tài khoản thành công!", false);
+                if (status == 1){
+                    if (currentStaff == null) Others.showAlert(mainPanel,"Đăng ký tài khoản thành công!", false);
+                    else Others.showAlert(mainPanel,"Chỉnh sửa tài khoản thành công!", false);
                     saveSuccess = true;
                     var delay = new PauseTransition(Duration.seconds(2.5));
                     delay.setOnFinished(e -> closeForm());
                     delay.play();
                 }
-                else if (registerStatus == -1){
+                else if (status == -1){
                     Others.showAlert(mainPanel, "Tên đăng nhập hoặc Số điện thoại đã được sử dụng!", true);
                 }
                 else {
