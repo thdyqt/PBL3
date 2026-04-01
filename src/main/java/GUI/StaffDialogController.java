@@ -3,6 +3,7 @@ package GUI;
 import Business.StaffBusiness;
 import Entity.Staff;
 import Util.Others;
+import Util.UserSession;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -111,6 +112,11 @@ public class StaffDialogController implements Initializable {
             txtPhone.setText(staff.getPhone());
             txtUsername.setText(staff.getUser());
             cbRole.setValue(staff.getRole());
+
+            if (currentStaff.getId() == UserSession.getInstance().getId()) {
+                cbRole.setEditable(false);
+            }
+
             if (staff.getHire_date() != null) {
                 dpHireDate.setValue(staff.getHire_date().toLocalDate());
             }

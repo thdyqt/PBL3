@@ -3,6 +3,7 @@ package GUI;
 import Data.StaffData;
 import Entity.Staff;
 import Util.Others;
+import Util.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -135,7 +137,7 @@ public class StaffManagementForm implements Initializable {
             stage.setTitle(staffToEdit == null ? "Thêm nhân viên mới" : "Chỉnh sửa nhân viên");
             stage.setScene(new Scene(root));
 
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.setResizable(false);
             stage.showAndWait();
 
@@ -158,7 +160,7 @@ public class StaffManagementForm implements Initializable {
     void btnEditClick(ActionEvent event) {
         Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
         if (selectedStaff == null){
-            Others.showAlert(mainPane, "Vui lòng chọn nhân viên cần chỉnh sửa", true);
+            Others.showAlert(mainPane, "Vui lòng chọn nhân viên!", true);
             return;
         }
         openStaffDialog(selectedStaff);
@@ -166,6 +168,34 @@ public class StaffManagementForm implements Initializable {
 
     @FXML
     void btnResignClick(ActionEvent event) {
+        Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
 
+        if (selectedStaff == null){
+            Others.showAlert(mainPane, "Vui lòng chọn nhân viên!", true);
+            return;
+        }
+
+        if (selectedStaff.getId() == UserSession.getInstance().getId()){
+            Others.showAlert(mainPane, "Bạn không thể thôi việc chính mình!", true);
+            return;
+        }
+
+        boolean isConfirm = Others.showCustomConfirm(
+                "Thôi việc nhân viên",
+                "Bạn đang yêu cầu thôi việc nhân viên này khỏi hệ thống.\nBạn có chắc chắn muốn thực hiện không?",
+                "Xác nhận", "Hủy bỏ"
+        );
+
+        if (isConfirm) {
+            int result = Business.StaffBusiness.resignStaff(selectedStaff.getId(), selectedStaff.getName(), selectedStaff.getUser());
+
+            if (result == 1) {
+                Util.Others.showAlert(mainPane,"Cho thôi việc nhân viên thành công!", false);
+                loadTable();
+                Util.Others.animateTableRows(tblStaff);
+            } else {
+                Util.Others.showAlert(mainPane, "Lỗi kết nối máy chủ dữ liệu!", true);
+            }
+        }
     }
 }

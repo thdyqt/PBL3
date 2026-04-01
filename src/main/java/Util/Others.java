@@ -88,7 +88,9 @@ public class Others {
     private static Label currentToast;
     private static SequentialTransition currentToastAnimation;
 
-    public static void showAlert(Pane rootPane, String message, boolean isError) {
+    public static void showAlert(Node node, String message, boolean isError) {
+        if (node == null || node.getScene() == null) return;
+        Pane rootPane = (Pane) node.getScene().getRoot();
 
         // Dọn dẹp thông báo cũ
         if (currentToast != null) {
@@ -141,5 +143,39 @@ public class Others {
 
         currentToastAnimation = new SequentialTransition(showAnim, hideAnim);
         currentToastAnimation.play();
+    }
+
+    // HIỂN THỊ HỘP THOẠI XÁC NHẬN
+    public static boolean showCustomConfirm(String title, String content, String btnYesText, String btnNoText) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+
+        javafx.scene.layout.StackPane iconPane = new javafx.scene.layout.StackPane();
+        javafx.scene.shape.Circle bg = new javafx.scene.shape.Circle(22, javafx.scene.paint.Color.web("#FEF3C7"));
+        javafx.scene.control.Label exclamation = new javafx.scene.control.Label("!");
+        exclamation.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #D97706;");
+        iconPane.getChildren().addAll(bg, exclamation);
+        alert.setGraphic(iconPane);
+
+        // Tùy chỉnh chữ trên 2 nút bấm
+        javafx.scene.control.ButtonType buttonYes = new javafx.scene.control.ButtonType(btnYesText, javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+        javafx.scene.control.ButtonType buttonNo = new javafx.scene.control.ButtonType(btnNoText, javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(buttonYes, buttonNo);
+
+        // Áp dụng CSS
+        javafx.scene.control.DialogPane dialogPane = alert.getDialogPane();
+        try {
+            dialogPane.getStylesheets().add(Others.class.getResource("/GUI/style.css").toExternalForm());
+            dialogPane.getStyleClass().add("modern-alert");
+        } catch (Exception e) {
+            System.out.println("Không tìm thấy file CSS cho Alert ở đường dẫn /GUI/style.css");
+        }
+
+        // Hiển thị và chờ người dùng bấm, sau đó trả về true/false
+        java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == buttonYes;
     }
 }

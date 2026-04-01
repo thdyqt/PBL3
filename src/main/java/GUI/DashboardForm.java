@@ -1,6 +1,5 @@
 package GUI;
 
-import Business.StaffBusiness;
 import Util.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
@@ -8,17 +7,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class DashboardForm implements Initializable {
@@ -231,38 +231,18 @@ public class DashboardForm implements Initializable {
 
     @FXML
     void btnExitClick(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Kết thúc ca trực");
-        alert.setHeaderText(null);
-        alert.setContentText(" Bạn đang yêu cầu đăng xuất khỏi hệ thống POS.\n Bạn có chắc chắn muốn thoát không?");
+        boolean isConfirm = Util.Others.showCustomConfirm(
+                "Kết thúc ca trực",
+                "Bạn đang yêu cầu đăng xuất khỏi hệ thống POS.\nBạn có chắc chắn muốn thoát không?",
+                "Đăng xuất", "Hủy bỏ"
+        );
 
-        StackPane iconPane = new StackPane();
-        Circle bg = new Circle(22, javafx.scene.paint.Color.web("#FEF3C7"));
-        Label exclamation = new Label("!");
-        exclamation.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #D97706;");
-        iconPane.getChildren().addAll(bg, exclamation);
-        alert.setGraphic(iconPane);
-
-        ButtonType buttonYes = new ButtonType("Đăng xuất", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonNo = new ButtonType("Hủy bỏ", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(buttonYes, buttonNo);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        try {
-            dialogPane.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-            dialogPane.getStyleClass().add("modern-alert");
-        } catch (Exception e) {
-            System.out.println("Không tìm thấy file CSS cho Alert!");
-        }
-
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.isPresent() && result.get() == buttonYes) {
+        if (isConfirm) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("login.fxml"));
                 mainBorderPane.getScene().setRoot(loader.load());
 
-                StaffBusiness.logout();
+                Business.StaffBusiness.logout();
 
             } catch (Exception e) {
                 e.printStackTrace();

@@ -39,4 +39,12 @@ public class StaffBusiness {
         }
         return 0;
     }
+
+    public static int resignStaff(int id, String name, String username){
+        if (StaffData.resignStaff(id)) {
+            LogBusiness.saveLog("Thôi việc nhân viên " + name + " (" + username + ")");
+            return 1;
+        }
+        return 0;
+    }
 }
