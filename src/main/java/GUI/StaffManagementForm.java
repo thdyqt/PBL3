@@ -6,6 +6,8 @@ import Util.Others;
 import Util.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -60,12 +62,15 @@ public class StaffManagementForm implements Initializable {
     private TextField txtSearch;
 
     private boolean saveSuccess = false;
+    private ObservableList<Staff> masterData = FXCollections.observableArrayList();
+    private FilteredList<Staff> filteredData;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableStyles();
         Others.animateTableRows(tblStaff);
         loadTable();
+        setupSearch();
     }
 
     private void setupTableStyles() {
@@ -118,10 +123,42 @@ public class StaffManagementForm implements Initializable {
         });
     }
 
-    public void loadTable() {
+    private void loadTable() {
         List<Staff> listFromDB = StaffData.getAllStaff();
-        ObservableList<Staff> staffList = FXCollections.observableArrayList(listFromDB);
-        tblStaff.setItems(staffList);
+        masterData.setAll(listFromDB);
+        filteredData = new FilteredList<>(masterData, b -> true);
+        SortedList<Staff> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(tblStaff.comparatorProperty());
+        tblStaff.setItems(sortedData);
+    }
+
+    private void setupSearch() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(staff -> {
+                if (newValue == null || newValue.trim().isEmpty()) {
+                    return true;
+                }
+
+                String searchKeyword = newValue.toLowerCase();
+
+                String hireDateStr = "";
+                if (staff.getHire_date() != null) {
+                    hireDateStr = sdf.format(staff.getHire_date());
+                }
+
+                if (staff.getName().toLowerCase().contains(searchKeyword) ||
+                        staff.getPhone().toLowerCase().contains(searchKeyword) ||
+                        staff.getUser().toLowerCase().contains(searchKeyword) ||
+                        (staff.getRole() != null && staff.getRole().toLowerCase().contains(searchKeyword)) ||
+                        hireDateStr.contains(searchKeyword)) {
+                    return true;
+                }
+
+                return false;
+            });
+        });
     }
 
     private void openStaffDialog(Staff staffToEdit) {
@@ -152,12 +189,12 @@ public class StaffManagementForm implements Initializable {
     }
 
     @FXML
-    void btnAddClick(ActionEvent event) {
+    private void btnAddClick(ActionEvent event) {
         openStaffDialog(null);
     }
 
     @FXML
-    void btnEditClick(ActionEvent event) {
+    private void btnEditClick(ActionEvent event) {
         Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
         if (selectedStaff == null){
             Others.showAlert(mainPane, "Vui lòng chọn nhân viên!", true);
@@ -167,7 +204,7 @@ public class StaffManagementForm implements Initializable {
     }
 
     @FXML
-    void btnResignClick(ActionEvent event) {
+    private void btnResignClick(ActionEvent event) {
         Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
 
         if (selectedStaff == null){
