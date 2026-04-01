@@ -3,6 +3,8 @@ package GUI;
 import Business.CustomerBusiness;
 import Business.StaffBusiness;
 import Util.Others;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -82,7 +85,7 @@ public class LoginForm implements Initializable {
             new Thread(() -> {
                 int loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
 
-                javafx.application.Platform.runLater(() -> {
+                Platform.runLater(() -> {
                     btnLogin.setDisable(false);
                     btnRegister.setDisable(false);
 
@@ -91,7 +94,7 @@ public class LoginForm implements Initializable {
                         Others.showAlert(rootPane,"Đăng nhập thành công!", false);
                         txtPass.clear();
 
-                        javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.5));
+                        PauseTransition delay = new PauseTransition(Duration.seconds(2.5));
                         delay.setOnFinished(actionEvent -> {
                             try {
                                 FXMLLoader loader = null;
@@ -143,8 +146,8 @@ public class LoginForm implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         Others.playFormAnimation(mainForm);
 
-        Util.Others.setMaxLength(txtUser, 20);
-        Util.Others.setMaxLength(txtPass, 20);
+        Others.setMaxLength(txtUser, 20);
+        Others.setMaxLength(txtPass, 20);
 
         txtUser.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.contains(" ")) {
@@ -166,7 +169,7 @@ public class LoginForm implements Initializable {
             btnRegister.setDisable(true);
             Others.showAlert(rootPane, "Khóa tạm thời 60 giây do nhập sai quá 5 lần!", true);
 
-            javafx.animation.PauseTransition lockTimer = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(60));
+            PauseTransition lockTimer = new PauseTransition(Duration.seconds(60));
             lockTimer.setOnFinished(e -> {
                 failedAttempts = 0;
                 btnLogin.setDisable(false);

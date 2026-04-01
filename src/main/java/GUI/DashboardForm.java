@@ -224,6 +224,12 @@ public class DashboardForm implements Initializable {
     }
 
     @FXML
+    void btnCustomerClick(ActionEvent event) {
+        setActiveMenu(btnCustomer);
+        switchForm("CustomerManagement.fxml");
+    }
+
+    @FXML
     void btnExitClick(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Kết thúc ca trực");

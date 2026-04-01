@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 public class LogData {
+    // LUÔN SỬ DỤNG HÀM NÀY ĐỂ GHI NHẬT KÝ HOẠT ĐỘNG VÀO DATABASE
     public static void insertLog(String username, String action){
         String sql = "INSERT INTO ActivityLog (username, action, created_at) VALUES (?, ?, ?)";
         try(Connection conn = DBConnection.getConnection();

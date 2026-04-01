@@ -38,6 +38,23 @@ public class StaffData {
         return list;
     }
 
+    public static boolean isAccountExist(String username, String phone){
+        String sql = "SELECT id_nhan_vien FROM Staff WHERE username = ? OR phone = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, phone);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
     public static boolean addStaff(Staff s) {
         String sql = "INSERT INTO Staff (phone, full_name, username, pass_word, position, hire_date) VALUES (?, ?, ?, ?, ?, ?)";
 
