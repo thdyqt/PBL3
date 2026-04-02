@@ -66,7 +66,7 @@ public class OrderData {
     }
 
     public static Order searchOrder(int id){
-        String sql = "SELECT * FROM Orders WHERE id = ?";
+        String sql = "SELECT * FROM Orders WHERE id_Order = ?";
         Order foundOrder = null;
 
         try (
@@ -99,7 +99,7 @@ public class OrderData {
 
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
-        String sql = "UPDATE Orders SET process_time = ?, id_nhan_vien = ?, id_khach_hang = ? WHERE id = ?";
+        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ? WHERE id_Order = ?";
 
         try (
             Connection conn = DBConnection.getConnection();
