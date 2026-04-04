@@ -220,7 +220,7 @@ public class DashboardForm implements Initializable {
     @FXML
     void btnStaffClick(ActionEvent event) {
         setActiveMenu(btnStaff);
-        switchForm("staffManagement.fxml");
+        switchForm("StaffManagement.fxml");
     }
 
     @FXML
