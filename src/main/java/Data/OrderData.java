@@ -65,36 +65,63 @@ public class OrderData {
         }
     }
 
-    public static Order searchOrder(int id){
-        String sql = "SELECT * FROM Orders WHERE id_Order = ?";
-        Order foundOrder = null;
+    //the method that do the actual search work
+    private static List<Order> executeQuery_Order(String sql, int searchPara){
+        //create the empty list to hold (and later return) all records that fit the criteria
+        List<Order> orderList = new ArrayList<>();
 
         try (
-            Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+        ){
+            //prevent SQL injection by making it an int
+            stmt.setInt(1, searchPara);
 
-            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()){
+                    //setting the 3 keys or Order
+                    Order order = new Order();
+                    order.setId(rs.getInt("id_Order"));
+                    order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    foundOrder = new Order();
-                    foundOrder.setId(rs.getInt("id"));
-                    foundOrder.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+                    Staff staff = new Staff();
+                    staff.setId(rs.getInt("id_Staff"));
+                    order.setStaff(staff);
 
                     Customer customer = new Customer();
                     customer.setId(rs.getInt("id_Customer"));
-                    foundOrder.setCustomer(customer);
+                    order.setCustomer(customer);
 
-                    Staff staff = new Staff();
-                    customer.setId(rs.getInt("id_Staff"));
-                    foundOrder.setStaff(staff);
+                    orderList.add(order);
                 }
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e){
             e.printStackTrace();
         }
-        return foundOrder;
+        return orderList;
+    }
+
+
+    //mutiple search methods (ID/Staff/Customer)
+    public static Order searchOrder_ByID(int id_Order){
+        String sql = "SELECT * FROM Orders WHERE id_Order = ?";
+        List<Order> result = executeQuery_Order(sql, id_Order);
+
+        if (result.isEmpty()){
+            return null;
+        }
+        return result.get(0);
+    }
+
+    public static List<Order> searchOrder_ByStaff(int id_Staff){
+        String sql = "SELECT * FROM Orders WHERE id_Staff = ?";
+        return executeQuery_Order(sql, id_Staff);
+    }
+
+    public static List<Order> searchOrder_ByCustomer(int id_Customer){
+        String sql = "SELECT * FROM Orders WHERE id_Customer = ?";
+        return executeQuery_Order(sql, id_Customer);
     }
 
     //same thing as addOrder, albeit changed slightly

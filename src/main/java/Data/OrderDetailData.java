@@ -35,35 +35,46 @@ public class OrderDetailData {
         }
     }
 
-    public static List<OrderDetail> searchOrderDetail(int id_Order){
-        List<OrderDetail> found = new ArrayList<>();
-        String sql = "SELECT * FROM `OrderDetail` WHERE id_Order = ?";
-        try(
-                Connection connection = DBConnection.getConnection();
-                PreparedStatement stmt = connection.prepareStatement(sql);
+    //method that does the actual work
+    private static List<OrderDetail> executeQuery_OrderDetail(String sql, int searchPara){
+        List<OrderDetail> orderDetailList = new ArrayList<>();
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
         ){
+            stmt.setInt(1, searchPara);
 
-            stmt.setInt(1, id_Order);
+            try (ResultSet rs = stmt.executeQuery()){
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setQuantity(rs.getInt("quanity"));
 
-            try(ResultSet rs = stmt.executeQuery()){
-                while (rs.next()){
-                    int id_Product = rs.getInt("id_Product");
-                    int quantity = rs.getInt("quantity");
-                    int price = rs.getInt("price");
+                Order order = new Order();
+                order.setId(rs.getInt("id_Order"));
+                orderDetail.setOrder(order);
 
-                    Product product = new Product();
-                    product.setProductID(id_Product);
+                Product product = new Product();
+                product.setProductID(rs.getInt("id_Product"));
+                orderDetail.setProduct(product);
 
-                    OrderDetail item = new OrderDetail(id_Order, product, quantity, price);
-
-                    found.add(item);
-                }
+                orderDetailList.add(orderDetail);
             }
-
-        } catch (SQLException e){
+        }
+        catch (SQLException e){
             e.printStackTrace();
         }
-        return found;
+        return orderDetailList;
+    }
+
+    //mutiple search methods (id_Order/id_Product)
+    public static List<OrderDetail> searchOrderDetail_ById_Order(int id_Order){
+        String sql = "SELECT * FROM OrderDetail WHERE id_order = ?";
+        return executeQuery_OrderDetail(sql, id_Order);
+    }
+
+    public static List<OrderDetail> searchOrderDetail_ById_Product(int id_Product){
+        String sql = "SELECT * FROM OrderDetail WHERE id_Product = ?";
+        return executeQuery_OrderDetail(sql, id_Product);
     }
 
     //this just change the amount of a product
