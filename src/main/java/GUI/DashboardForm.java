@@ -242,7 +242,7 @@ public class DashboardForm implements Initializable {
                 javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("login.fxml"));
                 mainBorderPane.getScene().setRoot(loader.load());
 
-                Business.StaffBusiness.logout();
+                BusinessBLL.StaffBusiness.logout();
 
             } catch (Exception e) {
                 e.printStackTrace();

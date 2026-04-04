@@ -1,7 +1,7 @@
 package GUI;
 
-import Data.CustomerData;
-import Entity.Customer;
+import DataDAL.CustomerData;
+import EntityDTO.Customer;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;

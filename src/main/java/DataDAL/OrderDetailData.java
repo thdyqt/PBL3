@@ -1,8 +1,7 @@
-package Data;
+package DataDAL;
 
-import Entity.OrderDetail;
-import Entity.Product;
-import Entity.Order;
+import EntityDTO.OrderDetail;
+import EntityDTO.Product;
 
 import Util.DBConnection;
 import java.sql.*;

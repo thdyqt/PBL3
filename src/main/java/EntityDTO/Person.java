@@ -1,4 +1,4 @@
-package Entity;
+package EntityDTO;
 
 public abstract class Person {
     protected int id;

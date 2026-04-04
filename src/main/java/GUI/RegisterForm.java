@@ -1,6 +1,6 @@
 package GUI;
 
-import Business.CustomerBusiness;
+import BusinessBLL.CustomerBusiness;
 import Util.Others;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;

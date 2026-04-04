@@ -1,4 +1,4 @@
-package Business;
+package BusinessBLL;
 
 public class OrderDetailBusiness {
 }

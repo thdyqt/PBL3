@@ -1,7 +1,7 @@
-package Business;
+package BusinessBLL;
 
-import Data.ProductData;
-import Entity.Product;
+import DataDAL.ProductData;
+import EntityDTO.Product;
 
 public class ProductBusiness {
 
