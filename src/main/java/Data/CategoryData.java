@@ -89,14 +89,14 @@ public class CategoryData {
     // ===== GHI LOG =====
     public static void addLog(int categoryID, String categoryName,
                               String action, String note) {
-        String sql = "INSERT INTO CategoryLog (CategoryID, CategoryName, Action, Note) "
-                + "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO ActivityLog (username,action,created_at) "
+                + "VALUES (?, ?,?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, categoryID);
-            stmt.setString(2, categoryName);
-            stmt.setString(3, action);
-            stmt.setString(4, note);
+            stmt.setString(1, "admin");
+            stmt.setString(2, note);
+            java.time.LocalDateTime now = java.time.LocalDateTime.now();
+            stmt.setTimestamp(3, Timestamp.valueOf(now));
             stmt.executeUpdate();
 
         } catch (SQLException e) {
