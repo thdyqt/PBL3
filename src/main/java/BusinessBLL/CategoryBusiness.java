@@ -1,7 +1,7 @@
-package Business;
+package BusinessBLL;
 
-import Data.CategoryData;
-import Entity.Category;
+import DataDAL.CategoryData;
+import EntityDTO.Category;
 
 public class CategoryBusiness {
 

@@ -1,7 +1,7 @@
-package Business;
+package BusinessBLL;
 
-import Data.CustomerData;
-import Entity.Customer;
+import DataDAL.CustomerData;
+import EntityDTO.Customer;
 
 public class CustomerBusiness {
     public static int login(String username, String password) {

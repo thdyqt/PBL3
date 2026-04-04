@@ -1,4 +1,4 @@
-package Data;
+package DataDAL;
 
 import Util.DBConnection;
 

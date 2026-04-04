@@ -1,4 +1,4 @@
-package Entity;
+package EntityDTO;
 
 //ok this might sounds counterintuitive
 //but OrderDetail is like, how many of a product is there

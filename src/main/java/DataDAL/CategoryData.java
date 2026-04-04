@@ -1,10 +1,8 @@
-package Data;
+package DataDAL;
 
-import Entity.Category;
+import EntityDTO.Category;
 import Util.DBConnection;
-import Util.UserSession;
 
-import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

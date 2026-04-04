@@ -1,7 +1,7 @@
 package GUI;
 
-import Business.StaffBusiness;
-import Entity.Staff;
+import BusinessBLL.StaffBusiness;
+import EntityDTO.Staff;
 import Util.Others;
 import Util.UserSession;
 import javafx.animation.PauseTransition;

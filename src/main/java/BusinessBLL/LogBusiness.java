@@ -1,6 +1,6 @@
-package Business;
+package BusinessBLL;
 
-import Data.LogData;
+import DataDAL.LogData;
 import Util.UserSession;
 
 public class LogBusiness {

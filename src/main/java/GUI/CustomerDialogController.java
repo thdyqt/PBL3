@@ -1,7 +1,7 @@
 package GUI;
 
-import Data.CustomerData;
-import Entity.Customer;
+import DataDAL.CustomerData;
+import EntityDTO.Customer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;

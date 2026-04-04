@@ -1,7 +1,7 @@
-package Business;
+package BusinessBLL;
 
-import Data.StaffData;
-import Entity.Staff;
+import DataDAL.StaffData;
+import EntityDTO.Staff;
 import Util.UserSession;
 
 import java.sql.Date;

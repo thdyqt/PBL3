@@ -1,7 +1,7 @@
 package GUI;
 
-import Data.StaffData;
-import Entity.Staff;
+import DataDAL.StaffData;
+import EntityDTO.Staff;
 import Util.Others;
 import Util.UserSession;
 import javafx.collections.FXCollections;
@@ -224,7 +224,7 @@ public class StaffManagementForm implements Initializable {
         );
 
         if (isConfirm) {
-            int result = Business.StaffBusiness.resignStaff(selectedStaff.getId(), selectedStaff.getName(), selectedStaff.getUser());
+            int result = BusinessBLL.StaffBusiness.resignStaff(selectedStaff.getId(), selectedStaff.getName(), selectedStaff.getUser());
 
             if (result == 1) {
                 Util.Others.showAlert(mainPane,"Cho thôi việc nhân viên thành công!", false);

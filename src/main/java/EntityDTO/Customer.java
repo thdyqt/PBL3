@@ -1,4 +1,4 @@
-package Entity;
+package EntityDTO;
 
 public class Customer extends Person {
     private int point;
