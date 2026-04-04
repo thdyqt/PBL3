@@ -2,6 +2,7 @@ package DataDAL;
 
 import EntityDTO.OrderDetail;
 import EntityDTO.Product;
+import EntityDTO.Order;
 
 import Util.DBConnection;
 import java.sql.*;
