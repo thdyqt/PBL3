@@ -120,6 +120,18 @@ public class CategoryData {
     }
     // ===== NGỪNG KINH DOANH =====
     public static boolean stopBusiness(int categoryID) {
+
+        String abc = "SELECT * FROM Product WHERE CategoryID = ?";
+        try(PreparedStatement pstmt = connection.prepareStatement(abc)){
+            pstmt.setInt(1,categoryID);
+            try(ResultSet resultSet = pstmt.executeQuery()){
+                while(resultSet.next()){
+                   ProductData.stopBusiness(resultSet.getInt("CategoryID"));
+                }
+            }
+        } catch (SQLException e){
+            System.err.println("Lỗi khi ngừng kinh doanh Sản Phẩm thuộc Danh mục này: "+e.getMessage());
+        }
         String sql = "UPDATE Category SET status = 'Inactive' WHERE category_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -134,6 +146,17 @@ public class CategoryData {
 
     // ===== MỞ LẠI KINH DOANH =====
     public static boolean restartBusiness(int categoryID) {
+        String abc = "SELECT * FROM Product WHERE CategoryID = ?";
+        try(PreparedStatement pstmt = connection.prepareStatement(abc)){
+            pstmt.setInt(1,categoryID);
+            try(ResultSet resultSet = pstmt.executeQuery()){
+                while(resultSet.next()){
+                    ProductData.restartBusiness(resultSet.getInt("CategoryID"));
+                }
+            }
+        } catch (SQLException e){
+            System.err.println("Lỗi khi ngừng kinh doanh Sản Phẩm thuộc Danh mục này: "+e.getMessage());
+        }
         String sql = "UPDATE Category SET status = 'Active' WHERE category_id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {

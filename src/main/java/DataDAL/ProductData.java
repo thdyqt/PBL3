@@ -96,7 +96,7 @@ public class ProductData {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("Lỗi stopBusiness Product: " + e.getMessage());
+            System.err.println("Lỗi Ngừng kinh doanh Sản Phẩm: " + e.getMessage());
         }
         return false;
     }
