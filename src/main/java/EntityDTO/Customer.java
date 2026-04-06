@@ -3,7 +3,7 @@ package EntityDTO;
 public class Customer extends Person {
     private int point;
     public enum rank {
-        Bronze, Silver, Gold, Platinum, Diamond;
+        Bronze, Silver, Gold, Emerald, Diamond;
     }
     private rank Customer_rank;
 
@@ -15,7 +15,7 @@ public class Customer extends Person {
         this.setPoint(0); // Gọi setter để tự động set rank Bronze
     }
 
-    // Constructor dùng khi lấy dữ liệu từ DB lên (đã có id và point)
+    // Constructor dùng khi lấy dữ liệu từ DB lên hoặc khi Update (đã có id và point)
     public Customer(int id, String phone, String name, String user, String password, int point) {
         super(id, phone, name, user, password);
         this.setPoint(point); // Gọi setter để gán điểm và tự động tính toán lại Rank
@@ -38,7 +38,7 @@ public class Customer extends Person {
         UpdatedRank(this);
     }
 
-    public void UpdatedRank(Customer c) {
+    private void UpdatedRank(Customer c) {
         if (c.getPoint() < 100) {
             c.setCustomer_rank(rank.Bronze);
         } else if (c.getPoint() < 200) {
@@ -46,9 +46,9 @@ public class Customer extends Person {
         } else if (c.getPoint() < 500) {
             c.setCustomer_rank(rank.Gold);
         } else if (c.getPoint() < 1000) {
-            c.setCustomer_rank(rank.Platinum);
-        } else {
             c.setCustomer_rank(rank.Diamond);
+        } else {
+            c.setCustomer_rank(rank.Emerald);
         }
     }
 }
