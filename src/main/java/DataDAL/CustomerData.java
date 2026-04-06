@@ -3,8 +3,8 @@ package DataDAL;
 import EntityDTO.Customer;
 import Util.DBConnection;
 import Util.UserSession;
-
 import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,14 +37,16 @@ public class CustomerData {
         return list;
     }
 
-    public static boolean isAccountExist(String username, String phone){
-        String sql = "SELECT id_khach_hang FROM Customer WHERE username = ? OR phone = ?";
+    // Cập nhật hàm này để bỏ qua ID của chính khách hàng đang sửa
+    public static boolean isAccountExist(String username, String phone, int idToIgnore){
+        String sql = "SELECT id_khach_hang FROM Customer WHERE (username = ? OR phone = ?) AND id_khach_hang != ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
             stmt.setString(2, phone);
+            stmt.setInt(3, idToIgnore);
             ResultSet rs = stmt.executeQuery();
             return rs.next();
 
@@ -78,19 +80,33 @@ public class CustomerData {
     }
 
     public static boolean updateCustomer(Customer c) {
-        String sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, point = ? WHERE id_khach_hang = ?";
+        String sql;
+        boolean isChangePass = c.getPassword() != null && !c.getPassword().trim().isEmpty();
+
+        // Nếu có nhập mật khẩu mới thì update cả pass, ngược lại giữ nguyên
+        if (isChangePass) {
+            sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, point = ? WHERE id_khach_hang = ?";
+        } else {
+            sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, point = ? WHERE id_khach_hang = ?";
+        }
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, c.getPhone());
             stmt.setString(2, c.getName());
             stmt.setString(3, c.getUser());
-            stmt.setString(4, c.getPassword());
-            stmt.setInt(5, c.getPoint());
-            stmt.setInt(6, c.getId());
 
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+            int index = 4;
+            if (isChangePass) {
+                String hashedPassword = BCrypt.hashpw(c.getPassword(), BCrypt.gensalt(12));
+                stmt.setString(index++, hashedPassword);
+            }
+
+            stmt.setInt(index++, c.getPoint());
+            stmt.setInt(index, c.getId());
+
+            return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,41 +114,8 @@ public class CustomerData {
         }
     }
 
-    public static List<Customer> searchCustomer(String keyword) {
-        List<Customer> list = new ArrayList<>();
-        String sql = "SELECT * FROM Customer WHERE status = 'Active' AND " +
-                "(phone LIKE ? OR full_name LIKE ? OR username LIKE ? OR point LIKE ?)";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String searchPattern = "%" + keyword + "%";
-
-            stmt.setString(1, searchPattern);
-            stmt.setString(2, searchPattern);
-            stmt.setString(3, searchPattern);
-            stmt.setString(4, searchPattern);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    list.add(new Customer(
-                            rs.getInt("id_khach_hang"),
-                            rs.getString("phone"),
-                            rs.getString("full_name"),
-                            rs.getString("username"),
-                            rs.getString("pass_word"),
-                            rs.getInt("point")
-                    ));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
     public static int checkLogin(String user, String pass) {
-        String sql = "SELECT id_khach_hang, pass_word FROM Customer WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_khach_hang, phone, full_name, username, pass_word, point FROM Customer WHERE username = ? OR phone = ?";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 

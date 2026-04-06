@@ -1,19 +1,28 @@
 package GUI;
 
-import DataDAL.CustomerData;
+import BusinessBLL.CustomerBusiness;
 import EntityDTO.Customer;
+import Util.Others;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
-import org.mindrot.jbcrypt.BCrypt;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class CustomerDialogController {
+public class CustomerDialogController implements Initializable {
+
+    @FXML
+    private AnchorPane mainPanel;
 
     @FXML
     private Label lblTitle;
@@ -36,23 +45,63 @@ public class CustomerDialogController {
     @FXML
     private Button btnSave;
 
-    private Customer currentCustomer; // Khách hàng đang được chọn để sửa
-    private boolean isEditMode = false; // Cờ đánh dấu chế độ Thêm hay Sửa
+    private Customer currentCustomer = null;
+    private boolean saveSuccess = false;
 
-    // Hàm nhận dữ liệu từ form Quản lý truyền sang khi ấn nút Sửa
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // Chuẩn hóa input giống như Staff
+        Others.setMaxLength(txtPhone, 10);
+        Others.setMaxLength(txtUsername, 20);
+        Others.setMaxLength(txtName, 100);
+        Others.setMaxLength(txtPassword, 20);
+
+        txtPhone.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtPhone.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        txtUsername.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains(" ")) {
+                txtUsername.setText(newValue.replaceAll(" ", ""));
+            }
+        });
+
+        txtName.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("^[\\p{L} .'-]*$")) {
+                txtName.setText(newValue.replaceAll("[^\\p{L} .'-]", ""));
+            }
+        });
+
+        txtPassword.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.contains(" ")) {
+                txtPassword.setText(newValue.replaceAll(" ", ""));
+            }
+        });
+    }
+
+    public boolean isSaveSuccess() {
+        return saveSuccess;
+    }
+
+    private void closeWindow() {
+        Stage stage = (Stage) btnCancel.getScene().getWindow();
+        stage.close();
+    }
+
     public void setCustomerData(Customer customer) {
         this.currentCustomer = customer;
-        this.isEditMode = true;
 
-        // Đổi giao diện sang chế độ Sửa
-        lblTitle.setText("SỬA THÔNG TIN KHÁCH HÀNG");
-        btnSave.setText("Cập nhật");
-        txtPassword.setPromptText("Để trống nếu giữ nguyên mật khẩu cũ");
+        if(customer != null) {
+            lblTitle.setText("SỬA THÔNG TIN KHÁCH HÀNG");
+            btnSave.setText("Cập nhật");
+            txtPassword.setPromptText("Để trống nếu giữ nguyên mật khẩu cũ");
 
-        // Đổ dữ liệu cũ vào các ô Text
-        txtName.setText(customer.getName());
-        txtPhone.setText(customer.getPhone());
-        txtUsername.setText(customer.getUser());
+            txtName.setText(customer.getName());
+            txtPhone.setText(customer.getPhone());
+            txtUsername.setText(customer.getUser());
+        }
     }
 
     @FXML
@@ -62,69 +111,60 @@ public class CustomerDialogController {
 
     @FXML
     void btnSaveClick(ActionEvent event) {
-        String name = txtName.getText().trim();
+        String name = Others.standardizeName(txtName.getText());
         String phone = txtPhone.getText().trim();
         String username = txtUsername.getText().trim();
         String rawPassword = txtPassword.getText().trim();
 
-        // 1. Kiểm tra không được để trống thông tin cơ bản
-        if (name.isEmpty() || phone.isEmpty() || username.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng nhập đầy đủ Tên, SĐT và Tài khoản!");
+        // Validate đầu vào
+        if (name.isEmpty() || phone.isEmpty() || username.isEmpty() || (currentCustomer == null && rawPassword.isEmpty())) {
+            Others.showAlert(mainPanel, "Vui lòng nhập đầy đủ thông tin bắt buộc!", true);
+            return;
+        }
+        else if (!phone.matches("^0[0-9]{9}$")) {
+            Others.showAlert(mainPanel, "Số điện thoại không hợp lệ!", true);
+            txtPhone.requestFocus();
+            return;
+        }
+        else if (username.length() < 6) {
+            Others.showAlert(mainPanel, "Tài khoản phải từ 6 kí tự!", true);
+            txtUsername.requestFocus();
+            return;
+        }
+        else if ((currentCustomer == null && rawPassword.length() < 6) ||
+                (currentCustomer != null && rawPassword.length() > 0 && rawPassword.length() < 6)) {
+            Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự trở lên!", true);
+            txtPassword.requestFocus();
             return;
         }
 
-        if (isEditMode) {
-            // ----- XỬ LÝ SỬA -----
-            currentCustomer.setName(name);
-            currentCustomer.setPhone(phone);
-            currentCustomer.setUser(username);
+        btnCancel.setDisable(true);
+        btnSave.setDisable(true);
+        Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
 
-            // Nếu người dùng nhập mật khẩu mới thì tiến hành Hash và đổi
-            if (!rawPassword.isEmpty()) {
-                currentCustomer.setPassword(BCrypt.hashpw(rawPassword, BCrypt.gensalt()));
-            }
+        // Chạy đa luồng gọi Database
+        new Thread(() -> {
+            int status = (currentCustomer == null) ?
+                    CustomerBusiness.register(phone, name, username, rawPassword) :
+                    CustomerBusiness.updateCustomer(currentCustomer.getId(), phone, name, username, rawPassword, currentCustomer.getPoint());
 
-            if (CustomerData.updateCustomer(currentCustomer)) {
-                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Đã cập nhật thông tin khách hàng!");
-                closeWindow();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Thất bại", "Cập nhật thất bại. Số điện thoại hoặc Tài khoản có thể bị trùng!");
-            }
+            Platform.runLater(() -> {
+                btnCancel.setDisable(false);
+                btnSave.setDisable(false);
 
-        } else {
-            // ----- XỬ LÝ THÊM MỚI -----
-            if (rawPassword.isEmpty()) {
-                showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng nhập mật khẩu cho khách hàng mới!");
-                return;
-            }
+                if (status == 1) {
+                    saveSuccess = true;
+                    Others.showAlert(mainPanel, currentCustomer == null ? "Đã thêm khách hàng thành công!" : "Đã cập nhật thành công!", false);
 
-            if (CustomerData.isAccountExist(username, phone)) {
-                showAlert(Alert.AlertType.ERROR, "Lỗi dữ liệu", "Tài khoản hoặc Số điện thoại này đã được sử dụng!");
-                return;
-            }
-
-            String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
-            Customer newCustomer = new Customer(phone, name, username, hashedPassword);
-
-            if (CustomerData.addCustomer(newCustomer)) {
-                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Đã thêm khách hàng mới thành công!");
-                closeWindow();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Thất bại", "Đã xảy ra lỗi khi thêm vào cơ sở dữ liệu!");
-            }
-        }
-    }
-
-    private void closeWindow() {
-        Stage stage = (Stage) btnCancel.getScene().getWindow();
-        stage.close();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+                    var delay = new PauseTransition(Duration.seconds(2.0));
+                    delay.setOnFinished(e -> closeWindow());
+                    delay.play();
+                } else if (status == -1) {
+                    Others.showAlert(mainPanel, "Số điện thoại hoặc Tài khoản đã được sử dụng!", true);
+                } else {
+                    Others.showAlert(mainPanel, "Lỗi kết nối máy chủ dữ liệu!", true);
+                }
+            });
+        }).start();
     }
 }

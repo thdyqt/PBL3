@@ -10,15 +10,14 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<StackPane style="-fx-background-color: #F8FAFC; -fx-padding: 20;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.CustomerManagementForm">
+<StackPane stylesheets="@style.css" styleClass="customer-root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.CustomerManagementForm">
     <children>
-        <BorderPane style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-radius: 15; -fx-border-color: #E2E8F0; -fx-border-width: 1;">
+        <BorderPane styleClass="customer-border-pane">
             <effect>
                 <DropShadow blurType="GAUSSIAN" height="15.0" radius="7.0" width="15.0">
                     <color><Color opacity="0.05" /></color>
@@ -26,23 +25,22 @@
             </effect>
 
             <top>
-                <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="15.0" style="-fx-border-color: #F1F5F9; -fx-border-width: 0 0 2 0; -fx-padding: 0 20 0 20;" BorderPane.alignment="CENTER">
+                <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="15.0" styleClass="customer-header-bar" BorderPane.alignment="CENTER">
                     <children>
                         <Label text="Tìm kiếm:" textFill="#475569">
                             <font><Font name="System Bold" size="14.0" /></font>
                         </Label>
 
-                        <TextField fx:id="txtSearch" onAction="#Search" prefWidth="250.0" promptText="Nhập tên, số điện thoại..." style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 12; -fx-text-fill: #1E293B;" />
-
-                        <Region HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="txtSearch" onAction="#Search" prefWidth="250.0" promptText="Nhập tên, số điện thoại..." styleClass="customer-search-box" />
+                        <ComboBox prefWidth="150.0" styleClass="customer-combo-box" />
 
                         <Label text="Sắp xếp theo:" textFill="#475569">
                             <font><Font name="System Bold" size="14.0" /></font>
                         </Label>
 
-                        <ComboBox fx:id="cbbSort" prefWidth="160.0" style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;" />
+                        <ComboBox fx:id="cbbSort" prefWidth="160.0" styleClass="customer-combo-box" />
 
-                        <Button fx:id="btnSort" mnemonicParsing="false" onAction="#btnSortClick" style="-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 20;" text="Lọc">
+                        <Button fx:id="btnSort" mnemonicParsing="false" onAction="#btnSortClick" styleClass="action-btn, btn-filter" text="Lọc">
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <effect>
                                 <DropShadow blurType="GAUSSIAN" offsetY="2.0" radius="3.0">
@@ -51,7 +49,7 @@
                             </effect>
                         </Button>
 
-                        <Button fx:id="btnEdit" mnemonicParsing="false" onAction="#btnEditClick" style="-fx-background-color: #F59E0B; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 20;" text="✎ Sửa">
+                        <Button fx:id="btnEdit" mnemonicParsing="false" onAction="#btnEditClick" styleClass="action-btn, btn-edit-item" text="✎ Sửa">
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <effect>
                                 <DropShadow blurType="GAUSSIAN" offsetY="2.0" radius="3.0">
@@ -60,7 +58,7 @@
                             </effect>
                         </Button>
 
-                        <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#btnAddClick" style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 20;" text="+ Thêm mới">
+                        <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#btnAddClick" styleClass="action-btn, btn-add-item" text="+ Thêm mới">
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <effect>
                                 <DropShadow blurType="GAUSSIAN" offsetY="2.0" radius="3.0">
@@ -73,9 +71,9 @@
             </top>
 
             <center>
-                <VBox style="-fx-padding: 20;" BorderPane.alignment="CENTER">
+                <VBox styleClass="customer-table-container" BorderPane.alignment="CENTER">
                     <children>
-                        <TableView fx:id="tableCustomer" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;">
+                        <TableView fx:id="tableCustomer" styleClass="customer-table" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="colSTT" prefWidth="50.0" text="STT" />
                                 <TableColumn fx:id="colId" prefWidth="120.0" text="Mã Khách" />
