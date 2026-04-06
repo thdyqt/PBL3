@@ -8,7 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductData {
-    private static Connection connection = DBConnection.getConnection();
+    private static Connection connection;
+
+    static {
+        try {
+            connection = DBConnection.getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static Product mapResultSet(ResultSet rs) throws SQLException {
         return new Product(

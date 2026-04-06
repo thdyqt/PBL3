@@ -9,7 +9,6 @@ import java.util.List;
 
 
 public class CategoryData {
-    private static Connection connection = DBConnection.getConnection();
     public static Category mapResultSet(ResultSet rs) throws SQLException {
         return new Category(rs.getInt("CategoryID"),
                             rs.getString("CategoryName"));
@@ -18,7 +17,7 @@ public class CategoryData {
         List<Category> list = new ArrayList<>();
         String sql = "SELECT * FROM Category";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -34,7 +33,7 @@ public class CategoryData {
     public static Category getByID(int categoryID) {
         String sql = "SELECT * FROM Category WHERE category_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, categoryID);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -50,7 +49,7 @@ public class CategoryData {
     public static boolean addCategory(Category category) {
         String sql = "INSERT INTO Category (category_name) VALUES (?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql,
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, category.getCategoryName());
@@ -71,7 +70,7 @@ public class CategoryData {
     public static boolean updateCategory(Category category) {
         String sql = "UPDATE Category SET category_name = ? WHERE category_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, category.getCategoryName());
             stmt.setInt(2, category.getCategoryID());
 
@@ -90,7 +89,7 @@ public class CategoryData {
         String sql = "INSERT INTO ActivityLog (username,action,created_at) "
                 + "VALUES (?, ?,?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, "admin");
             stmt.setString(2, note);
             java.time.LocalDateTime now = java.time.LocalDateTime.now();
@@ -106,7 +105,7 @@ public class CategoryData {
     public static boolean isCategoryExist(String categoryName) {
         String sql = "SELECT 1 FROM Category WHERE category_name = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, categoryName);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -122,7 +121,7 @@ public class CategoryData {
     public static boolean stopBusiness(int categoryID) {
 
         String abc = "SELECT * FROM Product WHERE CategoryID = ?";
-        try(PreparedStatement pstmt = connection.prepareStatement(abc)){
+        try(Connection con = DBConnection.getConnection(); PreparedStatement pstmt = con.prepareStatement(abc)){
             pstmt.setInt(1,categoryID);
             try(ResultSet resultSet = pstmt.executeQuery()){
                 while(resultSet.next()){
@@ -134,7 +133,7 @@ public class CategoryData {
         }
         String sql = "UPDATE Category SET status = 'Inactive' WHERE category_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, categoryID);
             return stmt.executeUpdate() > 0;
 
@@ -147,7 +146,7 @@ public class CategoryData {
     // ===== MỞ LẠI KINH DOANH =====
     public static boolean restartBusiness(int categoryID) {
         String abc = "SELECT * FROM Product WHERE CategoryID = ?";
-        try(PreparedStatement pstmt = connection.prepareStatement(abc)){
+        try(Connection con = DBConnection.getConnection(); PreparedStatement pstmt = con.prepareStatement(abc)){
             pstmt.setInt(1,categoryID);
             try(ResultSet resultSet = pstmt.executeQuery()){
                 while(resultSet.next()){
@@ -159,7 +158,7 @@ public class CategoryData {
         }
         String sql = "UPDATE Category SET status = 'Active' WHERE category_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, categoryID);
             return stmt.executeUpdate() > 0;
 
@@ -173,7 +172,7 @@ public class CategoryData {
     public static boolean isInactive(int categoryID) {
         String sql = "SELECT 1 FROM Category WHERE category_id = ? AND status = 'Inactive'";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, categoryID);
 
             try (ResultSet rs = stmt.executeQuery()) {

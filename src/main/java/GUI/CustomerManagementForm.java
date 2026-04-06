@@ -3,6 +3,7 @@ package GUI;
 import DataDAL.CustomerData;
 import EntityDTO.Customer;
 import Util.Others;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -73,7 +74,6 @@ public class CustomerManagementForm implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupTableStyles();
         setupRankColumn();
-        Others.animateTableRows(tableCustomer);
 
         // Cấu hình ComboBox sắp xếp
         ObservableList<String> sortOptions = FXCollections.observableArrayList(
@@ -158,14 +158,18 @@ public class CustomerManagementForm implements Initializable {
     }
 
     private void loadTable() {
-        List<Customer> listFromDB = CustomerData.getAllCustomers();
-        masterData.setAll(listFromDB);
-        filteredData = new FilteredList<>(masterData, b -> true);
-
-        SortedList<Customer> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tableCustomer.comparatorProperty());
-        tableCustomer.setItems(sortedData);
-    }
+        new Thread(() -> {
+            List<Customer> listFromDB = CustomerData.getAllCustomers();
+            Platform.runLater(() -> {
+                masterData.setAll(listFromDB);
+                filteredData = new FilteredList<>(masterData, b -> true);
+                SortedList<Customer> sortedData = new SortedList<>(filteredData);
+                sortedData.comparatorProperty().bind(tableCustomer.comparatorProperty());
+                tableCustomer.setItems(sortedData);
+                Others.animateTableRows(tableCustomer);
+            });
+        }).start();
+}
 
     private void setupSearch() {
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
