@@ -112,3 +112,75 @@
     -fx-font-size: 14px;
     -fx-border-color: transparent;
 }
+
+
+
+/* ======================================================= */
+/* CUSTOMER MANAGEMENT FORM STYLES                         */
+/* ======================================================= */
+
+.customer-root {
+    -fx-background-color: #F8FAFC;
+    -fx-padding: 20;
+}
+
+.customer-border-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1;
+}
+
+.customer-header-bar {
+    -fx-border-color: #F1F5F9;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 0 20 0 20;
+}
+
+.customer-search-box {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+    -fx-text-fill: #1E293B;
+}
+
+.customer-combo-box {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+/* Base style chung cho các nút bấm tác vụ */
+.action-btn {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 20;
+}
+
+.btn-filter {
+    -fx-background-color: #3B82F6;
+}
+
+.btn-edit-item {
+    -fx-background-color: #F59E0B;
+}
+
+.btn-add-item {
+    -fx-background-color: #10B981;
+}
+
+.customer-table-container {
+    -fx-padding: 20;
+}
+
+.customer-table {
+    -fx-background-color: transparent;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
