@@ -50,7 +50,6 @@ public class CustomerDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Chuẩn hóa input giống như Staff
         Others.setMaxLength(txtPhone, 10);
         Others.setMaxLength(txtUsername, 20);
         Others.setMaxLength(txtName, 100);
@@ -94,9 +93,8 @@ public class CustomerDialogController implements Initializable {
         this.currentCustomer = customer;
 
         if(customer != null) {
-            lblTitle.setText("SỬA THÔNG TIN KHÁCH HÀNG");
-            btnSave.setText("Cập nhật");
-            txtPassword.setPromptText("Để trống nếu giữ nguyên mật khẩu cũ");
+            lblTitle.setText("CHỈNH SỬA THÔNG TIN KHÁCH HÀNG");
+            txtPassword.setPromptText("Để trống nếu không đổi mật khẩu");
 
             txtName.setText(customer.getName());
             txtPhone.setText(customer.getPhone());
@@ -116,8 +114,7 @@ public class CustomerDialogController implements Initializable {
         String username = txtUsername.getText().trim();
         String rawPassword = txtPassword.getText().trim();
 
-        // Validate đầu vào
-        if (name.isEmpty() || phone.isEmpty() || username.isEmpty() || (currentCustomer == null && rawPassword.isEmpty())) {
+        if (name.isEmpty() || phone.isEmpty() || (currentCustomer == null && rawPassword.isEmpty())) {
             Others.showAlert(mainPanel, "Vui lòng nhập đầy đủ thông tin bắt buộc!", true);
             return;
         }
@@ -126,7 +123,7 @@ public class CustomerDialogController implements Initializable {
             txtPhone.requestFocus();
             return;
         }
-        else if (username.length() < 6) {
+        else if (username.length() > 0 && username.length() < 6) {
             Others.showAlert(mainPanel, "Tài khoản phải từ 6 kí tự!", true);
             txtUsername.requestFocus();
             return;
@@ -142,7 +139,6 @@ public class CustomerDialogController implements Initializable {
         btnSave.setDisable(true);
         Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
 
-        // Chạy đa luồng gọi Database
         new Thread(() -> {
             int status = (currentCustomer == null) ?
                     CustomerBusiness.register(phone, name, username, rawPassword) :

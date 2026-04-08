@@ -36,6 +36,13 @@ public class Others {
         return result.toString().trim();
     }
 
+    // LẤY TÊN THAY VÌ HỌ
+    public static String getFirstName(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) return "";
+        String[] parts = fullName.trim().split("\\s+");
+        return parts[parts.length - 1];
+    }
+
     // ANIMATION KHI FORM HIỂN THỊ
     public static void playFormAnimation(Node formNode) {
         formNode.setOpacity(0);

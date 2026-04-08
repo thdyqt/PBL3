@@ -107,7 +107,7 @@ public class StaffDialogController implements Initializable {
         this.currentStaff = staff;
 
         if (staff != null) {
-            lblTitle.setText("CHỈNH SỬA NHÂN VIÊN");
+            lblTitle.setText("CHỈNH SỬA THÔNG TIN NHÂN VIÊN");
             txtName.setText(staff.getName());
             txtPhone.setText(staff.getPhone());
             txtUsername.setText(staff.getUser());
