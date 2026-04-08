@@ -10,6 +10,7 @@ module com.example.pbl3 {
     requires eu.hansolo.tilesfx;
     requires java.sql;
     requires jbcrypt;
+    requires com.zaxxer.hikari;
 
     opens EntityDTO to javafx.base;
     opens GUI to javafx.fxml;

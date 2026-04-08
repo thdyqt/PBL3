@@ -4,6 +4,7 @@ import DataDAL.StaffData;
 import EntityDTO.Staff;
 import Util.Others;
 import Util.UserSession;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -68,7 +69,6 @@ public class StaffManagementForm implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableStyles();
-        Others.animateTableRows(tblStaff);
         loadTable();
         setupSearch();
     }
@@ -124,12 +124,17 @@ public class StaffManagementForm implements Initializable {
     }
 
     private void loadTable() {
-        List<Staff> listFromDB = StaffData.getAllStaff();
-        masterData.setAll(listFromDB);
-        filteredData = new FilteredList<>(masterData, b -> true);
-        SortedList<Staff> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tblStaff.comparatorProperty());
-        tblStaff.setItems(sortedData);
+        new Thread(() -> {
+            List<Staff> listFromDB = StaffData.getAllStaff();
+            Platform.runLater(() -> {
+                masterData.setAll(listFromDB);
+                filteredData = new FilteredList<>(masterData, b -> true);
+                SortedList<Staff> sortedData = new SortedList<>(filteredData);
+                sortedData.comparatorProperty().bind(tblStaff.comparatorProperty());
+                tblStaff.setItems(sortedData);
+                Others.animateTableRows(tblStaff);
+            });
+        }).start();
     }
 
     private void setupSearch() {

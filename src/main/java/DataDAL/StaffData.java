@@ -165,7 +165,7 @@ public class StaffData {
     }
 
     public static int checkLogin(String user, String pass) {
-        String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE (username = ? OR phone = ?) AND status = 'Active'";
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
