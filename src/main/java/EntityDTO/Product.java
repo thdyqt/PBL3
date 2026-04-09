@@ -7,17 +7,19 @@ public class Product {
     private int ProductPrice;
     private int quantity;
     private boolean isAvailable;
+    private String image;
 
     //Constructor
     public Product() {}
 
-    public Product(int id,String name,int cateid,int price,int quantity,boolean isA){
+    public Product(int id,String name,int cateid,int price,int quantity,boolean isA,String image){
              this.CategoryID = id;
              this.ProductName = name;
              this.CategoryID = cateid;
              this.ProductPrice = price;
              this.quantity = quantity;
              this.isAvailable = isA;
+             this.image = image;
          }
 
     public Product(String name,int cateid,int price,int quantity,boolean isA){
@@ -68,4 +70,6 @@ public class Product {
     public void setAvailable(boolean available) {
         isAvailable = available;
     }
+    public String getImage()            { return image; }
+    public void setImage(String image)  { this.image = image; }
 }

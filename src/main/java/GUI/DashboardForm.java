@@ -249,5 +249,10 @@ public class DashboardForm implements Initializable {
             }
         }
     }
+    @FXML
+    void btnProductClick(ActionEvent event){
+        setActiveMenu(btnProduct);
+        switchForm("productMenuView.fxml");
+    }
 }
 

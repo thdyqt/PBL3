@@ -17,7 +17,8 @@ public class ProductData {
                 rs.getInt("CategoryID"),
                 rs.getInt("ProductPrice"),
                 rs.getInt("quantity"),
-                rs.getBoolean("isAvailable")
+                rs.getBoolean("isAvailable"),
+                rs.getString("image")
         );
     }
 //====Lấy tất cả====
@@ -40,7 +41,7 @@ public class ProductData {
 //====THÊM SẢN PHẨM===
     public static boolean addProduct(Product product) {
         String sql = "INSERT INTO Product (ProductName, CategoryID, ProductPrice, quantity) "
-                + "VALUES (?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -49,6 +50,7 @@ public class ProductData {
             stmt.setInt(2, product.getCategoryID());
             stmt.setInt(3, product.getProductPrice());
             stmt.setInt(4, product.getQuantity());
+            stmt.setString(5, product.getImage());
 
 
             int rows = stmt.executeUpdate();
@@ -69,7 +71,7 @@ public class ProductData {
     // ===== UPDATE =====
     public static boolean updateProduct(Product product) {
         String sql = "UPDATE Product SET ProductName = ?, CategoryID = ?, "
-                + "ProductPrice = ?, quantity = ? "  // ← bỏ isAvailable
+                + "ProductPrice = ?, quantity = ?, image = ?"  // ← bỏ isAvailable
                 + "WHERE ProductID = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -78,7 +80,8 @@ public class ProductData {
             stmt.setInt(2, product.getCategoryID());
             stmt.setInt(3, product.getProductPrice());
             stmt.setInt(4, product.getQuantity());
-            stmt.setInt(5, product.getProductID());  //
+            stmt.setString(5, product.getImage());
+            stmt.setInt(6, product.getProductID());  //
 
             return stmt.executeUpdate() > 0;
 
@@ -213,5 +216,19 @@ public class ProductData {
         }
         return false;
     }
+    public static String getImage(int productID) {
+        String sql = "SELECT image FROM Product WHERE ProductID = ?";
 
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, productID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return rs.getString("image");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getImage Product: " + e.getMessage());
+        }
+        return null;
+    }
 }
