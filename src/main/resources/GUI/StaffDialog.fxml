@@ -27,7 +27,7 @@
                                 <Font name="System Bold" size="22.0" />
                             </font>
                         </Label>
-                        <Label text="Vui lòng điền đầy đủ thông tin bên dưới để tiếp tục." textFill="#64748B">
+                        <Label fx:id="lblDesc" text="Vui lòng điền đầy đủ thông tin bên dưới để tiếp tục." textFill="#64748B">
                             <font>
                                 <Font size="13.0" />
                             </font>

@@ -1,6 +1,7 @@
 package GUI;
 
 import EntityDTO.Staff;
+import Util.Others;
 import Util.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
@@ -202,6 +203,8 @@ public class DashboardForm implements Initializable {
             StaffDialogController controller = loader.getController();
 
             UserSession session = UserSession.getInstance();
+            java.sql.Date sqlHireDate = session.getHire_date() != null ?
+                    new java.sql.Date(session.getHire_date().getTime()) : null;
 
             Staff currentStaff = new Staff(
                     session.getId(),
@@ -209,13 +212,15 @@ public class DashboardForm implements Initializable {
                     session.getName(),
                     session.getUsername(),
                     session.getPosition(),
-                    (Date) session.getHire_date()
+                    sqlHireDate
             );
 
             controller.setStaffData(currentStaff);
 
             if (isViewOnly) {
                 controller.setViewOnlyMode();
+            } else {
+                controller.setProfileEditMode();
             }
 
             Stage stage = new Stage();
@@ -226,13 +231,37 @@ public class DashboardForm implements Initializable {
             stage.showAndWait();
 
             if (controller.isSaveSuccess()) {
-                Util.Others.showAlert(mainBorderPane, "Cập nhật thành công! Vui lòng đăng xuất và đăng nhập lại để cập nhật giao diện mới.", false);
+                loadUserProfile();
+                StaffManagementForm.getInstance().refreshTableData();
+                Util.Others.showAlert(mainBorderPane, "Cập nhật thông tin thành công!", false);
             }
 
         } catch (Exception e) {
             System.out.println("Lỗi khi mở form thông tin tài khoản: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private static StaffDialogController getStaffDialogController(boolean isViewOnly, FXMLLoader loader) {
+        StaffDialogController controller = loader.getController();
+
+        UserSession session = UserSession.getInstance();
+
+        Staff currentStaff = new Staff(
+                session.getId(),
+                session.getPhone(),
+                session.getName(),
+                session.getUsername(),
+                session.getPosition(),
+                (Date) session.getHire_date()
+        );
+
+        controller.setStaffData(currentStaff);
+
+        if (isViewOnly) {
+            controller.setViewOnlyMode();
+        }
+        return controller;
     }
 
     // SIDEBAR
@@ -270,6 +299,10 @@ public class DashboardForm implements Initializable {
 
     @FXML
     void btnStaffClick(ActionEvent event) {
+        if (!UserSession.getInstance().getPosition().equals("Admin")){
+            Others.showAlert(mainBorderPane, "Bạn không có quyền truy cập vào tính năng này", true);
+            return;
+        }
         setActiveMenu(btnStaff);
         switchForm("staffManagement.fxml");
     }

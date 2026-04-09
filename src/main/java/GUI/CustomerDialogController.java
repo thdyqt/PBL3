@@ -92,6 +92,11 @@ public class CustomerDialogController implements Initializable {
     public void setCustomerData(Customer customer) {
         this.currentCustomer = customer;
 
+        if(customer == null){
+            txtPassword.setPromptText("Mật khẩu mặc định là số điện thoại");
+            txtPassword.setEditable(false);
+        }
+
         if(customer != null) {
             lblTitle.setText("CHỈNH SỬA THÔNG TIN KHÁCH HÀNG");
             txtPassword.setPromptText("Để trống nếu không đổi mật khẩu");
@@ -112,9 +117,21 @@ public class CustomerDialogController implements Initializable {
         String name = Others.standardizeName(txtName.getText());
         String phone = txtPhone.getText().trim();
         String username = txtUsername.getText().trim();
-        String rawPassword = txtPassword.getText().trim();
+        String rawPassword = txtPassword.getText().isEmpty() ? txtPhone.getText().trim() : txtPassword.getText().trim();
 
-        if (name.isEmpty() || phone.isEmpty() || (currentCustomer == null && rawPassword.isEmpty())) {
+        if (currentCustomer != null) {
+            boolean isNameUnchanged = name.equals(currentCustomer.getName());
+            boolean isPhoneUnchanged = phone.equals(currentCustomer.getPhone());
+            boolean isUserUnchanged = username.equals(currentCustomer.getUser());
+            boolean isPassUnchanged = rawPassword.isEmpty();
+
+            if (isNameUnchanged && isPhoneUnchanged && isUserUnchanged && isPassUnchanged) {
+                Others.showAlert(mainPanel, "Không có thông tin nào được thay đổi!", true);
+                return;
+            }
+        }
+
+        if (name.isEmpty() || phone.isEmpty()) {
             Others.showAlert(mainPanel, "Vui lòng nhập đầy đủ thông tin bắt buộc!", true);
             return;
         }
@@ -131,13 +148,7 @@ public class CustomerDialogController implements Initializable {
             return;
         }
 
-        if (currentCustomer == null && rawPassword.length() < 6) {
-            Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự trở lên!", true);
-            txtPassword.requestFocus();
-            return;
-        }
-
-        if (currentCustomer != null && !rawPassword.isEmpty() && rawPassword.length() < 6) {
+        if (!rawPassword.isEmpty() && rawPassword.length() < 6) {
             Others.showAlert(mainPanel, "Mật khẩu mới phải từ 6 kí tự trở lên!", true);
             txtPassword.requestFocus();
             return;

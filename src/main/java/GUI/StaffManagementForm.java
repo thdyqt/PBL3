@@ -61,9 +61,23 @@ public class StaffManagementForm implements Initializable {
     @FXML
     private TextField txtSearch;
 
-    private boolean saveSuccess = false;
     private ObservableList<Staff> masterData = FXCollections.observableArrayList();
     private FilteredList<Staff> filteredData;
+    private static StaffManagementForm instance;
+
+    public StaffManagementForm() {
+        instance = this;
+    }
+
+    public static StaffManagementForm getInstance() {
+        return instance;
+    }
+
+    public void refreshTableData() {
+        if (tblStaff != null && tblStaff.getScene() != null) {
+            loadTable();
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

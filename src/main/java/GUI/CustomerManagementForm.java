@@ -231,7 +231,7 @@ public class CustomerManagementForm implements Initializable {
     void btnEditClick(ActionEvent event) {
         Customer selected = tableCustomer.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            new Alert(Alert.AlertType.WARNING, "Vui lòng chọn một khách hàng trong bảng để sửa!").showAndWait();
+            Others.showAlert(rootPane, "Vui lòng chọn khách hàng!", true);
             return;
         }
         openDialog(selected);
