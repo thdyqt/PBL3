@@ -1,5 +1,6 @@
 package GUI;
 
+import EntityDTO.Staff;
 import Util.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
@@ -7,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
@@ -14,9 +17,12 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -88,6 +94,9 @@ public class DashboardForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        menuInfo.setOnAction(event -> openProfileDialog(true));
+        menuEditAcc.setOnAction(event -> openProfileDialog(false));
+
         mainBorderPane.setOpacity(0);
         mainBorderPane.setScaleX(0.95);
         mainBorderPane.setScaleY(0.95);
@@ -182,6 +191,48 @@ public class DashboardForm implements Initializable {
 
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
+    }
+
+    @FXML
+    private void openProfileDialog(boolean isViewOnly) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("staffDialog.fxml"));
+            Parent root = loader.load();
+
+            StaffDialogController controller = loader.getController();
+
+            UserSession session = UserSession.getInstance();
+
+            Staff currentStaff = new Staff(
+                    session.getId(),
+                    session.getPhone(),
+                    session.getName(),
+                    session.getUsername(),
+                    session.getPosition(),
+                    (Date) session.getHire_date()
+            );
+
+            controller.setStaffData(currentStaff);
+
+            if (isViewOnly) {
+                controller.setViewOnlyMode();
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle(isViewOnly ? "Thông tin tài khoản cá nhân" : "Chỉnh sửa tài khoản");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+
+            if (controller.isSaveSuccess()) {
+                Util.Others.showAlert(mainBorderPane, "Cập nhật thành công! Vui lòng đăng xuất và đăng nhập lại để cập nhật giao diện mới.", false);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Lỗi khi mở form thông tin tài khoản: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // SIDEBAR

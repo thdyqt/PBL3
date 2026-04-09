@@ -118,19 +118,27 @@ public class CustomerDialogController implements Initializable {
             Others.showAlert(mainPanel, "Vui lòng nhập đầy đủ thông tin bắt buộc!", true);
             return;
         }
-        else if (!phone.matches("^0[0-9]{9}$")) {
+
+        if (!phone.matches("^0[0-9]{9}$")) {
             Others.showAlert(mainPanel, "Số điện thoại không hợp lệ!", true);
             txtPhone.requestFocus();
             return;
         }
-        else if (username.length() > 0 && username.length() < 6) {
+
+        if (username.length() > 0 && username.length() < 6) {
             Others.showAlert(mainPanel, "Tài khoản phải từ 6 kí tự!", true);
             txtUsername.requestFocus();
             return;
         }
-        else if ((currentCustomer == null && rawPassword.length() < 6) ||
-                (currentCustomer != null && rawPassword.length() > 0 && rawPassword.length() < 6)) {
+
+        if (currentCustomer == null && rawPassword.length() < 6) {
             Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự trở lên!", true);
+            txtPassword.requestFocus();
+            return;
+        }
+
+        if (currentCustomer != null && !rawPassword.isEmpty() && rawPassword.length() < 6) {
+            Others.showAlert(mainPanel, "Mật khẩu mới phải từ 6 kí tự trở lên!", true);
             txtPassword.requestFocus();
             return;
         }

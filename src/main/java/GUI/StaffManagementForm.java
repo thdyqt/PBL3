@@ -70,6 +70,15 @@ public class StaffManagementForm implements Initializable {
         setupTableStyles();
         loadTable();
         setupSearch();
+
+        tblStaff.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
+                if (selectedStaff != null) {
+                    openStaffDialog(selectedStaff);
+                }
+            }
+        });
     }
 
     private void setupTableStyles() {

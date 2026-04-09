@@ -82,6 +82,15 @@ public class CustomerManagementForm implements Initializable {
 
         loadTable();
         setupSearch();
+
+        tableCustomer.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Customer selectedCustomer = tableCustomer.getSelectionModel().getSelectedItem();
+                if (selectedCustomer != null) {
+                    openDialog(selectedCustomer);
+                }
+            }
+        });
     }
 
     private void setupTableStyles() {

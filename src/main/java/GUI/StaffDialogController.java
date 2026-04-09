@@ -114,7 +114,7 @@ public class StaffDialogController implements Initializable {
             cbRole.setValue(staff.getRole());
 
             if (currentStaff.getId() == UserSession.getInstance().getId()) {
-                cbRole.setEditable(false);
+                cbRole.setDisable(true);
             }
 
             if (staff.getHire_date() != null) {
@@ -138,29 +138,34 @@ public class StaffDialogController implements Initializable {
             return;
         }
 
-        else if (!phone.matches("^0[0-9]{9}$")) {
+         if (!phone.matches("^0[0-9]{9}$")) {
             Others.showAlert(mainPanel, "Số điện thoại không hợp lệ!", true);
             txtPhone.requestFocus();
             return;
         }
 
-        else if (user.length() < 6) {
+         if (user.length() < 6) {
             Others.showAlert(mainPanel, "Tài khoản phải từ 6 kí tự!", true);
             txtUsername.requestFocus();
             return;
         }
 
-        else if ((currentStaff == null && pass.length() < 6) || (currentStaff != null && pass.length() > 0 && pass.length() < 6)) {
+        if (currentStaff == null && pass.length() < 6) {
             Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự trở lên!", true);
             txtPassword.requestFocus();
             return;
         }
 
-        else {
-            btnCancel.setDisable(true);
-            btnSave.setDisable(true);
-            Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
+        if (currentStaff != null && !pass.isEmpty() && pass.length() < 6) {
+            Others.showAlert(mainPanel, "Mật khẩu mới phải từ 6 kí tự trở lên!", true);
+            txtPassword.requestFocus();
+            return;
         }
+
+        btnCancel.setDisable(true);
+        btnSave.setDisable(true);
+        Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
+
 
         new Thread(() -> {
             int status = (currentStaff == null) ? StaffBusiness.register(phone, name, user, pass, role, hire_date)
@@ -186,5 +191,20 @@ public class StaffDialogController implements Initializable {
                 }
             });
         }).start();
+    }
+
+    public void setViewOnlyMode() {
+        lblTitle.setText("THÔNG TIN TÀI KHOẢN");
+
+        txtName.setEditable(false);
+        txtPhone.setEditable(false);
+        txtUsername.setEditable(false);
+        txtPassword.setEditable(false);
+        cbRole.setDisable(true);
+        dpHireDate.setDisable(true);
+        txtPassword.setPromptText("Đã bảo mật");
+
+        btnSave.setVisible(false);
+        btnCancel.setText("Đóng");
     }
 }
