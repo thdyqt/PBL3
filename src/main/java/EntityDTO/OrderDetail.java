@@ -1,8 +1,8 @@
-package EntityDTO;
-
-//ok this might sounds counterintuitive
+//ok this might sound counterintuitive
 //but OrderDetail is like, how many of a product is there
 //thus the Order contain many OrderDetail
+package EntityDTO;
+
 public class OrderDetail {
     //attributes
     private Order order;

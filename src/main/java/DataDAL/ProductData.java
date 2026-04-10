@@ -13,7 +13,7 @@ public class ProductData {
     static {
         try {
             connection = DBConnection.getConnection();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

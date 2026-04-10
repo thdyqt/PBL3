@@ -38,31 +38,45 @@ public class OrderData {
         return list;
     }
 
-    public static boolean addOrder(Order order){
+    public static int addOrder(Order order){
         //foreign keys are in here
         //specifically id_Staff and id_Customer
         //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status) VALUES (?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
-
             //data loading
-            //1,2,3 corresponding to the order in sql
+            //1,2,3,4 corresponding to the order in sql
             stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
             stmt.setInt(2, order.getStaff().getId());
-            stmt.setInt(3, order.getCustomer().getId());
+
+            if (order.getCustomer() != null) {
+                stmt.setInt(3, order.getCustomer().getId());
+            } else {
+                stmt.setNull(3, java.sql.Types.INTEGER);
+            }
+
+            stmt.setString(4, order.getStatus().name());
 
             int rowsAffected = stmt.executeUpdate();
-            //it added something -> return true
-            return rowsAffected > 0;
+
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                        //this method now return the id of the created order
+                    }
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return -1;
     }
 
     //the method that do the actual search work
