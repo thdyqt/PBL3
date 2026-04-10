@@ -9,7 +9,7 @@ import DataDAL.OrderDetailData;
 import java.util.List;
 
 public class OrderDetailBusiness {
-    public static boolean saveOrderDetail(List<OrderDetail> itemList, int createdOrderID){
+    public static boolean saveOrderDetail_BLL(List<OrderDetail> itemList, int createdOrderID){
         //link the order with its content
         for (OrderDetail item : itemList){
             Order linkedOrder = new Order();
@@ -23,5 +23,9 @@ public class OrderDetailBusiness {
             }
         }
         return true;
+    }
+
+    public static boolean deleteALLItemsFromOrder_BLL(int OrderID){
+        return OrderDetailData.deleteALLItemsFromOrder(OrderID);
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class OrderDetailData {
     //CRUD operations
     public static boolean addProduct_OrderDetail(OrderDetail orderDetail){
-        String sql = "INSERT INTO `OrderDetail` (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO OrderDetail (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -78,7 +78,7 @@ public class OrderDetailData {
 
     //this just change the amount of a product
     public static boolean updateOrderDetail(int newQuantity, int id_Order, int id_Product){
-        String sql = "UPDATE `OrderDetail` SET quantity = ? WHERE id_Order = ? AND id_Product = ?";
+        String sql = "UPDATE OrderDetail SET quantity = ? WHERE id_Order = ? AND id_Product = ?";
         try (
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -92,12 +92,12 @@ public class OrderDetailData {
             return rowsAffected > 0;
         } catch (SQLException e){
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
-    public static boolean deleteOrderDetail(int id_Order, int id_Product){
-        String sql = "DELETE FROM `OrderDetail` WHERE id_Order = ? AND id_Product = ?";
+    public static boolean deleteOrderDetail_1_Product(int id_Order, int id_Product){
+        String sql = "DELETE FROM OrderDetail WHERE id_Order = ? AND id_Product = ?";
         try(
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -109,7 +109,24 @@ public class OrderDetailData {
             return rowsAffected > 0;
         }catch (SQLException e){
             e.printStackTrace();
+            return false;
         }
-        return false;
+    }
+
+    public static boolean deleteALLItemsFromOrder(int OrderID){
+        String sql = "DELETE FROM OrderDetail WHERE id_Order = ?";
+
+        try(
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+        ){
+            stmt.setInt(1, OrderID);
+            stmt.executeUpdate();
+
+            return true;
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 }
