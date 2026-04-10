@@ -41,7 +41,7 @@ public class OrderBusiness {
     }
 
     public static List<Order> searchOrder_BLL(){
-
+        return OrderData.getAllOrders();
     }
 
     public static String updateOrder_BLL(Order order){
