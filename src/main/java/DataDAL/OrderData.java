@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Orders WHERE status = 'Created'";
+        String sql = "SELECT * FROM Orders";
 
         //open connection (conn) -> load sql query (stmt) -> return result (rs)
         try (
@@ -53,7 +53,7 @@ public class OrderData {
             stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
             stmt.setInt(2, order.getStaff().getId());
 
-            if (order.getCustomer() != null) {
+            if (order.getCustomer() != null && order.getCustomer().getId() > 0) {
                 stmt.setInt(3, order.getCustomer().getId());
             } else {
                 stmt.setNull(3, java.sql.Types.INTEGER);

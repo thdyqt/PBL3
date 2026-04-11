@@ -22,7 +22,7 @@ public class OrderDetailData {
         ) {
             stmt.setInt(1, orderDetail.getOrder().getId());
             stmt.setInt(2, orderDetail.getProduct().getProductID());
-            stmt.setInt(3, orderDetail.getProduct().getQuantity());
+            stmt.setInt(3, orderDetail.getQuantity());
             stmt.setInt(4, orderDetail.getTotalPrice());
 
             int rowsAffected = stmt.executeUpdate();

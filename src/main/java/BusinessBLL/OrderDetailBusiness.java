@@ -30,7 +30,7 @@ public class OrderDetailBusiness {
                 //have invalid id
                 //have quanity of 0 or less
             //is skipped
-            if (item.getProduct() == null || item.getProduct().getProductID() <= 0 || item.getProduct().getQuantity() <= 0){
+            if (item.getProduct() == null || item.getProduct().getProductID() <= 0 || item.getQuantity() <= 0){
                 continue;
             }
 
