@@ -98,7 +98,8 @@ public class LoginForm implements Initializable {
                         delay.setOnFinished(actionEvent -> {
                             try {
                                 FXMLLoader loader = null;
-                                if (rbStaff.isSelected()) loader = new FXMLLoader(getClass().getResource("dashboard.fxml"));
+                                if (rbStaff.isSelected()) loader = new FXMLLoader(getClass().getResource("Staff/StaffDashboard.fxml"));
+                                else loader = new FXMLLoader(getClass().getResource("Customer/CustomerDashboard.fxml"));
                                 Parent root = loader.load();
 
                                 btnLogin.getScene().setRoot(root);

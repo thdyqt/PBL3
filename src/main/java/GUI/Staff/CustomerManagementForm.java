@@ -1,7 +1,8 @@
-package GUI;
+package GUI.Staff;
 
 import DataDAL.CustomerData;
 import EntityDTO.Customer;
+import GUI.CustomerDialogController;
 import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -239,7 +240,7 @@ public class CustomerManagementForm implements Initializable {
 
     private void openDialog(Customer customer) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/CustomerDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("CustomerDialog.fxml"));
             Parent root = loader.load();
 
             CustomerDialogController controller = loader.getController();

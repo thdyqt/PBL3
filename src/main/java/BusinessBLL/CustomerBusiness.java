@@ -40,7 +40,7 @@ public class CustomerBusiness {
     public static int register(String phone, String name, String username, String password) {
         if (CustomerData.isAccountExist(username, phone, -1)) return -1;
 
-        if (CustomerData.addCustomer(new Customer(phone, name, username, password))){
+        if (CustomerData.addCustomer(new Customer(phone, name, username, password, 0))){
             LogBusiness.saveLog("Thêm khách hàng " + name + " (" + phone + ") vào hệ thống");
             return 1;
         }

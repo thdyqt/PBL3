@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Staff;
 
 public class BillManagementForm {
 }

@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Staff;
 
 import BusinessBLL.StaffBusiness;
 import EntityDTO.Staff;

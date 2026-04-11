@@ -50,7 +50,7 @@ public class RegisterForm implements Initializable{
     @FXML
     void btnBackToLoginClick(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
             Parent root = loader.load();
 
             btnBackToLogin.getScene().setRoot(root);

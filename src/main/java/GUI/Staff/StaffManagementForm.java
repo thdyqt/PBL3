@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Staff;
 
 import DataDAL.StaffData;
 import EntityDTO.Staff;
@@ -197,7 +197,7 @@ public class StaffManagementForm implements Initializable {
 
     private void openStaffDialog(Staff staffToEdit) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("staffDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Staff/StaffDialog.fxml"));
             Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();

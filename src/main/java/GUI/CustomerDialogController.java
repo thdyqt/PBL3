@@ -28,6 +28,9 @@ public class CustomerDialogController implements Initializable {
     private Label lblTitle;
 
     @FXML
+    private Label lblDesc;
+
+    @FXML
     private TextField txtName;
 
     @FXML
@@ -47,6 +50,7 @@ public class CustomerDialogController implements Initializable {
 
     private Customer currentCustomer = null;
     private boolean saveSuccess = false;
+    private boolean isEditingSelf = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -181,5 +185,23 @@ public class CustomerDialogController implements Initializable {
                 }
             });
         }).start();
+    }
+
+    public void setViewOnlyMode() {
+        lblTitle.setText("THÔNG TIN TÀI KHOẢN");
+        lblDesc.setText("");
+        txtName.setEditable(false);
+        txtPhone.setEditable(false);
+        txtUsername.setEditable(false);
+        txtPassword.setEditable(false);
+
+        txtPassword.setPromptText("Đã bảo mật");
+        btnSave.setVisible(false);
+        btnCancel.setText("Đóng");
+    }
+
+    public void setProfileEditMode() {
+        this.isEditingSelf = true;
+        lblTitle.setText("CHỈNH SỬA THÔNG TIN CÁ NHÂN");
     }
 }

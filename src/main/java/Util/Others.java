@@ -7,6 +7,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Others {
     // SET ĐỘ DÀI TỐI ĐA CHO TEXTFIELD
     public static void setMaxLength(javafx.scene.control.TextField textField, int maxLength) {
@@ -41,6 +44,21 @@ public class Others {
         if (fullName == null || fullName.trim().isEmpty()) return "";
         String[] parts = fullName.trim().split("\\s+");
         return parts[parts.length - 1];
+    }
+
+    // CHAY THOI GIAN
+    public static void startClock(Label label) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a   |   dd/MM/yyyy");
+
+        Timeline clock = new Timeline(
+                new KeyFrame(Duration.ZERO, e -> {
+                    label.setText(LocalDateTime.now().format(formatter));
+                }),
+                new KeyFrame(Duration.seconds(1))
+        );
+
+        clock.setCycleCount(Animation.INDEFINITE);
+        clock.play();
     }
 
     // ANIMATION KHI FORM HIỂN THỊ
