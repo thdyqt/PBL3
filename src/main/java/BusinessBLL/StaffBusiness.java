@@ -3,16 +3,44 @@ package BusinessBLL;
 import DataDAL.StaffData;
 import EntityDTO.Staff;
 import Util.UserSession;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Date;
 
 public class StaffBusiness {
-    public static int login(String username, String password) {
-        if (StaffData.checkLogin(username, password) == 1){
-            LogBusiness.saveLog("Đăng nhập vào hệ thống");
-            return 1;
+    public static String login(String username, String password) {
+        try {
+            Staff dbStaff = StaffData.getStaffByUsernameOrPhone(username);
+
+            if (dbStaff == null) {
+                return "NOT FOUND";
+            }
+
+            if (BCrypt.checkpw(password, dbStaff.getPassword())) {
+                UserSession.getInstance().setStaff(
+                        dbStaff.getId(),
+                        dbStaff.getPhone(),
+                        dbStaff.getName(),
+                        dbStaff.getUser(),
+                        password,
+                        dbStaff.getRole(),
+                        dbStaff.getHire_date()
+                );
+
+                LogBusiness.saveLog("Đăng nhập vào hệ thống");
+                return "SUCCESS";
+            }
+            else {
+                return "WRONG PASSWORD";
+            }
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Lỗi BCrypt: Mật khẩu dưới DB chưa được mã hóa đúng chuẩn!");
+            return "SERVER ERROR";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "SERVER ERROR";
         }
-        return StaffData.checkLogin(username, password);
     }
 
     public static void logout() {
