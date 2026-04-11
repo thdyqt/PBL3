@@ -45,18 +45,20 @@ public class OrderDetailData {
             stmt.setInt(1, searchPara);
 
             try (ResultSet rs = stmt.executeQuery()){
-                OrderDetail orderDetail = new OrderDetail();
-                orderDetail.setQuantity(rs.getInt("quanity"));
+                while (rs.next()){
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setQuantity(rs.getInt("quanity"));
 
-                Order order = new Order();
-                order.setId(rs.getInt("id_Order"));
-                orderDetail.setOrder(order);
+                    Order order = new Order();
+                    order.setId(rs.getInt("id_Order"));
+                    orderDetail.setOrder(order);
 
-                Product product = new Product();
-                product.setProductID(rs.getInt("id_Product"));
-                orderDetail.setProduct(product);
+                    Product product = new Product();
+                    product.setProductID(rs.getInt("id_Product"));
+                    orderDetail.setProduct(product);
 
-                orderDetailList.add(orderDetail);
+                    orderDetailList.add(orderDetail);
+                }
             }
         }
         catch (SQLException e){
@@ -129,4 +131,5 @@ public class OrderDetailData {
             return false;
         }
     }
+
 }

@@ -116,6 +116,43 @@ public class OrderData {
         return orderList;
     }
 
+    //same exact thing as above, but now search para is String instead of int
+    private static List<Order> executeQuery_Order(String sql, String searchPara){
+        //create the empty list to hold (and later return) all records that fit the criteria
+        List<Order> orderList = new ArrayList<>();
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+        ){
+            //prevent SQL injection by making it an int
+            stmt.setString(1, searchPara);
+
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()){
+                    //setting the 3 keys or Order
+                    Order order = new Order();
+                    order.setId(rs.getInt("id_Order"));
+                    order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+
+                    Staff staff = new Staff();
+                    staff.setId(rs.getInt("id_Staff"));
+                    order.setStaff(staff);
+
+                    Customer customer = new Customer();
+                    customer.setId(rs.getInt("id_Customer"));
+                    order.setCustomer(customer);
+
+                    orderList.add(order);
+                }
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return orderList;
+    }
+
 
     //mutiple search methods (ID/Staff/Customer)
     public static Order searchOrder_ByID(int id_Order){
@@ -128,14 +165,23 @@ public class OrderData {
         return result.get(0);
     }
 
-    public static List<Order> searchOrder_ByStaff(int id_Staff){
+    //why list for those 2?
+    //because a staff can process multiple order
+    //so can a customer visit and buy multiple time
+    public static List<Order> searchOrder_ByStaffID(int id_Staff){
         String sql = "SELECT * FROM Orders WHERE id_Staff = ?";
         return executeQuery_Order(sql, id_Staff);
     }
 
-    public static List<Order> searchOrder_ByCustomer(int id_Customer){
-        String sql = "SELECT * FROM Orders WHERE id_Customer = ?";
-        return executeQuery_Order(sql, id_Customer);
+    public static List<Order> searchOrder_ByCustomerPhone(String phone){
+        String sql = "SELECT o.* FROM Orders o " +
+                "JOIN Customer c ON o.id_Customer = c.id_Customer " +
+                "WHERE c.phone LIKE ?";
+
+        //so that incomplete phone number input can still produce result with the number in it
+        String searchPattern = "%" + phone + "%";
+
+        return executeQuery_Order(sql, searchPattern);
     }
 
     //same thing as addOrder, albeit changed slightly
