@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Orders WHERE status = 'active'";
+        String sql = "SELECT * FROM Orders WHERE status = 'Created'";
 
         //open connection (conn) -> load sql query (stmt) -> return result (rs)
         try (
@@ -186,7 +186,7 @@ public class OrderData {
 
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
-        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ? WHERE id_Order = ?";
+        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ? WHERE id_Order = ?";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -197,8 +197,9 @@ public class OrderData {
             stmt.setInt(2, order.getStaff().getId());
             stmt.setInt(3, order.getCustomer().getId());
 
-            //the id of the Order that need to be updated
-            stmt.setInt(4, order.getId());
+            //the id of the Order that need to be updated and its status
+            stmt.setString(4, order.getStatus().name());
+            stmt.setInt(5, order.getId());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

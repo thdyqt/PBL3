@@ -70,7 +70,7 @@ public class OrderDetailBusiness {
 
         //setting quanity = 0 ~ deleting an item from the order content
         if (updatedQuanity == 0){
-            deleteSingleItemFromOrder_BLL(id_Order, id_Product);
+            return deleteSingleItemFromOrder_BLL(id_Order, id_Product);
         }
 
         boolean updateSuccessfull = OrderDetailData.updateOrderDetail(updatedQuanity, id_Order, id_Product);

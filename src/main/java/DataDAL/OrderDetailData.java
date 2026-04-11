@@ -47,7 +47,8 @@ public class OrderDetailData {
             try (ResultSet rs = stmt.executeQuery()){
                 while (rs.next()){
                     OrderDetail orderDetail = new OrderDetail();
-                    orderDetail.setQuantity(rs.getInt("quanity"));
+                    orderDetail.setQuantity(rs.getInt("quantity"));
+                    orderDetail.setTotalPrice(rs.getInt("price"));
 
                     Order order = new Order();
                     order.setId(rs.getInt("id_Order"));
