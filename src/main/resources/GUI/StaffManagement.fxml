@@ -30,7 +30,7 @@
                         <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#btnAddClick" prefHeight="35.0" style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;" text="+ Thêm mới">
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                         </Button>
-                        <Button fx:id="btnEdit" mnemonicParsing="false" onAction="#btnEditClick" prefHeight="35.0" style="-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;" text="✏ Sửa">
+                        <Button fx:id="btnEdit" mnemonicParsing="false" onAction="#btnEditClick" prefHeight="35.0" style="-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;" text="✏ Sửa thông tin">
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                         </Button>
 
@@ -55,7 +55,7 @@
             <children>
                 <TableView fx:id="tblStaff" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+                        <TableColumn fx:id="colSTT" prefWidth="50.0" text="STT" />
                         <TableColumn fx:id="colName" prefWidth="265.4117965698242" text="Họ và Tên" />
                         <TableColumn fx:id="colPhone" prefWidth="159.73098754882812" text="Số điện thoại" />
                         <TableColumn fx:id="colUsername" prefWidth="178.28564453125" text="Tài khoản" />

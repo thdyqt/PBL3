@@ -83,13 +83,13 @@ public class LoginForm implements Initializable {
             Others.showAlert(rootPane, "Đang kết nối máy chủ...", false);
 
             new Thread(() -> {
-                int loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
+                String loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
 
                 Platform.runLater(() -> {
                     btnLogin.setDisable(false);
                     btnRegister.setDisable(false);
 
-                    if (loginStatus == 1){
+                    if (loginStatus.equals("SUCCESS")){
                         failedAttempts = 0;
                         Others.showAlert(rootPane,"Đăng nhập thành công!", false);
                         txtPass.clear();
@@ -110,12 +110,12 @@ public class LoginForm implements Initializable {
                         });
                         delay.play();
                     }
-                    else if (loginStatus == 2){
+                    else if (loginStatus.equals("WRONG PASSWORD")){
                         handleFailedLogin("Mật khẩu không chính xác!");
                         txtPass.clear();
                         txtPass.requestFocus();
                     }
-                    else if (loginStatus == 0){
+                    else if (loginStatus.equals("NOT FOUND")){
                         handleFailedLogin("Tài khoản không tồn tại!");
                         txtUser.clear();
                         txtUser.requestFocus();

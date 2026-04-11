@@ -18,7 +18,7 @@ public class Product {
              this.ProductPrice = price;
              this.quantity = quantity;
              this.isAvailable = isA;
-         }
+    }
 
     public Product(String name,int cateid,int price,int quantity,boolean isA){
          this.ProductName = name;
