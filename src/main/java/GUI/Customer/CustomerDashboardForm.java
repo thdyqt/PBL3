@@ -5,6 +5,9 @@ import GUI.CustomerDialogController;
 import Util.Others;
 import Util.UserSession;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -73,21 +76,27 @@ public class CustomerDashboardForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mainBorderPane.setOpacity(0);
-        FadeTransition fade = new FadeTransition(Duration.millis(500), mainBorderPane);
-        fade.setToValue(1);
-        fade.play();
-
-        menuButtons = new Button[]{btnHome, btnProducts, btnCart, btnOrders};
-
-        loadUserProfile();
-
-        btnProductsClick(null);
-
-        // Sự kiện click cho Avatar (Xem và Sửa tài khoản khách hàng)
         menuInfo.setOnAction(event -> openProfileDialog(true));
         menuEditAcc.setOnAction(event -> openProfileDialog(false));
 
+        mainBorderPane.setOpacity(0);
+        mainBorderPane.setScaleX(0.95);
+        mainBorderPane.setScaleY(0.95);
+
+        // Tạo hiệu ứng rõ dần (Fade)
+        FadeTransition fade = new FadeTransition(Duration.millis(500), mainBorderPane);
+        fade.setToValue(1);
+
+        // Tạo hiệu ứng phóng to về kích thước chuẩn (Scale)
+        ScaleTransition scale = new ScaleTransition(Duration.millis(500), mainBorderPane);
+        scale.setToX(1.0);
+        scale.setToY(1.0);
+
+        ParallelTransition pt = new ParallelTransition(fade, scale);
+        pt.setInterpolator(Interpolator.EASE_OUT);
+        pt.play();
+
+        menuButtons = new Button[]{btnHome, btnProducts, btnCart, btnOrders};
         loadUserProfile();
         Others.startClock(lblTime);
         btnHomeClick(null);
@@ -147,7 +156,7 @@ public class CustomerDashboardForm implements Initializable {
         if (isConfirm) {
             try {
                 UserSession.getInstance().clearSession();
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Login.fxml"));
                 mainBorderPane.getScene().setRoot(loader.load());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -172,7 +181,7 @@ public class CustomerDashboardForm implements Initializable {
 
     private void openProfileDialog(boolean isViewOnly) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("CustomerDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/CustomerDialog.fxml"));
             Parent root = loader.load();
 
             CustomerDialogController controller = loader.getController();

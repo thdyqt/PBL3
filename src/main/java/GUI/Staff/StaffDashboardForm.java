@@ -181,7 +181,7 @@ public class StaffDashboardForm implements Initializable {
     @FXML
     private void openProfileDialog(boolean isViewOnly) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Staff/StaffDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffDialog.fxml"));
             Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();
@@ -266,13 +266,13 @@ public class StaffDashboardForm implements Initializable {
             return;
         }
         setActiveMenu(btnStaff);
-        switchForm("Staff/StaffManagement.fxml");
+        switchForm("/GUI/Staff/StaffManagement.fxml");
     }
 
     @FXML
     void btnCustomerClick(ActionEvent event) {
         setActiveMenu(btnCustomer);
-        switchForm("Staff/CustomerManagement.fxml");
+        switchForm("/GUI/Staff/CustomerManagement.fxml");
     }
 
     @FXML
@@ -285,7 +285,7 @@ public class StaffDashboardForm implements Initializable {
 
         if (isConfirm) {
             try {
-                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("Login.fxml"));
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/GUI/Login.fxml"));
                 mainBorderPane.getScene().setRoot(loader.load());
 
                 BusinessBLL.StaffBusiness.logout();

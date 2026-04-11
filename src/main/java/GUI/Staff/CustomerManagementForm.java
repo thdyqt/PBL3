@@ -240,7 +240,7 @@ public class CustomerManagementForm implements Initializable {
 
     private void openDialog(Customer customer) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("CustomerDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/CustomerDialog.fxml"));
             Parent root = loader.load();
 
             CustomerDialogController controller = loader.getController();

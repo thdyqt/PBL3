@@ -3,6 +3,7 @@ package GUI;
 import BusinessBLL.CustomerBusiness;
 import EntityDTO.Customer;
 import Util.Others;
+import Util.UserSession;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -14,6 +15,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -122,6 +124,7 @@ public class CustomerDialogController implements Initializable {
         String phone = txtPhone.getText().trim();
         String username = txtUsername.getText().trim();
         String rawPassword = txtPassword.getText().isEmpty() ? txtPhone.getText().trim() : txtPassword.getText().trim();
+        int point = currentCustomer.getPoint();
 
         if (currentCustomer != null) {
             boolean isNameUnchanged = name.equals(currentCustomer.getName());
@@ -146,7 +149,7 @@ public class CustomerDialogController implements Initializable {
             return;
         }
 
-        if (username.length() > 0 && username.length() < 6) {
+        if (!username.isEmpty() && username.length() < 6) {
             Others.showAlert(mainPanel, "Tài khoản phải từ 6 kí tự!", true);
             txtUsername.requestFocus();
             return;
@@ -158,6 +161,12 @@ public class CustomerDialogController implements Initializable {
             return;
         }
 
+        Window currentWindow = btnSave.getScene().getWindow();
+
+        if (isEditingSelf) {
+            if (!Others.showPasswordConfirmDialog(currentWindow, rawPassword)) return;
+        }
+
         btnCancel.setDisable(true);
         btnSave.setDisable(true);
         Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
@@ -165,7 +174,7 @@ public class CustomerDialogController implements Initializable {
         new Thread(() -> {
             int status = (currentCustomer == null) ?
                     CustomerBusiness.register(phone, name, username, rawPassword) :
-                    CustomerBusiness.updateCustomer(currentCustomer.getId(), phone, name, username, rawPassword, currentCustomer.getPoint());
+                    CustomerBusiness.updateCustomer(currentCustomer.getId(), phone, name, username, rawPassword, point);
 
             Platform.runLater(() -> {
                 btnCancel.setDisable(false);
@@ -174,6 +183,11 @@ public class CustomerDialogController implements Initializable {
                 if (status == 1) {
                     saveSuccess = true;
                     Others.showAlert(mainPanel, currentCustomer == null ? "Đã thêm khách hàng thành công!" : "Đã cập nhật thành công!", false);
+
+                    if (isEditingSelf) {
+                        String sessionPass = rawPassword.isEmpty() ? UserSession.getInstance().getPassword() : rawPassword;
+                        UserSession.getInstance().setCustomer(UserSession.getInstance().getId(), phone, name, username, sessionPass, point);
+                    }
 
                     var delay = new PauseTransition(Duration.seconds(2.0));
                     delay.setOnFinished(e -> closeWindow());

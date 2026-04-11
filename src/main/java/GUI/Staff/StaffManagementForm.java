@@ -197,7 +197,7 @@ public class StaffManagementForm implements Initializable {
 
     private void openStaffDialog(Staff staffToEdit) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Staff/StaffDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffDialog.fxml"));
             Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();
