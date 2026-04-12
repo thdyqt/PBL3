@@ -286,7 +286,7 @@
                      </padding>
                         </Button>
 
-                              <Button fx:id="btnProduct" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Sản phẩm">
+                              <Button fx:id="btnProduct" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnProductClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Sản phẩm">
                             <graphic>
                                 <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #F472B6; -fx-background-radius: 10;">
                                     <children>

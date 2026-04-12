@@ -1,22 +1,32 @@
 package GUI.Staff;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 public class productMenuController {
 
     @FXML
-    private Button btnC;
+    private Button btnCategory;
 
     @FXML
-    private Button btnP;
+    private StackPane btnCategoryPane;
 
     @FXML
-    private Label lbName;
+    private Button btnProductM;
 
     @FXML
-    private BorderPane mainPane;
+    private StackPane btnProductPane;
+
+    @FXML
+    void handleCategoryManagement(ActionEvent event) {
+
+    }
+
+    @FXML
+    void handleProductManagement(ActionEvent event) {
+
+    }
 
 }
