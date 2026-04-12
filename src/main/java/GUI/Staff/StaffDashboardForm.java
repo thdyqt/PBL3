@@ -245,6 +245,11 @@ public class StaffDashboardForm implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Node node = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof productMenuController) {
+                productMenuController ctrl = (productMenuController) controller;
+                ctrl.setContentArea(this.contentArea);
+            }
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(node);
