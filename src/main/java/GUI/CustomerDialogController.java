@@ -3,6 +3,7 @@ package GUI;
 import BusinessBLL.CustomerBusiness;
 import EntityDTO.Customer;
 import Util.Others;
+import Util.UserSession;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -14,6 +15,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -26,6 +28,9 @@ public class CustomerDialogController implements Initializable {
 
     @FXML
     private Label lblTitle;
+
+    @FXML
+    private Label lblDesc;
 
     @FXML
     private TextField txtName;
@@ -47,10 +52,10 @@ public class CustomerDialogController implements Initializable {
 
     private Customer currentCustomer = null;
     private boolean saveSuccess = false;
+    private boolean isEditingSelf = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Chuẩn hóa input giống như Staff
         Others.setMaxLength(txtPhone, 10);
         Others.setMaxLength(txtUsername, 20);
         Others.setMaxLength(txtName, 100);
@@ -93,10 +98,14 @@ public class CustomerDialogController implements Initializable {
     public void setCustomerData(Customer customer) {
         this.currentCustomer = customer;
 
+        if(customer == null){
+            txtPassword.setPromptText("Mật khẩu mặc định là số điện thoại");
+            txtPassword.setEditable(false);
+        }
+
         if(customer != null) {
-            lblTitle.setText("SỬA THÔNG TIN KHÁCH HÀNG");
-            btnSave.setText("Cập nhật");
-            txtPassword.setPromptText("Để trống nếu giữ nguyên mật khẩu cũ");
+            lblTitle.setText("CHỈNH SỬA THÔNG TIN KHÁCH HÀNG");
+            txtPassword.setPromptText("Để trống nếu không đổi mật khẩu");
 
             txtName.setText(customer.getName());
             txtPhone.setText(customer.getPhone());
@@ -114,39 +123,58 @@ public class CustomerDialogController implements Initializable {
         String name = Others.standardizeName(txtName.getText());
         String phone = txtPhone.getText().trim();
         String username = txtUsername.getText().trim();
-        String rawPassword = txtPassword.getText().trim();
+        String rawPassword = txtPassword.getText().isEmpty() ? txtPhone.getText().trim() : txtPassword.getText().trim();
+        int point = currentCustomer.getPoint();
 
-        // Validate đầu vào
-        if (name.isEmpty() || phone.isEmpty() || username.isEmpty() || (currentCustomer == null && rawPassword.isEmpty())) {
+        if (currentCustomer != null) {
+            boolean isNameUnchanged = name.equals(currentCustomer.getName());
+            boolean isPhoneUnchanged = phone.equals(currentCustomer.getPhone());
+            boolean isUserUnchanged = username.equals(currentCustomer.getUser());
+            boolean isPassUnchanged = rawPassword.isEmpty();
+
+            if (isNameUnchanged && isPhoneUnchanged && isUserUnchanged && isPassUnchanged) {
+                Others.showAlert(mainPanel, "Không có thông tin nào được thay đổi!", true);
+                return;
+            }
+        }
+
+        if (name.isEmpty() || phone.isEmpty()) {
             Others.showAlert(mainPanel, "Vui lòng nhập đầy đủ thông tin bắt buộc!", true);
             return;
         }
-        else if (!phone.matches("^0[0-9]{9}$")) {
+
+        if (!phone.matches("^0[0-9]{9}$")) {
             Others.showAlert(mainPanel, "Số điện thoại không hợp lệ!", true);
             txtPhone.requestFocus();
             return;
         }
-        else if (username.length() < 6) {
+
+        if (!username.isEmpty() && username.length() < 6) {
             Others.showAlert(mainPanel, "Tài khoản phải từ 6 kí tự!", true);
             txtUsername.requestFocus();
             return;
         }
-        else if ((currentCustomer == null && rawPassword.length() < 6) ||
-                (currentCustomer != null && rawPassword.length() > 0 && rawPassword.length() < 6)) {
-            Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự trở lên!", true);
+
+        if (!rawPassword.isEmpty() && rawPassword.length() < 6) {
+            Others.showAlert(mainPanel, "Mật khẩu mới phải từ 6 kí tự trở lên!", true);
             txtPassword.requestFocus();
             return;
+        }
+
+        Window currentWindow = btnSave.getScene().getWindow();
+
+        if (isEditingSelf) {
+            if (!Others.showPasswordConfirmDialog(currentWindow, rawPassword)) return;
         }
 
         btnCancel.setDisable(true);
         btnSave.setDisable(true);
         Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
 
-        // Chạy đa luồng gọi Database
         new Thread(() -> {
             int status = (currentCustomer == null) ?
                     CustomerBusiness.register(phone, name, username, rawPassword) :
-                    CustomerBusiness.updateCustomer(currentCustomer.getId(), phone, name, username, rawPassword, currentCustomer.getPoint());
+                    CustomerBusiness.updateCustomer(currentCustomer.getId(), phone, name, username, rawPassword, point);
 
             Platform.runLater(() -> {
                 btnCancel.setDisable(false);
@@ -155,6 +183,11 @@ public class CustomerDialogController implements Initializable {
                 if (status == 1) {
                     saveSuccess = true;
                     Others.showAlert(mainPanel, currentCustomer == null ? "Đã thêm khách hàng thành công!" : "Đã cập nhật thành công!", false);
+
+                    if (isEditingSelf) {
+                        String sessionPass = rawPassword.isEmpty() ? UserSession.getInstance().getPassword() : rawPassword;
+                        UserSession.getInstance().setCustomer(UserSession.getInstance().getId(), phone, name, username, sessionPass, point);
+                    }
 
                     var delay = new PauseTransition(Duration.seconds(2.0));
                     delay.setOnFinished(e -> closeWindow());
@@ -166,5 +199,23 @@ public class CustomerDialogController implements Initializable {
                 }
             });
         }).start();
+    }
+
+    public void setViewOnlyMode() {
+        lblTitle.setText("THÔNG TIN TÀI KHOẢN");
+        lblDesc.setText("");
+        txtName.setEditable(false);
+        txtPhone.setEditable(false);
+        txtUsername.setEditable(false);
+        txtPassword.setEditable(false);
+
+        txtPassword.setPromptText("Đã bảo mật");
+        btnSave.setVisible(false);
+        btnCancel.setText("Đóng");
+    }
+
+    public void setProfileEditMode() {
+        this.isEditingSelf = true;
+        lblTitle.setText("CHỈNH SỬA THÔNG TIN CÁ NHÂN");
     }
 }

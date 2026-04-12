@@ -2,7 +2,6 @@ package DataDAL;
 
 import EntityDTO.Customer;
 import Util.DBConnection;
-import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
@@ -37,7 +36,6 @@ public class CustomerData {
         return list;
     }
 
-    // Cập nhật hàm này để bỏ qua ID của chính khách hàng đang sửa
     public static boolean isAccountExist(String username, String phone, int idToIgnore){
         String sql = "SELECT id_khach_hang FROM Customer WHERE (username = ? OR phone = ?) AND id_khach_hang != ?";
 
@@ -83,7 +81,6 @@ public class CustomerData {
         String sql;
         boolean isChangePass = c.getPassword() != null && !c.getPassword().trim().isEmpty();
 
-        // Nếu có nhập mật khẩu mới thì update cả pass, ngược lại giữ nguyên
         if (isChangePass) {
             sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, point = ? WHERE id_khach_hang = ?";
         } else {
@@ -114,36 +111,31 @@ public class CustomerData {
         }
     }
 
-    public static int checkLogin(String user, String pass) {
+    public static Customer getCustomerByUsernameOrPhone(String user) {
         String sql = "SELECT id_khach_hang, phone, full_name, username, pass_word, point FROM Customer WHERE username = ? OR phone = ?";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, user);
             stmt.setString(2, user);
-            try(ResultSet rs = stmt.executeQuery()){
-                if (rs.next()){
-                    String dbPasswordHash = rs.getString("pass_word");
 
-                    if (BCrypt.checkpw(pass, dbPasswordHash)){
-                        int dbId = rs.getInt("id_khach_hang");
-                        String dbPhone = rs.getString("phone");
-                        String dbFullName = rs.getString("full_name");
-                        String dbUsername = rs.getString("username");
-                        int dbPoint = rs.getInt("point");
-                        UserSession.getInstance().setCustomer(dbId, dbPhone, dbFullName, dbUsername, pass, dbPoint);
-                        return 1;
-                    }
-                    else return 2;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Customer(
+                            rs.getInt("id_khach_hang"),
+                            rs.getString("phone"),
+                            rs.getString("full_name"),
+                            rs.getString("username"),
+                            rs.getString("pass_word"), // Truyền Hash vào DTO
+                            rs.getInt("point")
+                    );
                 }
-                else return 0;
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1;
-        } catch (IllegalArgumentException e) {
-            System.out.println("Lỗi BCrypt: Mật khẩu dưới DB chưa được mã hóa đúng chuẩn!");
-            return -1;
+            return null;
         }
     }
 }

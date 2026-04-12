@@ -9,16 +9,20 @@ public class Customer extends Person {
 
     public Customer() {}
 
-    // Constructor dùng khi thêm mới khách hàng (chưa có điểm)
-    public Customer(String phone, String name, String user, String password) {
+    public Customer(String phone, String name, String user, String password, int point) {
         super(phone, name, user, password);
-        this.setPoint(0); // Gọi setter để tự động set rank Bronze
+        this.point = point;
     }
 
-    // Constructor dùng khi lấy dữ liệu từ DB lên hoặc khi Update (đã có id và point)
+    public Customer(int id, String phone, String name, String user, int point) {
+        super(id, phone, name, user);
+        this.point = point;
+    }
+
     public Customer(int id, String phone, String name, String user, String password, int point) {
         super(id, phone, name, user, password);
-        this.setPoint(point); // Gọi setter để gán điểm và tự động tính toán lại Rank
+        this.point = point;
+
     }
 
     public rank getCustomer_rank() {

@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainPanel" prefHeight="480.0" prefWidth="500.0" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.StaffDialogController">
+<AnchorPane fx:id="mainPanel" prefHeight="480.0" prefWidth="500.0" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.StaffDialogController">
     <children>
         <VBox spacing="25.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="25.0">
             <children>
@@ -27,7 +27,7 @@
                                 <Font name="System Bold" size="22.0" />
                             </font>
                         </Label>
-                        <Label text="Vui lòng điền đầy đủ thông tin bên dưới để tiếp tục." textFill="#64748B">
+                        <Label fx:id="lblDesc" text="Vui lòng điền đầy đủ thông tin bên dưới để tiếp tục." textFill="#64748B">
                             <font>
                                 <Font size="13.0" />
                             </font>

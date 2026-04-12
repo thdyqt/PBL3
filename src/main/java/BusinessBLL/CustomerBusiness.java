@@ -2,34 +2,58 @@ package BusinessBLL;
 
 import DataDAL.CustomerData;
 import EntityDTO.Customer;
+import Util.UserSession;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class CustomerBusiness {
+    public static String login(String username, String password) {
+        try {
+            Customer dbCustomer = CustomerData.getCustomerByUsernameOrPhone(username);
 
-    public static int login(String username, String password) {
-        return CustomerData.checkLogin(username, password);
+            if (dbCustomer == null) {
+                return "NOT FOUND";
+            }
+
+            if (BCrypt.checkpw(password, dbCustomer.getPassword())) {
+                UserSession.getInstance().setCustomer(
+                        dbCustomer.getId(),
+                        dbCustomer.getPhone(),
+                        dbCustomer.getName(),
+                        dbCustomer.getUser(),
+                        password,
+                        dbCustomer.getPoint()
+                );
+                return "SUCCESS";
+            } else {
+                return "WRONG PASSWORD";
+            }
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Lỗi BCrypt: Mật khẩu dưới DB chưa được mã hóa đúng chuẩn!");
+            return "SERVER ERROR";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "SERVER ERROR";
+        }
     }
 
-    // Hàm Thêm mới
     public static int register(String phone, String name, String username, String password) {
-        // -1: Không kiểm tra id của ai cả (tạo mới)
         if (CustomerData.isAccountExist(username, phone, -1)) return -1;
 
-        if (CustomerData.addCustomer(new Customer(phone, name, username, password))){
-            LogBusiness.saveLog("Thêm khách hàng " + name + " (" + username + ") vào hệ thống");
+        if (CustomerData.addCustomer(new Customer(phone, name, username, password, 0))){
+            LogBusiness.saveLog("Thêm khách hàng " + name + " (" + phone + ") vào hệ thống");
             return 1;
         }
-        return 0; // Lỗi DB
+        return 0;
     }
 
-    // Hàm Cập nhật
     public static int updateCustomer(int id, String phone, String name, String username, String password, int point) {
-        // Kiểm tra xem phone/username mới có bị trùng với người khác không (bỏ qua id của chính nó)
         if (CustomerData.isAccountExist(username, phone, id)) return -1;
 
         if (CustomerData.updateCustomer(new Customer(id, phone, name, username, password, point))){
-            LogBusiness.saveLog("Cập nhật thông tin khách hàng " + name + " (" + username + ")");
+            LogBusiness.saveLog("Cập nhật thông tin khách hàng " + name + " (" + phone + ")");
             return 1;
         }
-        return 0; // Lỗi DB
+        return 0;
     }
 }

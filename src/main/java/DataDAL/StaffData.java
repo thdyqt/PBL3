@@ -2,7 +2,6 @@ package DataDAL;
 
 import EntityDTO.Staff;
 import Util.DBConnection;
-import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
@@ -10,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class StaffData {
@@ -164,37 +162,32 @@ public class StaffData {
         return list;
     }
 
-    public static int checkLogin(String user, String pass) {
-        String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE username = ? OR phone = ?";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)){
+    public static Staff getStaffByUsernameOrPhone(String user) {
+        String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE (username = ? OR phone = ?) AND status = 'Active'";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, user);
             stmt.setString(2, user);
-            try(ResultSet rs = stmt.executeQuery()){
-                if (rs.next()){
-                    String dbPasswordHash = rs.getString("pass_word");
 
-                    if (BCrypt.checkpw(pass, dbPasswordHash)){
-                        int dbId = rs.getInt("id_nhan_vien");
-                        String dbPhone = rs.getString("phone");
-                        String dbFullName = rs.getString("full_name");
-                        String dbUsername = rs.getString("username");
-                        String dbPosition = rs.getString("position");
-                        Date dbHireDate = rs.getDate("hire_date");
-                        UserSession.getInstance().setStaff(dbId, dbPhone, dbFullName, dbUsername, pass, dbPosition, dbHireDate);
-                        return 1;
-                    }
-                    else return 2;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Staff(
+                            rs.getInt("id_nhan_vien"),
+                            rs.getString("phone"),
+                            rs.getString("full_name"),
+                            rs.getString("username"),
+                            rs.getString("pass_word"),
+                            rs.getString("position"),
+                            rs.getDate("hire_date")
+                    );
                 }
-                else return 0;
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1;
-        } catch (IllegalArgumentException e) {
-            System.out.println("Lỗi BCrypt: Mật khẩu dưới DB chưa được mã hóa đúng chuẩn!");
-            return -1;
+            return null;
         }
     }
 }

@@ -1,7 +1,8 @@
-package GUI;
+package GUI.Staff;
 
 import DataDAL.CustomerData;
 import EntityDTO.Customer;
+import GUI.CustomerDialogController;
 import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,13 +53,13 @@ public class CustomerManagementForm implements Initializable {
     private TableColumn<Customer, Void> colSTT;
 
     @FXML
-    private TableColumn<Customer, Integer> colId;
-
-    @FXML
     private TableColumn<Customer, String> colName;
 
     @FXML
     private TableColumn<Customer, String> colPhone;
+
+    @FXML
+    private TableColumn<Customer, String> colUser;
 
     @FXML
     private TableColumn<Customer, Integer> colPoint;
@@ -73,26 +74,32 @@ public class CustomerManagementForm implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupTableStyles();
         setupRankColumn();
-        Others.animateTableRows(tableCustomer);
 
-        // Cấu hình ComboBox sắp xếp
         ObservableList<String> sortOptions = FXCollections.observableArrayList(
-                "Tên: A - Z", "Tên: Z - A", "Điểm: Cao - Thấp", "Điểm: Thấp - Cao", "Mã Khách: Mới nhất"
+                "Tên: A - Z", "Tên: Z - A", "Điểm: Cao - Thấp", "Điểm: Thấp - Cao", "Mặc định"
         );
         cbbSort.setItems(sortOptions);
-        cbbSort.getSelectionModel().selectFirst();
+        cbbSort.getSelectionModel().select("Mặc định");
 
         loadTable();
         setupSearch();
+
+        tableCustomer.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Customer selectedCustomer = tableCustomer.getSelectionModel().getSelectedItem();
+                if (selectedCustomer != null) {
+                    openDialog(selectedCustomer);
+                }
+            }
+        });
     }
 
     private void setupTableStyles() {
-        colId.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getId()));
         colName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         colPhone.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
         colPoint.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPoint()));
+        colUser.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUser()));
 
-        // TỰ ĐỘNG ĐÁNH SỐ THỨ TỰ
         colSTT.setCellFactory(column -> new TableCell<Customer, Void>() {
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -106,8 +113,8 @@ public class CustomerManagementForm implements Initializable {
             }
         });
 
-        colId.setStyle("-fx-alignment: CENTER; -fx-text-fill: #64748B;");
         colPhone.setStyle("-fx-alignment: CENTER;");
+        colUser.setStyle("-fx-alignment: CENTER;");
         colPoint.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #EF4444;");
         colName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
     }
@@ -161,10 +168,10 @@ public class CustomerManagementForm implements Initializable {
         List<Customer> listFromDB = CustomerData.getAllCustomers();
         masterData.setAll(listFromDB);
         filteredData = new FilteredList<>(masterData, b -> true);
-
         SortedList<Customer> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tableCustomer.comparatorProperty());
         tableCustomer.setItems(sortedData);
+        Others.animateTableRows(tableCustomer);
     }
 
     private void setupSearch() {
@@ -173,16 +180,48 @@ public class CustomerManagementForm implements Initializable {
                 if (newValue == null || newValue.trim().isEmpty()) return true;
 
                 String lowerCaseFilter = newValue.toLowerCase();
+
+                String rankName = "";
+                if (customer.getCustomer_rank() != null) {
+                    switch (customer.getCustomer_rank()) {
+                        case Bronze: rankName = "đồng"; break;
+                        case Silver: rankName = "bạc"; break;
+                        case Gold: rankName = "vàng"; break;
+                        case Emerald: rankName = "ngọc lục bảo"; break;
+                        case Diamond: rankName = "kim cương"; break;
+                    }
+                }
+
                 return customer.getName().toLowerCase().contains(lowerCaseFilter) ||
                         customer.getPhone().contains(lowerCaseFilter) ||
-                        customer.getUser().toLowerCase().contains(lowerCaseFilter) ||
-                        String.valueOf(customer.getId()).contains(lowerCaseFilter);
+                        (customer.getUser() != null && customer.getUser().toLowerCase().contains(lowerCaseFilter)) ||
+                        String.valueOf(customer.getId()).contains(lowerCaseFilter) ||
+                        rankName.contains(lowerCaseFilter);
             });
         });
     }
 
     @FXML
-    void Search(ActionEvent event) { }
+    void Search(ActionEvent event) {
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(staff -> {
+                if (newValue == null || newValue.trim().isEmpty()) {
+                    return true;
+                }
+
+                String searchKeyword = newValue.toLowerCase();
+
+                if (staff.getName().toLowerCase().contains(searchKeyword) ||
+                        staff.getPhone().toLowerCase().contains(searchKeyword) ||
+                        staff.getUser().toLowerCase().contains(searchKeyword) ||
+                        String.valueOf(staff.getPoint()).contains(searchKeyword)){
+                    return true;
+                }
+
+                return false;
+            });
+        });
+    }
 
     @FXML
     void btnAddClick(ActionEvent event) {
@@ -193,8 +232,7 @@ public class CustomerManagementForm implements Initializable {
     void btnEditClick(ActionEvent event) {
         Customer selected = tableCustomer.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            // Hiển thị thông báo đẹp nếu lấy rootPane (hoặc MainBorderPane bên Dashboard)
-            new Alert(Alert.AlertType.WARNING, "Vui lòng chọn một khách hàng trong bảng để sửa!").showAndWait();
+            Others.showAlert(rootPane, "Vui lòng chọn khách hàng!", true);
             return;
         }
         openDialog(selected);
@@ -215,7 +253,6 @@ public class CustomerManagementForm implements Initializable {
             dialogStage.setResizable(false);
             dialogStage.showAndWait();
 
-            // Nếu lưu DB thành công thì mới load lại bảng
             if(controller.isSaveSuccess()) {
                 loadTable();
                 Others.animateTableRows(tableCustomer);
@@ -238,10 +275,28 @@ public class CustomerManagementForm implements Initializable {
 
         switch (selectedOption) {
             case "Tên: A - Z":
-                comparator = Comparator.comparing(Customer::getName);
+                comparator = (c1, c2) -> {
+                    String ten1 = Others.getFirstName(c1.getName()).toLowerCase();
+                    String ten2 = Others.getFirstName(c2.getName()).toLowerCase();
+                    int cmp = ten1.compareTo(ten2);
+
+                    if (cmp == 0) {
+                        return c1.getName().toLowerCase().compareTo(c2.getName().toLowerCase());
+                    }
+                    return cmp;
+                };
                 break;
             case "Tên: Z - A":
-                comparator = Comparator.comparing(Customer::getName).reversed();
+                comparator = (c1, c2) -> {
+                    String ten1 = Others.getFirstName(c1.getName()).toLowerCase();
+                    String ten2 = Others.getFirstName(c2.getName()).toLowerCase();
+                    int cmp = ten2.compareTo(ten1);
+
+                    if (cmp == 0) {
+                        return c2.getName().toLowerCase().compareTo(c1.getName().toLowerCase());
+                    }
+                    return cmp;
+                };
                 break;
             case "Điểm: Cao - Thấp":
                 comparator = Comparator.comparingInt(Customer::getPoint).reversed();
@@ -249,12 +304,13 @@ public class CustomerManagementForm implements Initializable {
             case "Điểm: Thấp - Cao":
                 comparator = Comparator.comparingInt(Customer::getPoint);
                 break;
-            case "Mã Khách: Mới nhất":
-                comparator = Comparator.comparingInt(Customer::getId).reversed();
+            case "Mặc định":
+                comparator = Comparator.comparingInt(Customer::getId);
                 break;
         }
 
         if (comparator != null) {
+            tableCustomer.getSortOrder().clear();
             FXCollections.sort(masterData, comparator);
         }
     }

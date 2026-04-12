@@ -1,5 +1,7 @@
-package GUI;
+package GUI.Staff;
 
+import EntityDTO.Staff;
+import Util.Others;
 import Util.UserSession;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
@@ -7,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
@@ -14,14 +18,15 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.sql.Date;
 import java.util.ResourceBundle;
 
-public class DashboardForm implements Initializable {
+public class StaffDashboardForm implements Initializable {
     @FXML
     private Button btnBill;
 
@@ -88,6 +93,9 @@ public class DashboardForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        menuInfo.setOnAction(event -> openProfileDialog(true));
+        menuEditAcc.setOnAction(event -> openProfileDialog(false));
+
         mainBorderPane.setOpacity(0);
         mainBorderPane.setScaleX(0.95);
         mainBorderPane.setScaleY(0.95);
@@ -107,7 +115,7 @@ public class DashboardForm implements Initializable {
 
         menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnStatistic};
         loadUserProfile();
-        startClock();
+        Others.startClock(lblTime);
         btnHomeClick(null);
     }
 
@@ -170,18 +178,52 @@ public class DashboardForm implements Initializable {
         sidebarTimeline.play();
     }
 
-    private void startClock() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a   |   dd/MM/yyyy");
+    @FXML
+    private void openProfileDialog(boolean isViewOnly) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffDialog.fxml"));
+            Parent root = loader.load();
 
-        Timeline clock = new Timeline(
-                new KeyFrame(Duration.ZERO, e -> {
-                    lblTime.setText(LocalDateTime.now().format(formatter));
-                }),
-                new KeyFrame(Duration.seconds(1))
-        );
+            StaffDialogController controller = loader.getController();
 
-        clock.setCycleCount(Animation.INDEFINITE);
-        clock.play();
+            UserSession session = UserSession.getInstance();
+            Date sqlHireDate = session.getHire_date() != null ?
+                    new Date(session.getHire_date().getTime()) : null;
+
+            Staff currentStaff = new Staff(
+                    session.getId(),
+                    session.getPhone(),
+                    session.getName(),
+                    session.getUsername(),
+                    session.getPosition(),
+                    sqlHireDate
+            );
+
+            controller.setStaffData(currentStaff);
+
+            if (isViewOnly) {
+                controller.setViewOnlyMode();
+            } else {
+                controller.setProfileEditMode();
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle(isViewOnly ? "Thông tin tài khoản cá nhân" : "Chỉnh sửa tài khoản");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+
+            if (controller.isSaveSuccess()) {
+                loadUserProfile();
+                StaffManagementForm.getInstance().refreshTableData();
+                Util.Others.showAlert(mainBorderPane, "Cập nhật thông tin thành công!", false);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Lỗi khi mở form thông tin tài khoản: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // SIDEBAR
@@ -219,14 +261,18 @@ public class DashboardForm implements Initializable {
 
     @FXML
     void btnStaffClick(ActionEvent event) {
+        if (!UserSession.getInstance().getPosition().equals("Admin")){
+            Others.showAlert(mainBorderPane, "Bạn không có quyền truy cập vào tính năng này", true);
+            return;
+        }
         setActiveMenu(btnStaff);
-        switchForm("staffManagement.fxml");
+        switchForm("/GUI/Staff/StaffManagement.fxml");
     }
 
     @FXML
     void btnCustomerClick(ActionEvent event) {
         setActiveMenu(btnCustomer);
-        switchForm("CustomerManagement.fxml");
+        switchForm("/GUI/Staff/CustomerManagement.fxml");
     }
 
     @FXML
@@ -239,7 +285,7 @@ public class DashboardForm implements Initializable {
 
         if (isConfirm) {
             try {
-                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("login.fxml"));
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/GUI/Login.fxml"));
                 mainBorderPane.getScene().setRoot(loader.load());
 
                 BusinessBLL.StaffBusiness.logout();

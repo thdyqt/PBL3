@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Staff;
 
 import BusinessBLL.StaffBusiness;
 import EntityDTO.Staff;
@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -22,6 +23,9 @@ import java.util.ResourceBundle;
 public class StaffDialogController implements Initializable {
     @FXML
     private Label lblTitle;
+
+    @FXML
+    private Label lblDesc;
 
     @FXML
     private Button btnCancel;
@@ -52,6 +56,7 @@ public class StaffDialogController implements Initializable {
 
     private Staff currentStaff = null;
     private boolean saveSuccess;
+    private boolean isEditingSelf = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -93,7 +98,7 @@ public class StaffDialogController implements Initializable {
         return saveSuccess;
     }
 
-    void closeForm(){
+    void closeForm() {
         Stage stage = (Stage) txtName.getScene().getWindow();
         stage.close();
     }
@@ -105,16 +110,17 @@ public class StaffDialogController implements Initializable {
 
     public void setStaffData(Staff staff) {
         this.currentStaff = staff;
+        if (staff == null) txtPassword.setText("123456");
 
         if (staff != null) {
-            lblTitle.setText("CHỈNH SỬA NHÂN VIÊN");
+            lblTitle.setText("CHỈNH SỬA THÔNG TIN NHÂN VIÊN");
             txtName.setText(staff.getName());
             txtPhone.setText(staff.getPhone());
             txtUsername.setText(staff.getUser());
             cbRole.setValue(staff.getRole());
 
             if (currentStaff.getId() == UserSession.getInstance().getId()) {
-                cbRole.setEditable(false);
+                cbRole.setDisable(true);
             }
 
             if (staff.getHire_date() != null) {
@@ -133,58 +139,117 @@ public class StaffDialogController implements Initializable {
         String role = cbRole.getValue();
         Date hire_date = dpHireDate.getValue() != null ? Date.valueOf(dpHireDate.getValue()) : new Date(System.currentTimeMillis());
 
-        if (name.isEmpty() || phone.isEmpty() || user.isEmpty() || (currentStaff == null && pass.isEmpty())){
+        if (currentStaff != null) {
+            boolean isNameUnchanged = name.equals(currentStaff.getName());
+            boolean isPhoneUnchanged = phone.equals(currentStaff.getPhone());
+            boolean isUserUnchanged = user.equals(currentStaff.getUser());
+            boolean isRoleUnchanged = role != null && role.equals(currentStaff.getRole());
+            boolean isPassUnchanged = pass.isEmpty();
+
+            if (isEditingSelf) {
+                isPassUnchanged = isPassUnchanged || pass.equals(UserSession.getInstance().getPassword());
+            }
+
+            boolean isDateUnchanged = currentStaff.getHire_date() != null && hire_date.toString().equals(currentStaff.getHire_date().toString());
+
+            if (isNameUnchanged && isPhoneUnchanged && isUserUnchanged && isRoleUnchanged && isPassUnchanged && isDateUnchanged) {
+                Others.showAlert(mainPanel, "Không có thông tin nào được thay đổi!", true);
+                return;
+            }
+        }
+
+        if (name.isEmpty() || phone.isEmpty() || user.isEmpty() || (currentStaff == null && pass.isEmpty())) {
             Others.showAlert(mainPanel, "Vui lòng điền đầy đủ thông tin bắt buộc!", true);
             return;
         }
 
-        else if (!phone.matches("^0[0-9]{9}$")) {
+        if (!phone.matches("^0[0-9]{9}$")) {
             Others.showAlert(mainPanel, "Số điện thoại không hợp lệ!", true);
             txtPhone.requestFocus();
             return;
         }
 
-        else if (user.length() < 6) {
+        if (user.length() < 6) {
             Others.showAlert(mainPanel, "Tài khoản phải từ 6 kí tự!", true);
             txtUsername.requestFocus();
             return;
         }
 
-        else if ((currentStaff == null && pass.length() < 6) || (currentStaff != null && pass.length() > 0 && pass.length() < 6)) {
+        if (currentStaff == null && pass.length() < 6) {
             Others.showAlert(mainPanel, "Mật khẩu phải từ 6 kí tự trở lên!", true);
             txtPassword.requestFocus();
             return;
         }
 
-        else {
-            btnCancel.setDisable(true);
-            btnSave.setDisable(true);
-            Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
+        if (currentStaff != null && !pass.isEmpty() && pass.length() < 6) {
+            Others.showAlert(mainPanel, "Mật khẩu mới phải từ 6 kí tự trở lên!", true);
+            txtPassword.requestFocus();
+            return;
         }
+
+        Window currentWindow = btnSave.getScene().getWindow();
+
+        if (isEditingSelf) {
+            if (!Others.showPasswordConfirmDialog(currentWindow, pass)) return;
+        }
+
+        btnCancel.setDisable(true);
+        btnSave.setDisable(true);
+        Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
 
         new Thread(() -> {
             int status = (currentStaff == null) ? StaffBusiness.register(phone, name, user, pass, role, hire_date)
-                : StaffBusiness.updateStaff(currentStaff.getId(), phone, name, user, pass, role, hire_date);
+                    : StaffBusiness.updateStaff(currentStaff.getId(), phone, name, user, pass, role, hire_date);
 
             Platform.runLater(() -> {
                 btnCancel.setDisable(false);
                 btnSave.setDisable(false);
 
-                if (status == 1){
-                    if (currentStaff == null) Others.showAlert(mainPanel,"Đăng ký tài khoản thành công!", false);
-                    else Others.showAlert(mainPanel,"Chỉnh sửa tài khoản thành công!", false);
+                if (status == 1) {
+                    if (currentStaff == null) Others.showAlert(mainPanel, "Đăng ký tài khoản thành công!", false);
+                    else Others.showAlert(mainPanel, "Chỉnh sửa tài khoản thành công!", false);
                     saveSuccess = true;
+
+                    if (isEditingSelf) {
+                        String sessionPass = pass.isEmpty() ? UserSession.getInstance().getPassword() : pass;
+                        UserSession.getInstance().setStaff(UserSession.getInstance().getId(), phone, name, user, sessionPass, role, hire_date);
+                    }
+
                     var delay = new PauseTransition(Duration.seconds(2.5));
                     delay.setOnFinished(e -> closeForm());
                     delay.play();
-                }
-                else if (status == -1){
+                } else if (status == -1) {
                     Others.showAlert(mainPanel, "Tên đăng nhập hoặc Số điện thoại đã được sử dụng!", true);
-                }
-                else {
+                } else {
                     Others.showAlert(mainPanel, "Lỗi kết nối máy chủ dữ liệu!", true);
                 }
             });
         }).start();
+    }
+
+    public void setViewOnlyMode() {
+        lblTitle.setText("THÔNG TIN TÀI KHOẢN");
+        lblDesc.setText("");
+
+        txtName.setEditable(false);
+        txtPhone.setEditable(false);
+        txtUsername.setEditable(false);
+        txtPassword.setEditable(false);
+        cbRole.setDisable(true);
+        dpHireDate.setDisable(true);
+        txtPassword.setPromptText("Đã bảo mật");
+
+        btnSave.setVisible(false);
+        btnCancel.setText("Đóng");
+    }
+
+    public void setProfileEditMode() {
+        this.isEditingSelf = true;
+
+        lblTitle.setText("CHỈNH SỬA THÔNG TIN CÁ NHÂN");
+        txtUsername.setEditable(false);
+        txtUsername.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #64748B;");
+        dpHireDate.setDisable(true);
+        cbRole.setDisable(true);
     }
 }

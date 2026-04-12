@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Staff;
 
 import DataDAL.StaffData;
 import EntityDTO.Staff;
@@ -41,7 +41,7 @@ public class StaffManagementForm implements Initializable {
     private TableColumn<Staff, Date> colDate;
 
     @FXML
-    private TableColumn<Staff, Integer> colId;
+    private TableColumn<Staff, Void> colSTT;
 
     @FXML
     private TableColumn<Staff, String> colName;
@@ -61,27 +61,60 @@ public class StaffManagementForm implements Initializable {
     @FXML
     private TextField txtSearch;
 
-    private boolean saveSuccess = false;
     private ObservableList<Staff> masterData = FXCollections.observableArrayList();
     private FilteredList<Staff> filteredData;
+    private static StaffManagementForm instance;
+
+    public StaffManagementForm() {
+        instance = this;
+    }
+
+    public static StaffManagementForm getInstance() {
+        return instance;
+    }
+
+    public void refreshTableData() {
+        if (tblStaff != null && tblStaff.getScene() != null) {
+            loadTable();
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableStyles();
-        Others.animateTableRows(tblStaff);
         loadTable();
         setupSearch();
+
+        tblStaff.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
+                if (selectedStaff != null) {
+                    openStaffDialog(selectedStaff);
+                }
+            }
+        });
     }
 
     private void setupTableStyles() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
         colUsername.setCellValueFactory(new PropertyValueFactory<>("user"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colDate.setCellValueFactory(new PropertyValueFactory<>("hire_date"));
 
-        colId.setStyle("-fx-alignment: CENTER; -fx-text-fill: #64748B;");
+        colSTT.setCellFactory(column -> new TableCell<Staff, Void>() {
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(String.valueOf(getIndex() + 1));
+                    setStyle("-fx-alignment: CENTER; -fx-text-fill: #64748B;");
+                }
+            }
+        });
+
         colPhone.setStyle("-fx-alignment: CENTER;");
         colUsername.setStyle("-fx-alignment: CENTER;");
         colName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
@@ -130,6 +163,7 @@ public class StaffManagementForm implements Initializable {
         SortedList<Staff> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tblStaff.comparatorProperty());
         tblStaff.setItems(sortedData);
+        Others.animateTableRows(tblStaff);
     }
 
     private void setupSearch() {
@@ -163,7 +197,7 @@ public class StaffManagementForm implements Initializable {
 
     private void openStaffDialog(Staff staffToEdit) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("staffDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffDialog.fxml"));
             Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();

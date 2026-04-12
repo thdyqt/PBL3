@@ -83,13 +83,13 @@ public class LoginForm implements Initializable {
             Others.showAlert(rootPane, "Đang kết nối máy chủ...", false);
 
             new Thread(() -> {
-                int loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
+                String loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
 
                 Platform.runLater(() -> {
                     btnLogin.setDisable(false);
                     btnRegister.setDisable(false);
 
-                    if (loginStatus == 1){
+                    if (loginStatus.equals("SUCCESS")){
                         failedAttempts = 0;
                         Others.showAlert(rootPane,"Đăng nhập thành công!", false);
                         txtPass.clear();
@@ -98,7 +98,8 @@ public class LoginForm implements Initializable {
                         delay.setOnFinished(actionEvent -> {
                             try {
                                 FXMLLoader loader = null;
-                                if (rbStaff.isSelected()) loader = new FXMLLoader(getClass().getResource("dashboard.fxml"));
+                                if (rbStaff.isSelected()) loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffDashboard.fxml"));
+                                else loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerDashboard.fxml"));
                                 Parent root = loader.load();
 
                                 btnLogin.getScene().setRoot(root);
@@ -110,12 +111,12 @@ public class LoginForm implements Initializable {
                         });
                         delay.play();
                     }
-                    else if (loginStatus == 2){
+                    else if (loginStatus.equals("WRONG PASSWORD")){
                         handleFailedLogin("Mật khẩu không chính xác!");
                         txtPass.clear();
                         txtPass.requestFocus();
                     }
-                    else if (loginStatus == 0){
+                    else if (loginStatus.equals("NOT FOUND")){
                         handleFailedLogin("Tài khoản không tồn tại!");
                         txtUser.clear();
                         txtUser.requestFocus();
@@ -131,7 +132,7 @@ public class LoginForm implements Initializable {
     @FXML
     void btnRegisterClick(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("register.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Register.fxml"));
             Parent root = loader.load();
 
             btnRegister.getScene().setRoot(root);

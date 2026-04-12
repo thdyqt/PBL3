@@ -18,8 +18,8 @@
    <center>
       <VBox prefHeight="390.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="btnP" mnemonicParsing="false" prefHeight="158.0" prefWidth="200.0" styleClass="menu-button" stylesheets="@style2.css" text="Quản Lí Sản Phẩm" />
-            <Button fx:id="btnC" mnemonicParsing="false" prefHeight="159.0" prefWidth="200.0" styleClass="menu-button" stylesheets="@style2.css" text="Quản Lí Danh Mục" />
+            <Button fx:id="btnP" mnemonicParsing="false" prefHeight="158.0" prefWidth="200.0" styleClass="menu-button" stylesheets="@../style2.css" text="Quản Lí Sản Phẩm" />
+            <Button fx:id="btnC" mnemonicParsing="false" prefHeight="159.0" prefWidth="200.0" styleClass="menu-button" stylesheets="@../style2.css" text="Quản Lí Danh Mục" />
          </children>
       </VBox>
    </center>
