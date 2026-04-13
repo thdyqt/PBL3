@@ -11,17 +11,17 @@ public class Customer extends Person {
 
     public Customer(String phone, String name, String user, String password, int point) {
         super(phone, name, user, password);
-        this.point = point;
+        setPoint(point);
     }
 
     public Customer(int id, String phone, String name, String user, int point) {
         super(id, phone, name, user);
-        this.point = point;
+        setPoint(point);
     }
 
     public Customer(int id, String phone, String name, String user, String password, int point) {
         super(id, phone, name, user, password);
-        this.point = point;
+        setPoint(point);
 
     }
 
