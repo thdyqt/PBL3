@@ -307,6 +307,15 @@ public class DashboardForm implements Initializable {
         switchForm("StaffManagement.fxml");
     }
 
+    //SUNNY'S SECTION
+    //DO NOT TOUCH UNLESS AUTHORIZED
+    //side buttons
+    @FXML
+    void btnBillClick(ActionEvent event) {
+        setActiveMenu(btnBill);
+        switchForm("BillManagement.fxml");
+    }
+
     @FXML
     void btnCustomerClick(ActionEvent event) {
         setActiveMenu(btnCustomer);
@@ -333,5 +342,10 @@ public class DashboardForm implements Initializable {
             }
         }
     }
+
+
+
+
+
 }
 

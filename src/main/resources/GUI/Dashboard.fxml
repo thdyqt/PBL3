@@ -19,7 +19,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainBorderPane" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.DashboardForm">
+<BorderPane fx:id="mainBorderPane" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.DashboardForm">
 
     <center>
         <BorderPane BorderPane.alignment="CENTER">
@@ -226,7 +226,7 @@
                      </padding>
                         </Button>
 
-                              <Button fx:id="btnBill" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Lịch sử Giao dịch">
+                              <Button fx:id="btnBill" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnBillClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Lịch sử Giao dịch">
                             <graphic>
                                 <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #94A3B8; -fx-background-radius: 10;">
                                     <children>
