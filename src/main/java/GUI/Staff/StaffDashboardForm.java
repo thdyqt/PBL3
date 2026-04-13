@@ -304,7 +304,7 @@ public class StaffDashboardForm implements Initializable {
     @FXML
     void btnProductClick(ActionEvent event){
         setActiveMenu(btnProduct);
-        switchForm("/GUI/Staff/productMenu.fxml");
+        switchForm("/GUI/Staff/ProductMenu.fxml");
     }
 }
 

@@ -22,7 +22,7 @@
 <BorderPane fx:id="mainBorderPane" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.StaffDashboardForm">
 
     <left>
-        <VBox fx:id="sidebar" prefWidth="270.0" style="-fx-background-color: linear-gradient(to bottom right, #1E1B4B, #2563EB); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 20, 0, 8, 0);" stylesheets="@style.css" BorderPane.alignment="CENTER">
+        <VBox fx:id="sidebar" prefWidth="270.0" style="-fx-background-color: linear-gradient(to bottom right, #1E1B4B, #2563EB); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 20, 0, 8, 0);" stylesheets="@../style.css" BorderPane.alignment="CENTER">
             <children>
                 <Pane prefHeight="0.0" prefWidth="0.0">
                     <children>
