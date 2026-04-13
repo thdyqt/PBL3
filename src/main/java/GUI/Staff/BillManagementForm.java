@@ -117,6 +117,7 @@ public class BillManagementForm implements Initializable{
 
         setupTable();
         loadTable();
+        search();
     }
 
     private void setupTable(){
@@ -182,6 +183,15 @@ public class BillManagementForm implements Initializable{
             }
             return new SimpleStringProperty("");
         });
+
+        col_CustomerID.setStyle("-fx-alignment: CENTER;");
+        col_OrderID.setStyle("-fx-alignment: CENTER;");
+        col_CustomerName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+        col_OrderStatus.setStyle("-fx-alignment: CENTER;");
+        col_PhoneCustomer.setStyle("-fx-alignment: CENTER;");
+        colProcessStaffName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+        colProcessTime.setStyle("-fx-alignment: CENTER;");
+        col_StaffID.setStyle("-fx-alignment: CENTER;");
     }
 
     private void search(){
@@ -211,17 +221,22 @@ public class BillManagementForm implements Initializable{
                         }
                         return false;
                     case "Tìm kiếm theo SĐT khách hàng":
-                        if (order.getCustomer() != null || order.getCustomer().getPhone() != null){
+                        if (order.getCustomer() != null && order.getCustomer().getPhone() != null){
                             return String.valueOf(order.getCustomer().getPhone()).contains(keyword);
                         }
                         return false;
-
                     default:
                         return false;
                 }
 
+            });
 
             });
+            //force reset when cbb option change
+            cbbSearchOption.valueProperty().addListener((obs, oldVal, newVal) -> {
+            String currentText = txtSearch.getText();
+            txtSearch.setText("");
+            txtSearch.setText(currentText);
         });
     }
 
@@ -239,7 +254,7 @@ public class BillManagementForm implements Initializable{
         //sort binding
         sortedData.comparatorProperty().bind(tbOrder.comparatorProperty());
 
-        tbOrder.setItems(masterData);
+        tbOrder.setItems(sortedData);
 
         Others.animateTableRows(tbOrder);
     }
