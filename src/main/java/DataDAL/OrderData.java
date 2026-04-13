@@ -13,7 +13,10 @@ import java.util.List;
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT * FROM Orders WHERE status = 'active'";
+        String sql = "SELECT o.*, s.full_name AS staff_name, c.full_name AS customer_name, c.phone AS customer_phone " +
+                "FROM Orders o " +
+                "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
+                "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang";
 
         //open connection (conn) -> load sql query (stmt) -> return result (rs)
         try (
@@ -22,12 +25,27 @@ public class OrderData {
              ResultSet rs = stmt.executeQuery()
         ) {
 
-            //get everything
+            //get everything there is of order
             while (rs.next()) {
                 Order order = new Order();
-                order.setId(rs.getInt("id"));
-
+                order.setId(rs.getInt("id_Order"));
                 order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+
+                Staff staff = new Staff();
+                staff.setId(rs.getInt("id_Staff"));
+                staff.setName(rs.getString("staff_name"));
+                order.setStaff(staff);
+
+                int id_Customer = rs.getInt("id_Customer");
+                if (!rs.wasNull()){
+                    Customer customer = new Customer();
+                    customer.setId(id_Customer);
+                    customer.setName(rs.getString("customer_name"));
+                    customer.setPhone(rs.getString("customer_phone"));
+                    order.setCustomer(customer);
+                }
+
+                order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
 
                 list.add(order);
             }
@@ -38,68 +56,154 @@ public class OrderData {
         return list;
     }
 
-    public static boolean addOrder(Order order){
+    public static int addOrder(Order order){
         //foreign keys are in here
         //specifically id_Staff and id_Customer
         //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status) VALUES (?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
-
             //data loading
-            //1,2,3 corresponding to the order in sql
+            //1,2,3,4 corresponding to the order in sql
             stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
             stmt.setInt(2, order.getStaff().getId());
-            stmt.setInt(3, order.getCustomer().getId());
+
+            if (order.getCustomer() != null && order.getCustomer().getId() > 0) {
+                stmt.setInt(3, order.getCustomer().getId());
+            } else {
+                stmt.setNull(3, java.sql.Types.INTEGER);
+            }
+
+            stmt.setString(4, order.getStatus().name());
 
             int rowsAffected = stmt.executeUpdate();
-            //it added something -> return true
-            return rowsAffected > 0;
+
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                        //this method now return the id of the created order
+                    }
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+
+        return -1;
     }
 
-    public static Order searchOrder(int id){
-        String sql = "SELECT * FROM Orders WHERE id = ?";
-        Order foundOrder = null;
+    //the method that do the actual search work
+    private static List<Order> executeQuery_Order(String sql, int searchPara){
+        //create the empty list to hold (and later return) all records that fit the criteria
+        List<Order> orderList = new ArrayList<>();
 
         try (
-            Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+        ){
+            //prevent SQL injection by making it an int
+            stmt.setInt(1, searchPara);
 
-            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()){
+                    //setting the 3 keys or Order
+                    Order order = new Order();
+                    order.setId(rs.getInt("id_Order"));
+                    order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
 
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    foundOrder = new Order();
-                    foundOrder.setId(rs.getInt("id"));
-                    foundOrder.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+                    Staff staff = new Staff();
+                    staff.setId(rs.getInt("id_Staff"));
+                    order.setStaff(staff);
 
                     Customer customer = new Customer();
                     customer.setId(rs.getInt("id_Customer"));
-                    foundOrder.setCustomer(customer);
+                    order.setCustomer(customer);
 
-                    Staff staff = new Staff();
-                    customer.setId(rs.getInt("id_Staff"));
-                    foundOrder.setStaff(staff);
+                    orderList.add(order);
                 }
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e){
             e.printStackTrace();
         }
-        return foundOrder;
+        return orderList;
+    }
+
+    //same exact thing as above, but now search para is String instead of int
+    private static List<Order> executeQuery_Order(String sql, String searchPara){
+        //create the empty list to hold (and later return) all records that fit the criteria
+        List<Order> orderList = new ArrayList<>();
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+        ){
+            //prevent SQL injection by making it an int
+            stmt.setString(1, searchPara);
+
+            try (ResultSet rs = stmt.executeQuery()){
+                while (rs.next()){
+                    //setting the 3 keys or Order
+                    Order order = new Order();
+                    order.setId(rs.getInt("id_Order"));
+                    order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+
+                    Staff staff = new Staff();
+                    staff.setId(rs.getInt("id_Staff"));
+                    order.setStaff(staff);
+
+                    Customer customer = new Customer();
+                    customer.setId(rs.getInt("id_Customer"));
+                    order.setCustomer(customer);
+
+                    orderList.add(order);
+                }
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        return orderList;
+    }
+
+    //mutiple search methods (ID/Staff/Customer)
+    public static Order searchOrder_ByID(int id_Order){
+        String sql = "SELECT * FROM Orders WHERE id_Order = ?";
+        List<Order> result = executeQuery_Order(sql, id_Order);
+
+        if (result.isEmpty()){
+            return null;
+        }
+        return result.get(0);
+    }
+
+    //why list for those 2?
+    //because a staff can process multiple order
+    //so can a customer visit and buy multiple time
+    public static List<Order> searchOrder_ByStaffID(int id_Staff){
+        String sql = "SELECT * FROM Orders WHERE id_Staff = ?";
+        return executeQuery_Order(sql, id_Staff);
+    }
+
+    public static List<Order> searchOrder_ByCustomerPhone(String phone){
+        String sql = "SELECT o.* FROM Orders o " +
+                "JOIN Customer c ON o.id_Customer = c.id_Customer " +
+                "WHERE c.phone LIKE ?";
+
+        //so that incomplete phone number input can still produce result with the number in it
+        String searchPattern = "%" + phone + "%";
+
+        return executeQuery_Order(sql, searchPattern);
     }
 
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
-        String sql = "UPDATE Orders SET process_time = ?, id_nhan_vien = ?, id_khach_hang = ? WHERE id = ?";
+        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ? WHERE id_Order = ?";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -110,9 +214,28 @@ public class OrderData {
             stmt.setInt(2, order.getStaff().getId());
             stmt.setInt(3, order.getCustomer().getId());
 
-            //the id of the Order that need to be updated
-            stmt.setInt(4, order.getId());
+            //the id of the Order that need to be updated and its status
+            stmt.setString(4, order.getStatus().name());
+            stmt.setInt(5, order.getId());
 
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean deleteOrder(int OrderID){
+        String sql = "DELETE FROM Orders WHERE id_Order = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, OrderID);
+
+            // Returns true if 1 or more rows were deleted
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 

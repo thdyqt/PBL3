@@ -2,6 +2,7 @@ package DataDAL;
 
 import EntityDTO.OrderDetail;
 import EntityDTO.Product;
+import EntityDTO.Order;
 
 import Util.DBConnection;
 import java.sql.*;
@@ -12,17 +13,16 @@ import java.util.List;
 //basically adding/deleting items from a grocery bag
 public class OrderDetailData {
     //CRUD operations
-    public static boolean addProduct_OrderDetail(int id_Order, OrderDetail orderDetail){
-        String sql = "INSERT INTO `OrderDetail` (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
+    public static boolean addProduct_OrderDetail(OrderDetail orderDetail){
+        String sql = "INSERT INTO OrderDetail (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
-
-            stmt.setInt(1, id_Order);
+            stmt.setInt(1, orderDetail.getOrder().getId());
             stmt.setInt(2, orderDetail.getProduct().getProductID());
-            stmt.setInt(3, orderDetail.getProduct().getQuantity());
+            stmt.setInt(3, orderDetail.getQuantity());
             stmt.setInt(4, orderDetail.getTotalPrice());
 
             int rowsAffected = stmt.executeUpdate();
@@ -34,40 +34,54 @@ public class OrderDetailData {
         }
     }
 
-    public static List<OrderDetail> searchOrderDetail(int id_Order){
-        List<OrderDetail> found = new ArrayList<>();
-        String sql = "SELECT * FROM `OrderDetail` WHERE id_Order = ?";
-        try(
-                Connection connection = DBConnection.getConnection();
-                PreparedStatement stmt = connection.prepareStatement(sql);
+    //method that does the actual work
+    private static List<OrderDetail> executeQuery_OrderDetail(String sql, int searchPara){
+        List<OrderDetail> orderDetailList = new ArrayList<>();
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
         ){
+            stmt.setInt(1, searchPara);
 
-            stmt.setInt(1, id_Order);
-
-            try(ResultSet rs = stmt.executeQuery()){
+            try (ResultSet rs = stmt.executeQuery()){
                 while (rs.next()){
-                    int id_Product = rs.getInt("id_Product");
-                    int quantity = rs.getInt("quantity");
-                    int price = rs.getInt("price");
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setQuantity(rs.getInt("quantity"));
+                    orderDetail.setTotalPrice(rs.getInt("price"));
+
+                    Order order = new Order();
+                    order.setId(rs.getInt("id_Order"));
+                    orderDetail.setOrder(order);
 
                     Product product = new Product();
-                    product.setProductID(id_Product);
+                    product.setProductID(rs.getInt("id_Product"));
+                    orderDetail.setProduct(product);
 
-                    OrderDetail item = new OrderDetail(id_Order, product, quantity, price);
-
-                    found.add(item);
+                    orderDetailList.add(orderDetail);
                 }
             }
-
-        } catch (SQLException e){
+        }
+        catch (SQLException e){
             e.printStackTrace();
         }
-        return found;
+        return orderDetailList;
+    }
+
+    //mutiple search methods (id_Order/id_Product)
+    public static List<OrderDetail> searchOrderDetail_ById_Order(int id_Order){
+        String sql = "SELECT * FROM OrderDetail WHERE id_order = ?";
+        return executeQuery_OrderDetail(sql, id_Order);
+    }
+
+    public static List<OrderDetail> searchOrderDetail_ById_Product(int id_Product){
+        String sql = "SELECT * FROM OrderDetail WHERE id_Product = ?";
+        return executeQuery_OrderDetail(sql, id_Product);
     }
 
     //this just change the amount of a product
     public static boolean updateOrderDetail(int newQuantity, int id_Order, int id_Product){
-        String sql = "UPDATE `OrderDetail` SET quantity = ? WHERE id_Order = ? AND id_Product = ?";
+        String sql = "UPDATE OrderDetail SET quantity = ? WHERE id_Order = ? AND id_Product = ?";
         try (
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -81,12 +95,12 @@ public class OrderDetailData {
             return rowsAffected > 0;
         } catch (SQLException e){
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
-    public static boolean deleteOrderDetail(int id_Order, int id_Product){
-        String sql = "DELETE FROM `OrderDetail` WHERE id_Order = ? AND id_Product = ?";
+    public static boolean deleteOrderDetail_1_Product(int id_Order, int id_Product){
+        String sql = "DELETE FROM OrderDetail WHERE id_Order = ? AND id_Product = ?";
         try(
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -98,7 +112,25 @@ public class OrderDetailData {
             return rowsAffected > 0;
         }catch (SQLException e){
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
+
+    public static boolean deleteALLItemsFromOrder(int OrderID){
+        String sql = "DELETE FROM OrderDetail WHERE id_Order = ?";
+
+        try(
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+        ){
+            stmt.setInt(1, OrderID);
+            stmt.executeUpdate();
+
+            return true;
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

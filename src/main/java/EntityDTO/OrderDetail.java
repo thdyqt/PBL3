@@ -1,11 +1,11 @@
-package EntityDTO;
-
-//ok this might sounds counterintuitive
+//ok this might sound counterintuitive
 //but OrderDetail is like, how many of a product is there
 //thus the Order contain many OrderDetail
+package EntityDTO;
+
 public class OrderDetail {
     //attributes
-    private int orderId;
+    private Order order;
     private Product product;
     private int quantity;
     private int price;
@@ -15,8 +15,8 @@ public class OrderDetail {
 
     //constructors
     public OrderDetail(){};
-    public OrderDetail(int orderId, Product product, int quantity, int price){
-        this.orderId = orderId;
+    public OrderDetail(Order order, Product product, int quantity, int price){
+        this.order = order;
         this.product = product;
         this.quantity = quantity;
         this.price = price;
@@ -24,9 +24,9 @@ public class OrderDetail {
     }
 
     //get-set
-    public int getId(){return orderId;}
-    public void setId(int orderId){
-        this.orderId = orderId;
+    public Order getOrder(){return order;}
+    public void setOrder(Order order){
+        this.order = order;
     }
 
     public Product getProduct(){return product;}

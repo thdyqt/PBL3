@@ -3,7 +3,7 @@ package EntityDTO;
 public class Customer extends Person {
     private int point;
     public enum rank {
-        Bronze, Silver, Gold, Emerald, Diamond;
+        Bronze, Silver, Gold, Diamond, Emerald
     }
     private rank Customer_rank;
 
@@ -24,6 +24,7 @@ public class Customer extends Person {
         setPoint(point);
 
     }
+
 
     public rank getCustomer_rank() {
         return Customer_rank;
