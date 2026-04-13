@@ -1,7 +1,8 @@
-package GUI;
+package GUI.Staff;
 
 import DataDAL.CustomerData;
 import EntityDTO.Customer;
+import GUI.CustomerDialogController;
 import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

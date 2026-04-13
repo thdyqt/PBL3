@@ -4,20 +4,22 @@ public class Category {
     // ===== ATTRIBUTES =====
     private int CategoryID;
     private String categoryName;
+    private String status;
 
 
     // ===== CONSTRUCTORS =====
 
     // Constructor đầy đủ (load từ database)
-    public Category(int CategoryID, String categoryName) {
+    public Category(int CategoryID, String categoryName, String status) {
         this.CategoryID   = CategoryID;
         this.categoryName = categoryName;
+        this.status = status;
 
     }
 
     // Constructor không có ID (tạo mới, ID do DB tự sinh)
-    public Category(String categoryName) {
-        this(0, categoryName);
+    public Category(String categoryName,String status) {
+        this(0, categoryName,status);
     }
 
 

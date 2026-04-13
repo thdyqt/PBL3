@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Staff;
 
 import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;

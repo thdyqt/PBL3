@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Staff;
 
 import BusinessBLL.StaffBusiness;
 import EntityDTO.Staff;
@@ -9,18 +9,10 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -195,14 +187,15 @@ public class StaffDialogController implements Initializable {
             return;
         }
 
+        Window currentWindow = btnSave.getScene().getWindow();
+
         if (isEditingSelf) {
-            if (!confirmCurrentPassword(pass)) return;
+            if (!Others.showPasswordConfirmDialog(currentWindow, pass)) return;
         }
 
         btnCancel.setDisable(true);
         btnSave.setDisable(true);
         Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
-
 
         new Thread(() -> {
             int status = (currentStaff == null) ? StaffBusiness.register(phone, name, user, pass, role, hire_date)
@@ -258,93 +251,5 @@ public class StaffDialogController implements Initializable {
         txtUsername.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #64748B;");
         dpHireDate.setDisable(true);
         cbRole.setDisable(true);
-    }
-
-    private boolean confirmCurrentPassword(String newPassword) {
-        final boolean[] isConfirmed = {false};
-
-        Stage stage = new Stage(StageStyle.TRANSPARENT);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(txtName.getScene().getWindow());
-
-        VBox root = new VBox(12);
-        root.setPadding(new Insets(25));
-        root.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #E2E8F0; -fx-border-width: 1;");
-
-        DropShadow shadow = new DropShadow(20, new Color(0, 0, 0, 0.15));
-        root.setEffect(shadow);
-
-        Label lblHeader = new Label("Xác nhận bảo mật");
-        lblHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
-
-        Label lblDesc = new Label("Vui lòng xác nhận mật khẩu để lưu các thay đổi:");
-        lblDesc.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B;");
-
-        PasswordField pwdCurrentField = new PasswordField();
-        pwdCurrentField.setPromptText("Nhập mật khẩu hiện tại...");
-        pwdCurrentField.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
-        pwdCurrentField.setPrefWidth(320);
-
-        PasswordField pwdConfirmNewField = new PasswordField();
-        pwdConfirmNewField.setPromptText("Xác nhận lại mật khẩu mới...");
-        pwdConfirmNewField.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
-        pwdConfirmNewField.setPrefWidth(320);
-
-        boolean isChangingPassword = newPassword != null && !newPassword.isEmpty();
-        if (!isChangingPassword) {
-            pwdConfirmNewField.setVisible(false);
-            pwdConfirmNewField.setManaged(false);
-        }
-
-        Label lblError = new Label("");
-        lblError.setStyle("-fx-text-fill: #EF4444; -fx-font-size: 12px; -fx-font-weight: bold;");
-        lblError.setPrefHeight(15);
-        lblError.setWrapText(true);
-
-        Button btnCancelPopup = new Button("Hủy bỏ");
-        btnCancelPopup.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
-        btnCancelPopup.setOnAction(e -> stage.close());
-
-        Button btnConfirmPopup = new Button("Xác nhận");
-        btnConfirmPopup.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
-
-        Runnable checkAction = () -> {
-            boolean isCurrentCorrect = pwdCurrentField.getText().equals(UserSession.getInstance().getPassword());
-            boolean isNewCorrect = !isChangingPassword || pwdConfirmNewField.getText().equals(newPassword);
-
-            if (!isCurrentCorrect) {
-                lblError.setText("Mật khẩu hiện tại không chính xác!");
-                pwdCurrentField.clear();
-                pwdCurrentField.requestFocus();
-            } else if (!isNewCorrect) {
-                lblError.setText("Mật khẩu xác nhận không trùng khớp với mật khẩu mới!");
-                pwdConfirmNewField.clear();
-                pwdConfirmNewField.requestFocus();
-            } else {
-                isConfirmed[0] = true;
-                stage.close();
-            }
-        };
-
-        btnConfirmPopup.setOnAction(e -> checkAction.run());
-        pwdCurrentField.setOnAction(e -> {
-            if (isChangingPassword) pwdConfirmNewField.requestFocus(); // Nhấn enter tự nhảy xuống ô dưới
-            else checkAction.run();
-        });
-        pwdConfirmNewField.setOnAction(e -> checkAction.run()); // Ở ô dưới nhấn Enter là check luôn
-
-        HBox buttonBox = new HBox(10, btnCancelPopup, btnConfirmPopup);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-
-        root.getChildren().addAll(lblHeader, lblDesc, pwdCurrentField, pwdConfirmNewField, lblError, buttonBox);
-
-        Scene scene = new Scene(root);
-        scene.setFill(Color.TRANSPARENT);
-        stage.setScene(scene);
-
-        Platform.runLater(pwdCurrentField::requestFocus); // Tự đưa con trỏ chuột vào ô pass hiện tại
-        stage.showAndWait();
-
-        return isConfirmed[0];
     }
 }

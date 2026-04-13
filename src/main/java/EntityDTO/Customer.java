@@ -9,14 +9,20 @@ public class Customer extends Person {
 
     public Customer() {}
 
-    public Customer(String phone, String name, String user, String password) {
+    public Customer(String phone, String name, String user, String password, int point) {
         super(phone, name, user, password);
-        this.setPoint(0);
+        setPoint(point);
+    }
+
+    public Customer(int id, String phone, String name, String user, int point) {
+        super(id, phone, name, user);
+        setPoint(point);
     }
 
     public Customer(int id, String phone, String name, String user, String password, int point) {
         super(id, phone, name, user, password);
-        this.setPoint(point);
+        setPoint(point);
+
     }
 
 

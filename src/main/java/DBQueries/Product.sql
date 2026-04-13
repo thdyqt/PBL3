@@ -21,5 +21,9 @@ VALUES
     (N'Hamburger bò',      2, 35000, 20),
     (N'Pizza phô mai',     3, 45000,  0),
     (N'Nước cam ép',       4, 15000, 25);
+ALTER TABLE Product
+    ADD COLUMN image VARCHAR(255) DEFAULT NULL;
+UPDATE Product SET image = 'banhmithit.png' WHERE ProductID = 1;
+SHOW COLUMNS FROM Product;
 USE PBL3;
 DROP  TABLE Product;

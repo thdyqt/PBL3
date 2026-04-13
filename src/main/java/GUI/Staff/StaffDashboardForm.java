@@ -1,6 +1,7 @@
-package GUI;
+package GUI.Staff;
 
 import EntityDTO.Staff;
+import Util.IContentArea;
 import Util.Others;
 import Util.UserSession;
 import javafx.animation.*;
@@ -24,11 +25,9 @@ import javafx.util.Duration;
 
 import java.net.URL;
 import java.sql.Date;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
-public class DashboardForm implements Initializable {
+public class StaffDashboardForm implements Initializable {
     @FXML
     private Button btnBill;
 
@@ -117,7 +116,7 @@ public class DashboardForm implements Initializable {
 
         menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnStatistic};
         loadUserProfile();
-        startClock();
+        Others.startClock(lblTime);
         btnHomeClick(null);
     }
 
@@ -180,31 +179,17 @@ public class DashboardForm implements Initializable {
         sidebarTimeline.play();
     }
 
-    private void startClock() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a   |   dd/MM/yyyy");
-
-        Timeline clock = new Timeline(
-                new KeyFrame(Duration.ZERO, e -> {
-                    lblTime.setText(LocalDateTime.now().format(formatter));
-                }),
-                new KeyFrame(Duration.seconds(1))
-        );
-
-        clock.setCycleCount(Animation.INDEFINITE);
-        clock.play();
-    }
-
     @FXML
     private void openProfileDialog(boolean isViewOnly) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("staffDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffDialog.fxml"));
             Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();
 
             UserSession session = UserSession.getInstance();
-            java.sql.Date sqlHireDate = session.getHire_date() != null ?
-                    new java.sql.Date(session.getHire_date().getTime()) : null;
+            Date sqlHireDate = session.getHire_date() != null ?
+                    new Date(session.getHire_date().getTime()) : null;
 
             Staff currentStaff = new Staff(
                     session.getId(),
@@ -242,28 +227,6 @@ public class DashboardForm implements Initializable {
         }
     }
 
-    private static StaffDialogController getStaffDialogController(boolean isViewOnly, FXMLLoader loader) {
-        StaffDialogController controller = loader.getController();
-
-        UserSession session = UserSession.getInstance();
-
-        Staff currentStaff = new Staff(
-                session.getId(),
-                session.getPhone(),
-                session.getName(),
-                session.getUsername(),
-                session.getPosition(),
-                (Date) session.getHire_date()
-        );
-
-        controller.setStaffData(currentStaff);
-
-        if (isViewOnly) {
-            controller.setViewOnlyMode();
-        }
-        return controller;
-    }
-
     // SIDEBAR
     private void setActiveMenu(Button activeButton) {
         if (menuButtons == null) return;
@@ -283,6 +246,11 @@ public class DashboardForm implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Node node = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof IContentArea ctrl) {
+                // Nếu có, chắc chắn nó có hàm setContentArea để ta gọi
+                ctrl.setContentArea(this.contentArea);
+            }
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(node);
@@ -304,22 +272,13 @@ public class DashboardForm implements Initializable {
             return;
         }
         setActiveMenu(btnStaff);
-        switchForm("StaffManagement.fxml");
-    }
-
-    //SUNNY'S SECTION
-    //DO NOT TOUCH UNLESS AUTHORIZED
-    //side buttons
-    @FXML
-    void btnBillClick(ActionEvent event) {
-        setActiveMenu(btnBill);
-        switchForm("BillManagement.fxml");
+        switchForm("/GUI/Staff/StaffManagement.fxml");
     }
 
     @FXML
     void btnCustomerClick(ActionEvent event) {
         setActiveMenu(btnCustomer);
-        switchForm("CustomerManagement.fxml");
+        switchForm("/GUI/Staff/CustomerManagement.fxml");
     }
 
     @FXML
@@ -332,7 +291,7 @@ public class DashboardForm implements Initializable {
 
         if (isConfirm) {
             try {
-                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("login.fxml"));
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/GUI/Login.fxml"));
                 mainBorderPane.getScene().setRoot(loader.load());
 
                 BusinessBLL.StaffBusiness.logout();
@@ -342,10 +301,10 @@ public class DashboardForm implements Initializable {
             }
         }
     }
-
-
-
-
-
+    @FXML
+    void btnProductClick(ActionEvent event){
+        setActiveMenu(btnProduct);
+        switchForm("/GUI/Staff/productMenu.fxml");
+    }
 }
 
