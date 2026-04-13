@@ -105,6 +105,14 @@ public class BillManagementForm implements Initializable{
     }
 
     private void setupTable(){
+        //automatic search
+        //work via calling getId() and getStatus
+        //underlying mechanism
+        //convert id into Id() -> add get into it to make getId()
+        //then it looks for method named getId() in EntityDTO.Order
+        //finally return the value of it
+        //impractical
+        //only use for those 2 because the naming of the getters in Order concidently
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
         col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
@@ -140,21 +148,21 @@ public class BillManagementForm implements Initializable{
             if (cellData.getValue().getCustomer() != null && cellData.getValue().getCustomer().getId() > 0) {
                 return new SimpleObjectProperty<>(cellData.getValue().getCustomer().getId());
             }
-            return new SimpleObjectProperty<>(null); // Leave blank if it's a Walk-in
+            return new SimpleObjectProperty<>(null);
         });
 
         col_CustomerName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getCustomer() != null) {
                 return new SimpleStringProperty(cellData.getValue().getCustomer().getName());
             }
-            return new SimpleStringProperty("Khách vãng lai"); // Walk-in Customer
+            return new SimpleStringProperty("Non registered customer");
         });
 
         col_PhoneCustomer.setCellValueFactory(cellData -> {
             if (cellData.getValue().getCustomer() != null) {
                 return new SimpleStringProperty(cellData.getValue().getCustomer().getPhone());
             }
-            return new SimpleStringProperty(""); // Blank for walk-ins
+            return new SimpleStringProperty("");
         });
     }
 
