@@ -97,108 +97,46 @@ public class OrderData {
         return -1;
     }
 
-    //the method that do the actual search work
-    private static List<Order> executeQuery_Order(String sql, int searchPara){
-        //create the empty list to hold (and later return) all records that fit the criteria
-        List<Order> orderList = new ArrayList<>();
-
-        try (
-                Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-        ){
-            //prevent SQL injection by making it an int
-            stmt.setInt(1, searchPara);
-
-            try (ResultSet rs = stmt.executeQuery()){
-                while (rs.next()){
-                    //setting the 3 keys or Order
-                    Order order = new Order();
-                    order.setId(rs.getInt("id_Order"));
-                    order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
-
-                    Staff staff = new Staff();
-                    staff.setId(rs.getInt("id_Staff"));
-                    order.setStaff(staff);
-
-                    Customer customer = new Customer();
-                    customer.setId(rs.getInt("id_Customer"));
-                    order.setCustomer(customer);
-
-                    orderList.add(order);
-                }
-            }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        return orderList;
-    }
-
-    //same exact thing as above, but now search para is String instead of int
-    private static List<Order> executeQuery_Order(String sql, String searchPara){
-        //create the empty list to hold (and later return) all records that fit the criteria
-        List<Order> orderList = new ArrayList<>();
-
-        try (
-                Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-        ){
-            //prevent SQL injection by making it an int
-            stmt.setString(1, searchPara);
-
-            try (ResultSet rs = stmt.executeQuery()){
-                while (rs.next()){
-                    //setting the 3 keys or Order
-                    Order order = new Order();
-                    order.setId(rs.getInt("id_Order"));
-                    order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
-
-                    Staff staff = new Staff();
-                    staff.setId(rs.getInt("id_Staff"));
-                    order.setStaff(staff);
-
-                    Customer customer = new Customer();
-                    customer.setId(rs.getInt("id_Customer"));
-                    order.setCustomer(customer);
-
-                    orderList.add(order);
-                }
-            }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        return orderList;
-    }
-
     //mutiple search methods (ID/Staff/Customer)
     public static Order searchOrder_ByID(int id_Order){
-        String sql = "SELECT * FROM Orders WHERE id_Order = ?";
-        List<Order> result = executeQuery_Order(sql, id_Order);
+        String sql = "SELECT o.*, s.full_name AS staff_name, c.full_name AS customer_name, c.phone AS customer_phone " +
+                "FROM Orders o " +
+                "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
+                "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang " +
+                "WHERE o.id_Order = ?";
 
-        if (result.isEmpty()){
-            return null;
+        try (
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+        ){
+            stmt.setInt(1, id_Order);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()){
+                Order order = new Order();
+                order.setId(rs.getInt("id_Order"));
+                order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+
+                Staff staff = new Staff();
+                staff.setId(rs.getInt("id_Staff"));
+                staff.setName(rs.getString("staff_name"));
+                order.setStaff(staff);
+
+                int customerId = rs.getInt("id_Customer");
+                if (!rs.wasNull()){
+                    Customer customer = new Customer();
+                    customer.setId(customerId);
+                    customer.setName(rs.getString("customer_name"));
+                    customer.setPhone(rs.getString("customer_phone"));
+                    order.setCustomer(customer);
+                }
+                return order;
+            }
+
+        } catch (SQLException e){
+            e.printStackTrace();
         }
-        return result.get(0);
-    }
-
-    //why list for those 2?
-    //because a staff can process multiple order
-    //so can a customer visit and buy multiple time
-    public static List<Order> searchOrder_ByStaffID(int id_Staff){
-        String sql = "SELECT * FROM Orders WHERE id_Staff = ?";
-        return executeQuery_Order(sql, id_Staff);
-    }
-
-    public static List<Order> searchOrder_ByCustomerPhone(String phone){
-        String sql = "SELECT o.* FROM Orders o " +
-                "JOIN Customer c ON o.id_Customer = c.id_Customer " +
-                "WHERE c.phone LIKE ?";
-
-        //so that incomplete phone number input can still produce result with the number in it
-        String searchPattern = "%" + phone + "%";
-
-        return executeQuery_Order(sql, searchPattern);
+        return null;
     }
 
     //same thing as addOrder, albeit changed slightly
