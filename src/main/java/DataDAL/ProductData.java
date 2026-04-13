@@ -30,7 +30,7 @@ public class ProductData {
         );
     }
 //====Lấy tất cả====
-    public List<Product> getAllProduct(){
+    public static List<Product> getAllProduct(){
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE status = 'Active'";
 
@@ -46,9 +46,10 @@ public class ProductData {
         }
         return list;
     }
+
 //====THÊM SẢN PHẨM===
     public static boolean addProduct(Product product) {
-        String sql = "INSERT INTO Product (ProductName, CategoryID, ProductPrice, quantity) "
+        String sql = "INSERT INTO Product (ProductName, CategoryID, ProductPrice, quantity,image) "
                 + "VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql,

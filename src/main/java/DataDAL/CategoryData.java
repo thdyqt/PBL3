@@ -10,12 +10,12 @@ import java.util.List;
 
 public class CategoryData {
     public static Category mapResultSet(ResultSet rs) throws SQLException {
-        return new Category(rs.getInt("CategoryID"),
-                            rs.getString("CategoryName"));
+        return new Category(rs.getInt("category_id"),
+                            rs.getString("category_name"), rs.getString("status"));
     }
-    public static List<Category> getALL(){
+    public static List<Category> getAll(){
         List<Category> list = new ArrayList<>();
-        String sql = "SELECT * FROM Category";
+        String sql = "SELECT * FROM Category WHERE  status = 'Active'";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -30,6 +30,15 @@ public class CategoryData {
         return list;
     }
     // ===== GET BY ID =====
+    public static int getCategoryIDByName(String categoryName) {
+        List<Category> categories = CategoryData.getAll();
+        for (Category c : categories) {
+            if (c.getCategoryName().equals(categoryName)) {
+                return c.getCategoryID();
+            }
+        }
+        return -1; // Không tìm thấy
+    }
     public static Category getByID(int categoryID) {
         String sql = "SELECT * FROM Category WHERE category_id = ?";
 
@@ -47,13 +56,13 @@ public class CategoryData {
     }
     // ===== ADD =====
     public static boolean addCategory(Category category) {
-        String sql = "INSERT INTO Category (category_name) VALUES (?)";
+        String sql = "INSERT INTO Category (category_name,status) VALUES (?,?)";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, category.getCategoryName());
-
+            stmt.setString(2, "Active");
             int rows = stmt.executeUpdate();
             if (rows > 0) {
                 ResultSet keys = stmt.getGeneratedKeys();

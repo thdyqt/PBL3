@@ -1,6 +1,7 @@
 package GUI.Staff;
 
 import EntityDTO.Staff;
+import Util.IContentArea;
 import Util.Others;
 import Util.UserSession;
 import javafx.animation.*;
@@ -246,8 +247,8 @@ public class StaffDashboardForm implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Node node = loader.load();
             Object controller = loader.getController();
-            if (controller instanceof productMenuController) {
-                productMenuController ctrl = (productMenuController) controller;
+            if (controller instanceof IContentArea ctrl) {
+                // Nếu có, chắc chắn nó có hàm setContentArea để ta gọi
                 ctrl.setContentArea(this.contentArea);
             }
 

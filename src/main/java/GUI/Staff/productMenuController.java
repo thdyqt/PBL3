@@ -1,5 +1,6 @@
 package GUI.Staff;
 
+import Util.IContentArea;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,7 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import  javafx.scene.Node;
 
-public class productMenuController {
+public class productMenuController implements IContentArea {
 
     @FXML
     private Button btnCategory;
@@ -23,6 +24,7 @@ public class productMenuController {
     private StackPane btnProductPane;
     private StackPane contentArea;
 
+    @Override
     public void setContentArea(StackPane contentArea) {
         this.contentArea = contentArea;
     }
@@ -34,15 +36,15 @@ public class productMenuController {
 
     @FXML
     void handleProductManagement(ActionEvent event) {
-        switchForm("productView.fxml");
+        switchForm("/GUI/Staff/productView.fxml");
     }
     private void switchForm(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Node node = loader.load();
             Object ctrl = loader.getController();
-            if (ctrl instanceof ProductController pc) {
-                pc.setContentArea(this.contentArea);
+            if (ctrl instanceof IContentArea ic) {
+                ic.setContentArea(this.contentArea);
             }
             contentArea.getChildren().clear();
             contentArea.getChildren().add(node);

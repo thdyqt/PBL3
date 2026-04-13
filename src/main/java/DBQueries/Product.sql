@@ -23,5 +23,7 @@ VALUES
     (N'Nước cam ép',       4, 15000, 25);
 ALTER TABLE Product
     ADD COLUMN image VARCHAR(255) DEFAULT NULL;
+UPDATE Product SET image = 'banhmithit.png' WHERE ProductID = 1;
+SHOW COLUMNS FROM Product;
 USE PBL3;
 DROP  TABLE Product;
