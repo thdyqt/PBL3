@@ -171,7 +171,6 @@ public class OrderData {
         return orderList;
     }
 
-
     //mutiple search methods (ID/Staff/Customer)
     public static Order searchOrder_ByID(int id_Order){
         String sql = "SELECT * FROM Orders WHERE id_Order = ?";

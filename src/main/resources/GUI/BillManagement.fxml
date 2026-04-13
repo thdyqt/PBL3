@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color: #F8FAFC;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.BillManagementForm">
+<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color: #F8FAFC;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.BillManagementForm">
     <top>
         <VBox spacing="15.0" BorderPane.alignment="CENTER">
             <children>
@@ -25,7 +25,7 @@
 
                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
                     <children>
-                        <TextField fx:id="txtSearch" prefHeight="30.0" prefWidth="380.0" promptText="Tìm kiếm theo ID của đơn hàng/ nhân viên/ khách hàng" style="-fx-background-color: #F1F5F9; -fx-background-radius: 6; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
+                        <TextField fx:id="txtSearch" prefHeight="30.0" prefWidth="310.0" promptText="Chưa chọn tiêu chí tìm kiếm" style="-fx-background-color: #F1F5F9; -fx-background-radius: 6; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
                   <ComboBox fx:id="cbbSearchOption" prefWidth="150.0" />
                         <Region HBox.hgrow="ALWAYS" />
                   <Button fx:id="buttonOrderDetail" mnemonicParsing="false" text="Xem chi tiết hóa đơn" />

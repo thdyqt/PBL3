@@ -1,8 +1,11 @@
 package GUI;
 
+import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -63,12 +66,21 @@ public class BillManagementForm implements Initializable{
     @FXML
     private TextField txtSearch;
 
+    //objects
+    //an active version of the database
+    //will update itself when changes are made
     private ObservableList<EntityDTO.Order> masterData = FXCollections.observableArrayList();
+    //for search function
+    //work by hiding unrelated data
+    private FilteredList<EntityDTO.Order> filteredData;
 
+
+    //methods
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         ObservableList<String> searchOptions = FXCollections.observableArrayList(
+                "Chọn tiêu chí tìm kiếm",
                 "Tìm kiếm theo ID order",
                 "Tìm kiếm theo ID nhân viên thực hiện",
                 "Tìm kiếm theo SĐT khách hàng"
@@ -85,6 +97,9 @@ public class BillManagementForm implements Initializable{
                 txtSearch.clear();
 
                 switch (newValue) {
+                    case "Chọn tiêu chí tìm kiếm":
+                        txtSearch.setPromptText("Chưa chọn tiêu chí tìm kiếm");
+                        break;
                     case "Tìm kiếm theo ID order":
                         txtSearch.setPromptText("Nhập ID Đơn hàng");
                         break;
@@ -116,6 +131,8 @@ public class BillManagementForm implements Initializable{
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
         col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
+        //same thing as all the methods below
+        //albeit modified to format the date
         colProcessTime.setCellValueFactory(new PropertyValueFactory<>("process_time"));
         colProcessTime.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, java.time.LocalDateTime>() {
             private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -130,11 +147,12 @@ public class BillManagementForm implements Initializable{
             }
         });
 
+        //just get the value of Y in X if X is not null, yadda yadda
         colProcessStaffName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getStaff() != null) {
                 return new SimpleStringProperty(cellData.getValue().getStaff().getName());
             }
-            return new SimpleStringProperty("Không rõ"); // Unknown
+            return new SimpleStringProperty("Name unspecified.");
         });
 
         col_StaffID.setCellValueFactory(cellData -> {
@@ -166,12 +184,64 @@ public class BillManagementForm implements Initializable{
         });
     }
 
-    private void loadTable(){
-        java.util.List<EntityDTO.Order> list = BusinessBLL.OrderBusiness.getAllOrder_BLL();
+    private void search(){
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(order -> {
+                //empty query
+                if (newValue == null || newValue.trim().isEmpty()){
+                    return true;
+                }
 
+                //normalizer
+                String keyword = newValue.toLowerCase().trim();
+                String searchOption = cbbSearchOption.getValue();
+
+                if (searchOption == null){
+                    return true;
+                }
+
+                switch (searchOption){
+                    case "Chưa chọn tiêu chí tìm kiếm":
+                        return true;
+                    case "Tìm kiếm theo ID order":
+                        return String.valueOf(order.getId()).contains(keyword);
+                    case "Tìm kiếm theo ID nhân viên thực hiện":
+                        if (order.getStaff() != null){
+                            return String.valueOf(order.getStaff().getId()).contains(keyword);
+                        }
+                        return false;
+                    case "Tìm kiếm theo SĐT khách hàng":
+                        if (order.getCustomer() != null || order.getCustomer().getPhone() != null){
+                            return String.valueOf(order.getCustomer().getPhone()).contains(keyword);
+                        }
+                        return false;
+
+                    default:
+                        return false;
+                }
+
+
+            });
+        });
+    }
+
+    private void loadTable(){
+        //load static database
+        //with all the data unrestricted
+        java.util.List<EntityDTO.Order> list = BusinessBLL.OrderBusiness.getAllOrder_BLL();
+        //make it active
         masterData.setAll(list);
 
+        //by default, filter nothing, let all go through
+        filteredData = new FilteredList<>(masterData, temp -> true);
+
+        SortedList<EntityDTO.Order> sortedData = new SortedList<>(filteredData);
+        //sort binding
+        sortedData.comparatorProperty().bind(tbOrder.comparatorProperty());
+
         tbOrder.setItems(masterData);
+
+        Others.animateTableRows(tbOrder);
     }
 
 }
