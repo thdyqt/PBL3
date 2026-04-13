@@ -248,7 +248,6 @@ public class StaffDashboardForm implements Initializable {
             Node node = loader.load();
             Object controller = loader.getController();
             if (controller instanceof IContentArea ctrl) {
-                // Nếu có, chắc chắn nó có hàm setContentArea để ta gọi
                 ctrl.setContentArea(this.contentArea);
             }
 
@@ -266,6 +265,12 @@ public class StaffDashboardForm implements Initializable {
     }
 
     @FXML
+    void btnOrderClick(ActionEvent event){
+        setActiveMenu(btnOrder);
+        switchForm("/GUI/Staff/POS.fxml");
+    }
+
+    @FXML
     void btnStaffClick(ActionEvent event) {
         if (!UserSession.getInstance().getPosition().equals("Admin")){
             Others.showAlert(mainBorderPane, "Bạn không có quyền truy cập vào tính năng này", true);
@@ -279,6 +284,22 @@ public class StaffDashboardForm implements Initializable {
     void btnCustomerClick(ActionEvent event) {
         setActiveMenu(btnCustomer);
         switchForm("/GUI/Staff/CustomerManagement.fxml");
+    }
+
+    @FXML
+    void btnProductClick(ActionEvent event){
+        if (!UserSession.getInstance().getPosition().equals("Admin")){
+            Others.showAlert(mainBorderPane, "Bạn không có quyền truy cập vào tính năng này", true);
+            return;
+        }
+        setActiveMenu(btnProduct);
+        switchForm("/GUI/Staff/ProductMenu.fxml");
+    }
+
+    @FXML
+    void btnBillClick(ActionEvent event){
+        setActiveMenu(btnBill);
+        switchForm("/GUI/Staff/BillManagement.fxml");
     }
 
     @FXML
@@ -300,17 +321,6 @@ public class StaffDashboardForm implements Initializable {
                 e.printStackTrace();
             }
         }
-    }
-    @FXML
-    void btnProductClick(ActionEvent event){
-        setActiveMenu(btnProduct);
-        switchForm("/GUI/Staff/ProductMenu.fxml");
-    }
-
-    @FXML
-    void btnBillClick(ActionEvent event){
-        setActiveMenu(btnBill);
-        switchForm("/GUI/Staff/BillManagement.fxml");
     }
 }
 
