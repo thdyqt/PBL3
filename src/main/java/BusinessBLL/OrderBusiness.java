@@ -59,8 +59,6 @@ public class OrderBusiness {
         return false;
     }
 
-
-
     public static String updateOrder_BLL(Order order, String status){
         //so the id does exist and is valid
         if (order == null || order.getId() <= 0){

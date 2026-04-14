@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color: #F8FAFC;" stylesheets="" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillDetailController">
+<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color: #F8FAFC;" stylesheets="" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillDetailController">
     <top>
         <VBox spacing="15.0" stylesheets="@../style.css" BorderPane.alignment="CENTER">
             <children>
@@ -21,28 +21,33 @@
                         <Font name="System Bold" size="24.0" />
                     </font>
                 </Label>
-            <HBox prefHeight="50.0" prefWidth="1010.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
+            <HBox alignment="TOP_CENTER" prefHeight="50.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
                <children>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
+                  <VBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
                      <children>
-                        <Label text="Staff ID" />
-                        <Label text="Customer ID" />
+                        <Label fx:id="label_StaffID" prefHeight="16.0" prefWidth="243.0" style="-fx-font-weight: bold;" text="Staff ID" />
+                        <Region prefHeight="18.0" prefWidth="0.0" />
+                        <Label fx:id="label_CustomerID" prefHeight="16.0" prefWidth="269.0" style="-fx-font-weight: bold;" text="Customer ID" />
                      </children>
                   </VBox>
-                  <Region prefHeight="50.0" prefWidth="806.0" />
-                  <VBox prefHeight="200.0" prefWidth="100.0">
+                  <Region prefHeight="50.0" prefWidth="424.0" />
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Label text="Order ID" />
-                        <Label text="Process time" />
+                        <Label fx:id="label_OrderID" prefHeight="16.0" prefWidth="216.0" style="-fx-font-weight: bold;" text="Order ID" />
+                        <Region prefHeight="200.0" prefWidth="200.0" />
+                        <Label fx:id="label_ProcessTime" prefHeight="16.0" prefWidth="272.0" style="-fx-font-weight: bold;" text="Process time" />
                      </children>
                   </VBox>
                </children>
             </HBox>
 
-                <HBox alignment="CENTER" prefHeight="50.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
+                <HBox prefHeight="50.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
                     <children>
                         <TextField fx:id="txtSearch" prefHeight="30.0" prefWidth="310.0" promptText="Chưa chọn tiêu chí tìm kiếm" style="-fx-background-color: #F1F5F9; -fx-background-radius: 6; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
                         <ComboBox fx:id="cbbSearchOption" prefWidth="150.0" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+                  <Label style="-fx-font-weight: bold;" text="Tổng tiền" />
+                  <TextField fx:id="totalAmountBox" prefHeight="30.0" prefWidth="165.0" style="-fx-background-color: #F1F5F9; -fx-background-radius: 6; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
 
 
                     </children>
@@ -60,10 +65,11 @@
     <center>
         <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);" BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="tbOrder" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../style.css" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tbOrderDetail" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../style.css" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="col_ItemID" prefWidth="117.0" text="ID sản phẩm" />
-                        <TableColumn fx:id="col_ItemName" prefWidth="126.0" text="Tên sản phẩm" />
+                        <TableColumn fx:id="col_ItemID" prefWidth="100.0" text="ID sản phẩm" />
+                        <TableColumn fx:id="col_ItemName" prefWidth="100.0" text="Tên sản phẩm" />
+                  <TableColumn fx:id="col_ItemCategoryID" prefWidth="50.0" text="ID nhóm sản phẩm" />
                         <TableColumn fx:id="col_ItemQuanity" minWidth="0.0" prefWidth="95.0" text="Số lượng&#10;" />
                         <TableColumn fx:id="col_Price" minWidth="0.0" prefWidth="150.0" text="Số tiền trên đơn vị sản phẩm" />
                         <TableColumn fx:id="col_TotalPrice" prefWidth="95.0" text="Tổng tiền&#10;" />
