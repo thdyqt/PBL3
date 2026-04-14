@@ -22,8 +22,6 @@ public class Category {
         this(0, categoryName,status);
     }
 
-
-
     // ===== GETTERS & SETTERS =====
 
     public int getCategoryID()          { return CategoryID; }

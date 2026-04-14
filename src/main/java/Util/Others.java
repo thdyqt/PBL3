@@ -6,10 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -26,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Others {
     // SET ĐỘ DÀI TỐI ĐA CHO TEXTFIELD
-    public static void setMaxLength(javafx.scene.control.TextField textField, int maxLength) {
+    public static void setMaxLength(TextField textField, int maxLength) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() > maxLength) {
                 textField.setText(oldValue);
@@ -73,98 +70,6 @@ public class Others {
 
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
-    }
-
-    // HỘP THOẠI XÁC NHẬN MẬT KHẨU
-    public static boolean showPasswordConfirmDialog(Window ownerWindow, String newPassword) {
-        final boolean[] isConfirmed = {false};
-
-        Stage stage = new Stage(StageStyle.TRANSPARENT);
-        stage.initModality(Modality.APPLICATION_MODAL);
-
-        if (ownerWindow != null) {
-            stage.initOwner(ownerWindow);
-        }
-
-        VBox root = new VBox(12);
-        root.setPadding(new Insets(25));
-        root.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #E2E8F0; -fx-border-width: 1;");
-
-        DropShadow shadow = new DropShadow(20, new Color(0, 0, 0, 0.15));
-        root.setEffect(shadow);
-
-        Label lblHeader = new Label("Xác nhận bảo mật");
-        lblHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
-
-        Label lblDesc = new Label("Vui lòng xác nhận mật khẩu để lưu các thay đổi:");
-        lblDesc.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B;");
-
-        PasswordField pwdCurrentField = new PasswordField();
-        pwdCurrentField.setPromptText("Nhập mật khẩu hiện tại...");
-        pwdCurrentField.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
-        pwdCurrentField.setPrefWidth(320);
-
-        PasswordField pwdConfirmNewField = new PasswordField();
-        pwdConfirmNewField.setPromptText("Xác nhận lại mật khẩu mới...");
-        pwdConfirmNewField.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
-        pwdConfirmNewField.setPrefWidth(320);
-
-        boolean isChangingPassword = newPassword != null && !newPassword.isEmpty();
-        if (!isChangingPassword) {
-            pwdConfirmNewField.setVisible(false);
-            pwdConfirmNewField.setManaged(false);
-        }
-
-        Label lblError = new Label("");
-        lblError.setStyle("-fx-text-fill: #EF4444; -fx-font-size: 12px; -fx-font-weight: bold;");
-        lblError.setPrefHeight(15);
-        lblError.setWrapText(true);
-
-        Button btnCancelPopup = new Button("Hủy bỏ");
-        btnCancelPopup.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
-        btnCancelPopup.setOnAction(e -> stage.close());
-
-        Button btnConfirmPopup = new Button("Xác nhận");
-        btnConfirmPopup.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
-
-        Runnable checkAction = () -> {
-            boolean isCurrentCorrect = pwdCurrentField.getText().equals(Util.UserSession.getInstance().getPassword());
-            boolean isNewCorrect = !isChangingPassword || pwdConfirmNewField.getText().equals(newPassword);
-
-            if (!isCurrentCorrect) {
-                lblError.setText("Mật khẩu hiện tại không chính xác!");
-                pwdCurrentField.clear();
-                pwdCurrentField.requestFocus();
-            } else if (!isNewCorrect) {
-                lblError.setText("Mật khẩu xác nhận không trùng khớp với mật khẩu mới!");
-                pwdConfirmNewField.clear();
-                pwdConfirmNewField.requestFocus();
-            } else {
-                isConfirmed[0] = true;
-                stage.close();
-            }
-        };
-
-        btnConfirmPopup.setOnAction(e -> checkAction.run());
-        pwdCurrentField.setOnAction(e -> {
-            if (isChangingPassword) pwdConfirmNewField.requestFocus();
-            else checkAction.run();
-        });
-        pwdConfirmNewField.setOnAction(e -> checkAction.run());
-
-        HBox buttonBox = new HBox(10, btnCancelPopup, btnConfirmPopup);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-
-        root.getChildren().addAll(lblHeader, lblDesc, pwdCurrentField, pwdConfirmNewField, lblError, buttonBox);
-
-        Scene scene = new Scene(root);
-        scene.setFill(Color.TRANSPARENT);
-        stage.setScene(scene);
-
-        Platform.runLater(pwdCurrentField::requestFocus);
-        stage.showAndWait();
-
-        return isConfirmed[0];
     }
 
     // ANIMATION KHI FORM HIỂN THỊ
@@ -276,7 +181,7 @@ public class Others {
         currentToastAnimation.play();
     }
 
-    // HIỂN THỊ HỘP THOẠI XÁC NHẬN
+    // HIỂN THỊ HỘP THOẠI XÁC NHẬN (YES/NO)
     public static boolean showCustomConfirm(String title, String content, String btnYesText, String btnNoText) {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
 
@@ -308,5 +213,97 @@ public class Others {
         // Hiển thị và chờ người dùng bấm, sau đó trả về true/false
         java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == buttonYes;
+    }
+
+    // HỘP THOẠI XÁC NHẬN MẬT KHẨU
+    public static boolean showPasswordConfirmDialog(Window ownerWindow, String newPassword) {
+        final boolean[] isConfirmed = {false};
+
+        Stage stage = new Stage(StageStyle.TRANSPARENT);
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        if (ownerWindow != null) {
+            stage.initOwner(ownerWindow);
+        }
+
+        VBox root = new VBox(12);
+        root.setPadding(new Insets(25));
+        root.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #E2E8F0; -fx-border-width: 1;");
+
+        DropShadow shadow = new DropShadow(20, new Color(0, 0, 0, 0.15));
+        root.setEffect(shadow);
+
+        Label lblHeader = new Label("Xác nhận bảo mật");
+        lblHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+
+        Label lblDesc = new Label("Vui lòng xác nhận mật khẩu để lưu các thay đổi:");
+        lblDesc.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B;");
+
+        PasswordField pwdCurrentField = new PasswordField();
+        pwdCurrentField.setPromptText("Nhập mật khẩu hiện tại...");
+        pwdCurrentField.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
+        pwdCurrentField.setPrefWidth(320);
+
+        PasswordField pwdConfirmNewField = new PasswordField();
+        pwdConfirmNewField.setPromptText("Xác nhận lại mật khẩu mới...");
+        pwdConfirmNewField.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
+        pwdConfirmNewField.setPrefWidth(320);
+
+        boolean isChangingPassword = newPassword != null && !newPassword.isEmpty();
+        if (!isChangingPassword) {
+            pwdConfirmNewField.setVisible(false);
+            pwdConfirmNewField.setManaged(false);
+        }
+
+        Label lblError = new Label("");
+        lblError.setStyle("-fx-text-fill: #EF4444; -fx-font-size: 12px; -fx-font-weight: bold;");
+        lblError.setPrefHeight(15);
+        lblError.setWrapText(true);
+
+        Button btnCancelPopup = new Button("Hủy bỏ");
+        btnCancelPopup.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+        btnCancelPopup.setOnAction(e -> stage.close());
+
+        Button btnConfirmPopup = new Button("Xác nhận");
+        btnConfirmPopup.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+
+        Runnable checkAction = () -> {
+            boolean isCurrentCorrect = pwdCurrentField.getText().equals(Util.UserSession.getInstance().getPassword());
+            boolean isNewCorrect = !isChangingPassword || pwdConfirmNewField.getText().equals(newPassword);
+
+            if (!isCurrentCorrect) {
+                lblError.setText("Mật khẩu hiện tại không chính xác!");
+                pwdCurrentField.clear();
+                pwdCurrentField.requestFocus();
+            } else if (!isNewCorrect) {
+                lblError.setText("Mật khẩu xác nhận không trùng khớp với mật khẩu mới!");
+                pwdConfirmNewField.clear();
+                pwdConfirmNewField.requestFocus();
+            } else {
+                isConfirmed[0] = true;
+                stage.close();
+            }
+        };
+
+        btnConfirmPopup.setOnAction(e -> checkAction.run());
+        pwdCurrentField.setOnAction(e -> {
+            if (isChangingPassword) pwdConfirmNewField.requestFocus();
+            else checkAction.run();
+        });
+        pwdConfirmNewField.setOnAction(e -> checkAction.run());
+
+        HBox buttonBox = new HBox(10, btnCancelPopup, btnConfirmPopup);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+
+        root.getChildren().addAll(lblHeader, lblDesc, pwdCurrentField, pwdConfirmNewField, lblError, buttonBox);
+
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        stage.setScene(scene);
+
+        Platform.runLater(pwdCurrentField::requestFocus);
+        stage.showAndWait();
+
+        return isConfirmed[0];
     }
 }

@@ -3,7 +3,12 @@ package BusinessBLL;
 import DataDAL.CategoryData;
 import EntityDTO.Category;
 
+import java.util.List;
+
 public class CategoryBusiness {
+    public static List<Category> getAllCategories(){
+        return CategoryData.getAll();
+    }
 
     // ===== THÊM DANH MỤC =====
     public static String addCategory(Category category) {

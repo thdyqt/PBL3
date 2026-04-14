@@ -29,7 +29,7 @@ public class ProductData {
                 rs.getString("image")
         );
     }
-//====Lấy tất cả====
+    //====Lấy tất cả====
     public static List<Product> getAllProduct(){
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE status = 'Active'";
