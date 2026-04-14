@@ -10,6 +10,10 @@ public class Order {
         Created, Waiting_for_validation, Processing, Delivering, Finished, Cancelled;
     }
 
+    public enum orderType{
+        Online, Offline;
+    }
+
     //attributes
     private int id;
     private LocalDateTime process_time;
@@ -17,6 +21,7 @@ public class Order {
     private Customer customer;
     private List<OrderDetail> orderDetail;
     private orderStatus status;
+    private orderType type;
 
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();};
@@ -58,4 +63,7 @@ public class Order {
 
     public orderStatus getStatus(){return status;}
     public void setStatus(orderStatus status){this.status = status;}
+
+    public orderType getType(){return type;}
+    public void setType(orderType type){this.type = type;}
 }

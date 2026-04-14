@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillReceiptController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillReceiptController">
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0">
          <top>
@@ -31,12 +31,17 @@
                      <children>
                         <VBox prefHeight="200.0" prefWidth="100.0">
                            <children>
-                              <Label text="Cashier" />
-                              <Label text="Customer" />
+                              <Label text="Cashier ID" />
+                              <Label text="Customer ID" />
                            </children>
                         </VBox>
                         <Region prefHeight="200.0" prefWidth="200.0" />
-                        <Label text="Date" />
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label text="Order ID" />
+                              <Label text="Date" />
+                           </children>
+                        </VBox>
                      </children>
                   </HBox>
                </children>
