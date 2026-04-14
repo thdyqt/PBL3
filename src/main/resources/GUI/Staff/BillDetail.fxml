@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color: #F8FAFC;" stylesheets="" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillDetailController">
+    <top>
+        <VBox spacing="15.0" stylesheets="@../style.css" BorderPane.alignment="CENTER">
+            <children>
+                <Label prefHeight="30.0" prefWidth="240.0" text="Nội dung hóa đơn" textFill="#1E293B">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+            <HBox prefHeight="50.0" prefWidth="1010.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
+               <children>
+                  <Label text="Label" />
+                  <Region prefHeight="89.0" prefWidth="345.0" />
+                  <Label text="Label" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+                  <Label text="Label" />
+               </children>
+            </HBox>
+
+                <HBox alignment="CENTER" prefHeight="50.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
+                    <children>
+                        <TextField fx:id="txtSearch" prefHeight="30.0" prefWidth="310.0" promptText="Chưa chọn tiêu chí tìm kiếm" style="-fx-background-color: #F1F5F9; -fx-background-radius: 6; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
+                        <ComboBox fx:id="cbbSearchOption" prefWidth="150.0" />
+
+
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+                    </padding>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);" BorderPane.alignment="CENTER">
+            <children>
+                <TableView fx:id="tbOrder" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../style.css" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="col_ItemID" prefWidth="117.0" text="ID sản phẩm" />
+                        <TableColumn fx:id="col_ItemName" prefWidth="126.0" text="Tên sản phẩm" />
+                        <TableColumn fx:id="col_ItemQuanity" minWidth="0.0" prefWidth="95.0" text="Số lượng&#10;" />
+                        <TableColumn fx:id="col_Price" minWidth="0.0" prefWidth="150.0" text="Số tiền trên đơn vị sản phẩm" />
+                        <TableColumn fx:id="col_TotalPrice" prefWidth="95.0" text="Tổng tiền&#10;" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </children>
+            <BorderPane.margin>
+                <Insets bottom="20.0" left="20.0" right="20.0" />
+            </BorderPane.margin>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+    </center>
+</BorderPane>

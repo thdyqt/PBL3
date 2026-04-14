@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillReceiptController">
+   <children>
+      <BorderPane prefHeight="200.0" prefWidth="200.0">
+         <top>
+            <Region prefHeight="89.0" prefWidth="400.0" style="-fx-border-color: black; -fx-border-width: 0 0 2 0; -fx-border-style: segments(8, 5);" BorderPane.alignment="CENTER" />
+         </top>
+         <bottom>
+            <Region prefHeight="0.0" prefWidth="400.0" style="-fx-border-color: black; -fx-border-width: 0 0 2 0; -fx-border-style: segments(8, 5);" BorderPane.alignment="CENTER" />
+         </bottom>
+         <center>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label contentDisplay="CENTER" text="*** RECEIPT ***">
+                     <font>
+                        <Font name="System Bold" size="29.0" />
+                     </font>
+                     <graphic>
+                        <VBox prefHeight="200.0" prefWidth="100.0" />
+                     </graphic>
+                  </Label>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label text="Cashier" />
+                              <Label text="Customer" />
+                           </children>
+                        </VBox>
+                        <Region prefHeight="200.0" prefWidth="200.0" />
+                        <Label text="Date" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+      <VBox prefHeight="673.0" prefWidth="400.0" />
+   </children>
+</VBox>
