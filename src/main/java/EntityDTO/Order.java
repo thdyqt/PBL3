@@ -14,6 +14,9 @@ public class Order {
         Online, Offline;
     }
 
+    //offline -> status = {Processing, Finished}
+    //online -> status = {Created, Waiting_for_validation, Processing, Delivering, Finished, Cancelled}
+
     //attributes
     private int id;
     private LocalDateTime process_time;

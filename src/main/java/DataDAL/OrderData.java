@@ -46,6 +46,7 @@ public class OrderData {
                 }
 
                 order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
+                order.setType(Order.orderType.valueOf(rs.getString("order_type")));
 
                 list.add(order);
             }
@@ -150,7 +151,13 @@ public class OrderData {
             //foreign keys
             stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
             stmt.setInt(2, order.getStaff().getId());
-            stmt.setInt(3, order.getCustomer().getId());
+
+            if (order.getCustomer() != null) {
+                stmt.setInt(3, order.getCustomer().getId());
+            } else {
+
+                stmt.setNull(3, java.sql.Types.INTEGER);
+            }
 
             //the id of the Order that need to be updated and its status
             stmt.setString(4, order.getStatus().name());

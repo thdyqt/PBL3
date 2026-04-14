@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color: #F8FAFC;" stylesheets="" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillManagementForm">
+<BorderPane fx:id="mainPane" prefHeight="700.0" prefWidth="1050.0" style="-fx-background-color: #F8FAFC;" stylesheets="" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillManagementForm">
     <top>
         <VBox spacing="15.0" stylesheets="@../style.css" BorderPane.alignment="CENTER">
             <children>
@@ -49,14 +49,15 @@
             <children>
                 <TableView fx:id="tbOrder" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" stylesheets="@../style.css" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="col_OrderID" prefWidth="50.0" text="ID" />
-                        <TableColumn fx:id="colProcessTime" prefWidth="100.0" text="Thời gian&#10;   xử lý" />
-                        <TableColumn fx:id="colProcessStaffName" prefWidth="150.0" text="Nhân viên thực hiện" />
-                        <TableColumn fx:id="col_StaffID" minWidth="0.0" prefWidth="95.0" text="      ID&#10;Nhân viên" />
-                        <TableColumn fx:id="col_CustomerName" minWidth="0.0" prefWidth="150.0" text="Khách hàng" />
-                        <TableColumn fx:id="col_CustomerID" prefWidth="95.0" text="         ID&#10; Khách hàng" />
-                        <TableColumn fx:id="col_PhoneCustomer" prefWidth="167.0" text="SĐT Khách hàng" />
+                        <TableColumn fx:id="col_OrderID" prefWidth="30.0" text="ID" />
+                        <TableColumn fx:id="colProcessTime" prefWidth="127.0" text="Thời gian xử lý" />
+                        <TableColumn fx:id="colProcessStaffName" prefWidth="100.0" text="Nhân viên" />
+                        <TableColumn fx:id="col_StaffID" minWidth="0.0" text="ID Nhân viên" />
+                        <TableColumn fx:id="col_CustomerName" minWidth="0.0" prefWidth="178.0" text="Tên khách hàng" />
+                        <TableColumn fx:id="col_CustomerID" prefWidth="85.0" text="ID Khách hàng" />
+                        <TableColumn fx:id="col_PhoneCustomer" text="SĐT Khách hàng" />
                         <TableColumn fx:id="col_OrderStatus" prefWidth="105.0" text="Trạng thái" />
+                  <TableColumn fx:id="col_OrderType" prefWidth="75.0" text="Loại đơn hàng" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

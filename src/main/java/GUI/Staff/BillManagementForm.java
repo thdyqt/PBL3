@@ -52,6 +52,9 @@ public class BillManagementForm implements Initializable{
     private TableColumn<EntityDTO.Order, String> col_OrderStatus;
 
     @FXML
+    private TableColumn<EntityDTO.Order, String> col_OrderType;
+
+    @FXML
     private TableColumn<EntityDTO.Order, String> col_PhoneCustomer;
 
     @FXML
@@ -131,6 +134,7 @@ public class BillManagementForm implements Initializable{
         //only use for those 2 because the naming of the getters in Order concidently
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
         col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        col_OrderType.setCellValueFactory(new PropertyValueFactory<>("type"));
 
         //same thing as all the methods below
         //albeit modified to format the date
@@ -192,6 +196,7 @@ public class BillManagementForm implements Initializable{
         colProcessStaffName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         colProcessTime.setStyle("-fx-alignment: CENTER;");
         col_StaffID.setStyle("-fx-alignment: CENTER;");
+        col_OrderType.setStyle("-fx-alignment: CENTER;");
     }
 
     private void search(){
