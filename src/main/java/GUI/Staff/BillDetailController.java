@@ -96,6 +96,7 @@ public class BillDetailController{
     }
 
     private void setupTable(){
+        col_Price.setCellValueFactory(new PropertyValueFactory<>("price"));
         col_ItemID.setCellValueFactory(cellData -> {
             if (cellData.getValue().getProduct() != null) {
                 int itemID = cellData.getValue().getProduct().getProductID();
@@ -181,6 +182,13 @@ public class BillDetailController{
         List<OrderDetail> detailsList = BusinessBLL.OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
 
         masterData.setAll(detailsList);
+
+        int grandTotal = 0;
+        for (OrderDetail detail : detailsList) {
+            grandTotal += detail.getTotalPrice();
+        }
+
+        totalAmountBox.setText(String.valueOf(grandTotal));
     }
 
 }
