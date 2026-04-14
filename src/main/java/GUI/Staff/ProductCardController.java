@@ -32,33 +32,36 @@ public class ProductCardController {
     public void setData(Product product) {
         this.currentProduct = product;
 
-        // Đổ text lên giao diện
         lblProductId.setText("#" + product.getProductID());
         lblProductName.setText(product.getProductName());
         lblStock.setText(String.valueOf(product.getQuantity()));
-        lblPrice.setText(String.format("%,.0fđ", (double) product.getProductPrice()));
 
-        // Xử lý nạp hình ảnh
-        String imagePath = product.getImage();
-        if (imagePath != null && !imagePath.isEmpty()) {
+        lblPrice.setText(String.format("%,.0f đ", (double) product.getProductPrice()));
+
+        String imageName = product.getImage();
+
+        if (imageName != null && !imageName.trim().isEmpty()) {
+
+            String fullPath = "/images/" + imageName;
+
+            if (imageName.startsWith("images/") || imageName.startsWith("/images/")) {
+                fullPath = imageName.startsWith("/") ? imageName : "/" + imageName;
+            }
+
             try {
-                InputStream imageStream = getClass().getResourceAsStream("/" + imagePath);
+                InputStream imageStream = getClass().getResourceAsStream(fullPath);
                 if (imageStream != null) {
-                    imgProduct.setImage(new Image(imageStream));
+                    imgProduct.setImage(new Image(imageStream)); // Tải ảnh thành công!
                 } else {
+                    System.out.println("⚠️ CẢNH BÁO: Không tìm thấy file ảnh tại thư mục: " + fullPath);
                     imgProduct.setImage(new Image(getClass().getResourceAsStream("/images/default.png")));
                 }
             } catch (Exception e) {
-                System.out.println("Lỗi tải ảnh cho SP: " + product.getProductName());
+                imgProduct.setImage(new Image(getClass().getResourceAsStream("/images/default.png")));
             }
+        } else {
+            imgProduct.setImage(new Image(getClass().getResourceAsStream("/images/default.png")));
         }
-
-        cardContainer.setOnMouseEntered(e -> {
-            cardContainer.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 15; -fx-border-color: #2563EB; -fx-border-radius: 15; -fx-border-width: 2;");
-        });
-        cardContainer.setOnMouseExited(e -> {
-            cardContainer.setStyle("-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-border-width: 1.5;");
-        });
     }
 
     public Product getProduct() {

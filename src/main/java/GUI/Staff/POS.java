@@ -134,7 +134,6 @@ public class POS implements Initializable {
         }
     }
 
-
     @FXML
     void handleAddCustomer(ActionEvent event) {
 

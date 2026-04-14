@@ -242,7 +242,7 @@
                 </HBox>
             </top>
             <center>
-                <StackPane fx:id="contentArea" onDragDetected="#btnExitClick" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                <StackPane fx:id="contentArea" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
             </center>
 
         </BorderPane>
