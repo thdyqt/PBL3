@@ -20,8 +20,11 @@ import javafx.util.Duration;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Others {
+    public static Locale vn = new Locale("vi", "VN");
+
     // SET ĐỘ DÀI TỐI ĐA CHO TEXTFIELD
     public static void setMaxLength(TextField textField, int maxLength) {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
