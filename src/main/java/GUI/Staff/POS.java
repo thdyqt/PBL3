@@ -408,6 +408,7 @@ public class POS implements Initializable {
             lblCustomerName.setText("Khách vãng lai");
             lblCustomerName.setStyle("-fx-text-fill: #64748B;");
             txtCustomerPhone.requestFocus();
+            calculateTotal();
             return;
         }
 
@@ -418,6 +419,7 @@ public class POS implements Initializable {
             lblCustomerName.setText("Khách vãng lai");
             lblCustomerName.setStyle("-fx-text-fill: #64748B;");
             txtCustomerPhone.requestFocus();
+            calculateTotal();
             return;
         }
 
@@ -448,7 +450,22 @@ public class POS implements Initializable {
 
     @FXML
     void handleCancelOrder(ActionEvent event) {
+        if (cartList.isEmpty() && currentCustomer == null) {
+            return;
+        }
 
+        if (Others.showCustomConfirm("Xác nhận hủy đơn", "Bạn có chắc chắn muốn hủy toàn bộ đơn hàng hiện tại không?", "Đồng ý", "Hủy")){
+            txtCustomerPhone.clear();
+            currentCustomer = null;
+            lblCustomerName.setText("Khách vãng lai");
+            lblCustomerName.setStyle("-fx-text-fill: #64748B;");
+
+            cartList.clear();
+            tableCart.refresh();
+            cbbDiscount.getSelectionModel().clearSelection();
+            calculateTotal();
+            txtSearchProduct.clear();
+        }
     }
 
     @FXML

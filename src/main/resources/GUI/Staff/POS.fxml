@@ -79,7 +79,7 @@
                         </Label>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                             <children>
-                                <TextField fx:id="txtCustomerPhone" prefHeight="38.0" promptText="Nhập số điện thoại..." style="-fx-background-color: #F1F5F9; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8;" HBox.hgrow="ALWAYS" />
+                                <TextField fx:id="txtCustomerPhone" onAction="#searchCustomerByPhone" prefHeight="38.0" promptText="Nhập số điện thoại..." style="-fx-background-color: #F1F5F9; -fx-background-radius: 8; -fx-border-color: #E2E8F0; -fx-border-radius: 8;" HBox.hgrow="ALWAYS" />
                                 <Button fx:id="btnAddCustomer" minWidth="38.0" mnemonicParsing="false" onAction="#handleAddCustomer" prefHeight="38.0" prefWidth="38.0" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold;" text="+">
                                     <cursor><Cursor fx:constant="HAND" /></cursor>
                                     <font><Font size="16.0" /></font>
