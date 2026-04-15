@@ -47,6 +47,7 @@ public class OrderData {
 
                 order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
                 order.setType(Order.orderType.valueOf(rs.getString("order_type")));
+                order.setPayment(Order.orderPayment.valueOf(rs.getString("order_payment")));
 
                 list.add(order);
             }
