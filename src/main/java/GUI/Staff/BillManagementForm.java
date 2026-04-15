@@ -29,7 +29,6 @@ import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
-import static Util.Others.showWarning;
 
 
 public class BillManagementForm{
@@ -104,6 +103,10 @@ public class BillManagementForm{
 
         buttonOrderDetail.setOnAction(event -> {
             handleOrderDetail();
+        });
+
+        buttonOrderReceipt.setOnAction(actionEvent -> {
+            handleOrderReceipt();
         });
     }
 
@@ -266,11 +269,10 @@ public class BillManagementForm{
     }
 
     private void handleOrderDetail(){
-        Window current = mainPane.getScene().getWindow();
         EntityDTO.Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
 
         if (selectedOrder == null){
-            showWarning(current,"Chưa lựa chọn hóa đơn để xem chi tiết");
+            Others.showAlert(mainPane, "Vui lòng chọn hóa đơn!", true);
             return;
         }
 
@@ -283,6 +285,31 @@ public class BillManagementForm{
 
             Stage stage = new Stage();
             stage.setTitle("Thông tin hóa đơn #" + selectedOrder.getId());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleOrderReceipt(){
+        EntityDTO.Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
+
+        if (selectedOrder == null){
+            Others.showAlert(mainPane, "Vui lòng chọn hóa đơn!", true);
+            return;
+        }
+
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/BillReceipt.fxml"));
+            Parent root = loader.load();
+
+            BillReceiptController receiptController = loader.getController();
+            receiptController.setData(selectedOrder);
+
+            Stage stage = new Stage();
+            stage.setTitle("Hóa đơn #" + selectedOrder.getId());
             stage.setScene(new Scene(root));
             stage.show();
 
