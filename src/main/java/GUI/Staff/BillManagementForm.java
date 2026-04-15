@@ -20,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.w3c.dom.Entity;
 
 import java.io.IOError;
@@ -265,10 +266,11 @@ public class BillManagementForm{
     }
 
     private void handleOrderDetail(){
+        Window current = mainPane.getScene().getWindow();
         EntityDTO.Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
 
         if (selectedOrder == null){
-            showWarning("Chưa lựa chọn hóa đơn để xem chi tiết");
+            showWarning(current,"Chưa lựa chọn hóa đơn để xem chi tiết");
             return;
         }
 

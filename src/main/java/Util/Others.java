@@ -164,11 +164,15 @@ public class Others {
         return isConfirmed[0];
     }
 
-    public static void showWarning(String message){
+    public static void showWarning(Window ownerWindow ,String message){
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning");
         alert.setHeaderText(null);
         alert.setContentText(message);
+
+        if (ownerWindow != null) {
+            alert.initOwner(ownerWindow);
+        }
 
         alert.showAndWait();
     }
