@@ -13,6 +13,7 @@ public class CategoryData {
         return new Category(rs.getInt("category_id"),
                             rs.getString("category_name"), rs.getString("status"));
     }
+
     public static List<Category> getAll(){
         List<Category> list = new ArrayList<>();
         String sql = "SELECT * FROM Category WHERE  status = 'Active'";
@@ -29,6 +30,7 @@ public class CategoryData {
         }
         return list;
     }
+
     // ===== GET BY ID =====
     public static int getCategoryIDByName(String categoryName) {
         List<Category> categories = CategoryData.getAll();
@@ -90,7 +92,6 @@ public class CategoryData {
         }
         return false;
     }
-
 
     // ===== GHI LOG =====
     public static void addLog(int categoryID, String categoryName,

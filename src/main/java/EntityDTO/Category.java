@@ -22,8 +22,6 @@ public class Category {
         this(0, categoryName,status);
     }
 
-
-
     // ===== GETTERS & SETTERS =====
 
     public int getCategoryID()          { return CategoryID; }
@@ -36,6 +34,8 @@ public class Category {
         this.categoryName = categoryName;
     }
 
-
-
+    @Override
+    public String toString() {
+        return this.categoryName;
+    }
 }

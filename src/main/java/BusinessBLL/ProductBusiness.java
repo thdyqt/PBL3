@@ -3,9 +3,13 @@ package BusinessBLL;
 import DataDAL.ProductData;
 import EntityDTO.Product;
 
-public class ProductBusiness {
+import java.util.List;
 
-    // ===== THÊM SẢN PHẨM =====
+public class ProductBusiness {
+    public static List<Product> getAllProducts(){
+        return ProductData.getAllProduct();
+    }
+
     public static String addProduct(Product product) {
         if (ProductData.isProductExist(product.getProductName())) {
             return "Sản phẩm đã tồn tại!";

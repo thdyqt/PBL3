@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600" prefWidth="900" style="-fx-background-color: #2C1A0E;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.productMenuController">
+<BorderPane prefHeight="600" prefWidth="900" style="-fx-background-color: #2C1A0E;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.ProductMenuController">
 
     <!-- ═══════════════════════════════════════════
          BACKGROUND TEXTURE LAYER (wood grain effect)

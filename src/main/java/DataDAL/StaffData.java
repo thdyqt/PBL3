@@ -127,41 +127,6 @@ public class StaffData {
         }
     }
 
-    public static List<Staff> searchStaff(String keyword) {
-        List<Staff> list = new ArrayList<>();
-        String sql = "SELECT * FROM Staff WHERE status = 'Active' AND " +
-                "(phone LIKE ? OR full_name LIKE ? OR username LIKE ? OR position LIKE ? OR hire_date LIKE ?)";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            String searchPattern = "%" + keyword + "%";
-
-            stmt.setString(1, searchPattern);
-            stmt.setString(2, searchPattern);
-            stmt.setString(3, searchPattern);
-            stmt.setString(4, searchPattern);
-            stmt.setString(5, searchPattern);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    list.add(new Staff(
-                            rs.getInt("id_nhan_vien"),
-                            rs.getString("phone"),
-                            rs.getString("full_name"),
-                            rs.getString("username"),
-                            rs.getString("pass_word"),
-                            rs.getString("position"),
-                            rs.getDate("hire_date")
-                    ));
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
     public static Staff getStaffByUsernameOrPhone(String user) {
         String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE (username = ? OR phone = ?) AND status = 'Active'";
 

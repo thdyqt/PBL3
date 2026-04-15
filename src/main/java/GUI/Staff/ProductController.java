@@ -2,8 +2,6 @@ package GUI.Staff;
 
 import DataDAL.ProductData;
 import DataDAL.CategoryData;
-import DataDAL.ProductData;
-import DataDAL.ProductData;
 import EntityDTO.Category;
 import EntityDTO.Product;
 import Util.IContentArea;
@@ -25,7 +23,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -316,7 +313,7 @@ public class ProductController implements Initializable, IContentArea {
     }
     @FXML
     private void handleBack() {
-        switchForm("/GUI/Staff/productMenu.fxml");
+        switchForm("/GUI/Staff/ProductMenu.fxml");
     }
 
     private void switchForm(String fxmlFileName) {

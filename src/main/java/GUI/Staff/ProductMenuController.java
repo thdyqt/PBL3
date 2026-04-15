@@ -5,11 +5,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import  javafx.scene.Node;
 
-public class productMenuController implements IContentArea {
+public class ProductMenuController implements IContentArea {
 
     @FXML
     private Button btnCategory;
@@ -36,7 +35,7 @@ public class productMenuController implements IContentArea {
 
     @FXML
     void handleProductManagement(ActionEvent event) {
-        switchForm("/GUI/Staff/productView.fxml");
+        switchForm("/GUI/Staff/ProductView.fxml");
     }
     private void switchForm(String fxmlFileName) {
         try {
