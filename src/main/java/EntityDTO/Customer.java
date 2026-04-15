@@ -25,7 +25,6 @@ public class Customer extends Person {
 
     }
 
-
     public rank getCustomer_rank() {
         return Customer_rank;
     }
@@ -46,11 +45,11 @@ public class Customer extends Person {
     private void UpdatedRank(Customer c) {
         if (c.getPoint() < 100) {
             c.setCustomer_rank(rank.Bronze);
-        } else if (c.getPoint() < 200) {
-            c.setCustomer_rank(rank.Silver);
         } else if (c.getPoint() < 500) {
-            c.setCustomer_rank(rank.Gold);
+            c.setCustomer_rank(rank.Silver);
         } else if (c.getPoint() < 1000) {
+            c.setCustomer_rank(rank.Gold);
+        } else if (c.getPoint() < 2000) {
             c.setCustomer_rank(rank.Diamond);
         } else {
             c.setCustomer_rank(rank.Emerald);

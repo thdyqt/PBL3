@@ -98,7 +98,7 @@
                     <font><Font name="System Bold" size="18.0" /></font>
                 </Label>
 
-                <TableView fx:id="tableCart" prefHeight="200.0" style="-fx-background-color: transparent; -fx-border-color: #E2E8F0; -fx-border-radius: 8;" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tableCart" prefHeight="200.0" style="-fx-background-color: white; -fx-control-inner-background: white; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-table-cell-border-color: #F8FAFC;" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="colSTT" maxWidth="35.0" minWidth="35.0" prefWidth="35.0" style="-fx-alignment: CENTER;" text="STT" />
                         <TableColumn fx:id="colProductName" prefWidth="170.0" text="Sản phẩm" />
@@ -123,7 +123,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" /> <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
                         <Label text="Tổng cộng:" textFill="#64748B">
@@ -145,10 +145,17 @@
                         </Label>
                         <ComboBox fx:id="cbbDiscount" prefHeight="32.0" prefWidth="160.0" promptText="Chọn mã..." style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                        <Label text="THÀNH TIỀN" textFill="#0F172A" GridPane.rowIndex="3">
+                        <Label fx:id="lblDiscountTitle" text="Giảm giá (0%):" textFill="#10B981" GridPane.rowIndex="3">
+                            <font><Font name="System Bold" size="14.0" /></font>
+                        </Label>
+                        <Label fx:id="lblDiscountAmount" text="-0 VNĐ" textFill="#10B981" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <font><Font name="System Bold" size="15.0" /></font>
+                        </Label>
+
+                        <Label text="THÀNH TIỀN" textFill="#0F172A" GridPane.rowIndex="4">
                             <font><Font name="System Bold" size="18.0" /></font>
                         </Label>
-                        <Label fx:id="lblTotalPay" text="0 VNĐ" textFill="#2563EB" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <Label fx:id="lblTotalPay" text="0 VNĐ" textFill="#2563EB" GridPane.columnIndex="1" GridPane.rowIndex="4">
                             <font><Font name="System Bold" size="22.0" /></font>
                         </Label>
                     </children>

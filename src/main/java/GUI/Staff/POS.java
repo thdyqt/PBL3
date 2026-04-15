@@ -1,8 +1,10 @@
 package GUI.Staff;
 
 import BusinessBLL.CategoryBusiness;
+import BusinessBLL.CustomerBusiness;
 import BusinessBLL.ProductBusiness;
 import EntityDTO.Category;
+import EntityDTO.Customer;
 import EntityDTO.OrderDetail;
 import EntityDTO.Product;
 import Util.Others;
@@ -16,14 +18,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -85,15 +92,31 @@ public class POS implements Initializable {
     private Label lblTotalQuantity;
 
     @FXML
+    private Label lblDiscountTitle;
+
+    @FXML
+    private Label lblDiscountAmount;
+
+    @FXML
     private TextField txtCustomerPhone;
 
     @FXML
     private TextField txtSearchProduct;
 
     private ObservableList<OrderDetail> cartList = FXCollections.observableArrayList();
+    private List<Product> allProducts;
+    private Customer currentCustomer = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.setMaxLength(txtCustomerPhone, 10);
+
+        txtCustomerPhone.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtCustomerPhone.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
         colSTT.setCellFactory(column -> new TableCell<EntityDTO.OrderDetail, Integer>() {
             @Override
             protected void updateItem(Integer item, boolean empty) {
@@ -242,19 +265,23 @@ public class POS implements Initializable {
             }
         });
 
+        allProducts = ProductBusiness.getAllProducts();
         tableCart.setItems(cartList);
         loadCategories();
-        loadProducts();
+        setupSearchAndFilter();
+        displayProducts(allProducts);
     }
 
     private void loadCategories() {
         List<Category> listCat = CategoryBusiness.getAllCategories();
+        Category allCat = new Category(0, "Tất cả sản phẩm", "Active");
+        listCat.add(0, allCat);
+
         cbbCategory.setItems(FXCollections.observableArrayList(listCat));
+        cbbCategory.getSelectionModel().selectFirst();
     }
 
-    private void loadProducts() {
-        List<Product> listPro = ProductBusiness.getAllProducts();
-
+    private void displayProducts(List<Product> listPro) {
         flowPaneProducts.getChildren().clear();
 
         for (Product sp : listPro) {
@@ -328,12 +355,95 @@ public class POS implements Initializable {
         lblSubtotal.setText(String.format(vn, "%,d VNĐ", subtotal));
         lblTotalQuantity.setText(totalQty + " món");
 
-        lblTotalPay.setText(String.format(vn, "%,d VNĐ", subtotal));
+        int discountPercent = CustomerBusiness.getDiscountPercent(currentCustomer);
+        int discountAmount = (int)(subtotal * (discountPercent / 100.0));
+        int finalTotal = subtotal - discountAmount;
+
+        lblDiscountTitle.setText(String.format("Giảm giá (%d%%):", discountPercent));
+        lblDiscountAmount.setText(String.format(vn, "-%,d VNĐ", discountAmount));
+        lblTotalPay.setText(String.format(vn, "%,d VNĐ", finalTotal));
+    }
+
+    private void setupSearchAndFilter() {
+        txtSearchProduct.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterProducts();
+        });
+
+        cbbCategory.valueProperty().addListener((observable, oldValue, newValue) -> {
+            filterProducts();
+        });
+    }
+
+    private void filterProducts() {
+        String searchText = txtSearchProduct.getText().toLowerCase().trim();
+        Category selectedCategory = cbbCategory.getValue();
+
+        List<Product> filteredList = new ArrayList<>();
+
+        for (Product p : allProducts) {
+            boolean matchName = p.getProductName().toLowerCase().contains(searchText) ||
+                    String.valueOf(p.getProductID()).contains(searchText);
+
+            boolean matchCategory = true;
+
+            if (selectedCategory != null && selectedCategory.getCategoryID() != 0) {
+                matchCategory = (p.getCategoryID() == selectedCategory.getCategoryID());
+            }
+
+            if (matchName && matchCategory) {
+                filteredList.add(p);
+            }
+        }
+
+        displayProducts(filteredList);
     }
 
     @FXML
-    void handleAddCustomer(ActionEvent event) {
+    void searchCustomerByPhone() {
+        String phone = txtCustomerPhone.getText().trim();
 
+        if (!phone.matches("^0[0-9]{9}$")) {
+            Others.showAlert(mainPane, "Số điện thoại không hợp lệ!", true);
+            currentCustomer = null;
+            lblCustomerName.setText("Khách vãng lai");
+            lblCustomerName.setStyle("-fx-text-fill: #64748B;");
+            txtCustomerPhone.requestFocus();
+            return;
+        }
+
+        currentCustomer = CustomerBusiness.findCustomer(phone);
+
+        if (currentCustomer == null) {
+            Others.showAlert(mainPane, "Số điện thoại không tồn tại, vui lòng đăng ký!", true);
+            lblCustomerName.setText("Khách vãng lai");
+            lblCustomerName.setStyle("-fx-text-fill: #64748B;");
+            txtCustomerPhone.requestFocus();
+            return;
+        }
+
+        lblCustomerName.setText(currentCustomer.getName());
+        lblCustomerName.setStyle("-fx-text-fill: #16A34A; -fx-font-weight: bold;");
+        calculateTotal();
+    }
+    @FXML
+    void handleAddCustomer(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/CustomerDialog.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Thêm khách hàng mới");
+            stage.setScene(new Scene(root));
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+            searchCustomerByPhone();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Others.showAlert(mainPane, "Lỗi khi mở form thêm khách hàng!", true);
+        }
     }
 
     @FXML

@@ -47,6 +47,10 @@ public class CustomerBusiness {
         return 0;
     }
 
+    public static Customer findCustomer(String text){
+        return CustomerData.getCustomerByUsernameOrPhone(text);
+    }
+
     public static int updateCustomer(int id, String phone, String name, String username, String password, int point) {
         if (CustomerData.isAccountExist(username, phone, id)) return -1;
 
@@ -55,5 +59,18 @@ public class CustomerBusiness {
             return 1;
         }
         return 0;
+    }
+
+    public static int getDiscountPercent (Customer c) {
+        if (c == null) return 0;
+
+        Customer.rank rank = c.getCustomer_rank();
+        return switch (rank) {
+            case Silver -> 1;
+            case Gold -> 2;
+            case Diamond -> 5;
+            case Emerald -> 8;
+            default -> 0;
+        };
     }
 }
