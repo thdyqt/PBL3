@@ -1,5 +1,6 @@
 package GUI.Staff;
 
+
 import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -7,7 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
@@ -16,13 +19,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.collections.ObservableList;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.w3c.dom.Entity;
 
+import java.io.IOError;
+import java.io.IOException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
-public class BillManagementForm implements Initializable{
+
+
+public class BillManagementForm{
 
     @FXML
     private Button buttonOrderDetail;
@@ -52,6 +61,9 @@ public class BillManagementForm implements Initializable{
     private TableColumn<EntityDTO.Order, String> col_OrderStatus;
 
     @FXML
+    private TableColumn<EntityDTO.Order, String> col_OrderType;
+
+    @FXML
     private TableColumn<EntityDTO.Order, String> col_PhoneCustomer;
 
     @FXML
@@ -74,11 +86,31 @@ public class BillManagementForm implements Initializable{
     //work by hiding unrelated data
     private FilteredList<EntityDTO.Order> filteredData;
 
-
     //methods
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    private void initialize() {
+        setupCombobox();
+        setupTable();
+        loadTable();
+        search();
 
+        setupButtons();
+    }
+
+    private void setupButtons() {
+        Others.playButtonAnimation(buttonOrderDetail);
+        Others.playButtonAnimation(buttonOrderReceipt);
+
+        buttonOrderDetail.setOnAction(event -> {
+            handleOrderDetail();
+        });
+
+        buttonOrderReceipt.setOnAction(actionEvent -> {
+            handleOrderReceipt();
+        });
+    }
+
+    private void setupCombobox(){
         ObservableList<String> searchOptions = FXCollections.observableArrayList(
                 "Chọn tiêu chí tìm kiếm",
                 "Tìm kiếm theo ID order",
@@ -86,14 +118,11 @@ public class BillManagementForm implements Initializable{
                 "Tìm kiếm theo SĐT khách hàng"
         );
 
-        //adding options to cbb
         cbbSearchOption.setItems(searchOptions);
         cbbSearchOption.getSelectionModel().selectFirst();
 
-        //change prompt text of searcbox whenever a new cbb option is selected
         cbbSearchOption.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                txtSearch.setPromptText(newValue);
                 txtSearch.clear();
 
                 switch (newValue) {
@@ -114,10 +143,6 @@ public class BillManagementForm implements Initializable{
                 }
             }
         });
-
-        setupTable();
-        loadTable();
-        search();
     }
 
     private void setupTable(){
@@ -131,6 +156,7 @@ public class BillManagementForm implements Initializable{
         //only use for those 2 because the naming of the getters in Order concidently
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
         col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        col_OrderType.setCellValueFactory(new PropertyValueFactory<>("type"));
 
         //same thing as all the methods below
         //albeit modified to format the date
@@ -184,6 +210,7 @@ public class BillManagementForm implements Initializable{
             return new SimpleStringProperty("");
         });
 
+        //css
         col_CustomerID.setStyle("-fx-alignment: CENTER;");
         col_OrderID.setStyle("-fx-alignment: CENTER;");
         col_CustomerName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
@@ -192,6 +219,7 @@ public class BillManagementForm implements Initializable{
         colProcessStaffName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         colProcessTime.setStyle("-fx-alignment: CENTER;");
         col_StaffID.setStyle("-fx-alignment: CENTER;");
+        col_OrderType.setStyle("-fx-alignment: CENTER;");
     }
 
     private void search(){
@@ -238,6 +266,56 @@ public class BillManagementForm implements Initializable{
             txtSearch.setText("");
             txtSearch.setText(currentText);
         });
+    }
+
+    private void handleOrderDetail(){
+        EntityDTO.Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
+
+        if (selectedOrder == null){
+            Others.showAlert(mainPane, "Vui lòng chọn hóa đơn!", true);
+            return;
+        }
+
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/BillDetail.fxml"));
+            Parent root = loader.load();
+
+            BillDetailController detailController = loader.getController();
+            detailController.setOrderDetails(selectedOrder);
+
+            Stage stage = new Stage();
+            stage.setTitle("Thông tin hóa đơn #" + selectedOrder.getId());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleOrderReceipt(){
+        EntityDTO.Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
+
+        if (selectedOrder == null){
+            Others.showAlert(mainPane, "Vui lòng chọn hóa đơn!", true);
+            return;
+        }
+
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/BillReceipt.fxml"));
+            Parent root = loader.load();
+
+            BillReceiptController receiptController = loader.getController();
+            receiptController.setData(selectedOrder);
+
+            Stage stage = new Stage();
+            stage.setTitle("Hóa đơn #" + selectedOrder.getId());
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadTable(){

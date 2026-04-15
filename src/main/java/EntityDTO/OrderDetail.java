@@ -37,6 +37,7 @@ public class OrderDetail {
     public int getQuantity(){return quantity;}
     public void setQuantity(int quantity){
         this.quantity = quantity;
+        this.totalPrice = this.price * this.quantity;
     }
 
     public int getPrice() {return price;}
@@ -46,7 +47,5 @@ public class OrderDetail {
     }
 
     public int getTotalPrice(){return totalPrice;}
-    public void setTotalPrice(double totalPrice){
-        this.totalPrice = this.quantity * this.product.getProductPrice();
-    }
+    public void setTotalPrice(int totalPrice){this.totalPrice = totalPrice;}
 }

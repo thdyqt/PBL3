@@ -48,7 +48,8 @@ public class OrderDetailData {
                 while (rs.next()){
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setQuantity(rs.getInt("quantity"));
-                    orderDetail.setTotalPrice(rs.getInt("price"));
+                    orderDetail.setPrice(rs.getInt("price"));
+                    orderDetail.setTotalPrice(rs.getInt("totalPrice"));
 
                     Order order = new Order();
                     order.setId(rs.getInt("id_Order"));
@@ -56,6 +57,8 @@ public class OrderDetailData {
 
                     Product product = new Product();
                     product.setProductID(rs.getInt("id_Product"));
+                    product.setProductName(rs.getString("ProductName"));
+                    product.setCategoryID(rs.getInt("CategoryID"));
                     orderDetail.setProduct(product);
 
                     orderDetailList.add(orderDetail);
@@ -70,12 +73,18 @@ public class OrderDetailData {
 
     //mutiple search methods (id_Order/id_Product)
     public static List<OrderDetail> searchOrderDetail_ById_Order(int id_Order){
-        String sql = "SELECT * FROM OrderDetail WHERE id_order = ?";
+        String sql = "SELECT od.*, p.ProductName, p.CategoryID " +
+                "FROM OrderDetail od " +
+                "JOIN Product p ON od.id_Product = p.ProductID " +
+                "WHERE od.id_Order = ?";
         return executeQuery_OrderDetail(sql, id_Order);
     }
 
     public static List<OrderDetail> searchOrderDetail_ById_Product(int id_Product){
-        String sql = "SELECT * FROM OrderDetail WHERE id_Product = ?";
+        String sql = "SELECT od.*, p.ProductName, p.CategoryID " +
+                "FROM OrderDetail od " +
+                "JOIN Product p ON od.id_Product = p.ProductID " +
+                "WHERE od.id_Product = ?";
         return executeQuery_OrderDetail(sql, id_Product);
     }
 

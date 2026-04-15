@@ -11,6 +11,7 @@ module com.example.pbl3 {
     requires java.sql;
     requires jbcrypt;
     requires com.zaxxer.hikari;
+    requires mysql.connector.j;
 
     opens EntityDTO to javafx.base;
     opens GUI to javafx.fxml;
