@@ -8,6 +8,7 @@ import EntityDTO.OrderDetail;
 import DataDAL.OrderData;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OrderBusiness {
@@ -41,57 +42,31 @@ public class OrderBusiness {
         return OrderData.getAllOrders();
     }
 
-    public static List<Order> searchOrder_BLL(String keyword, String searchOption){
-        //return everything by default if option is empty
-        if (keyword == null || keyword.trim().isEmpty()){
-            return getAllOrder_BLL();
+    //status contraints as said in Order DTO
+    public static boolean isValidStatus(Order order, String status){
+        String type = String.valueOf(order.getType());
+
+        if ("Offline".equalsIgnoreCase(type)) {
+            return status.equals("Processing") || status.equals("Finished");
+        }
+        else if ("Online".equalsIgnoreCase(type)) {
+            List<String> validOnlineStates = Arrays.asList(
+                    "Created", "Waiting_for_validation", "Processing", "Delivering", "Finished", "Cancelled"
+            );
+            return validOnlineStates.contains(status);
         }
 
-        switch (searchOption){
-            case "Tìm kiếm theo ID order":
-                //the whole bullshittery because searchOrder_ByID only return a singular Order
-                try{
-                    int intKeyword = Integer.parseInt(keyword);
-                    Order foundOrder = OrderData.searchOrder_ByID(intKeyword);
-
-                    List<Order> result = new ArrayList<>();
-
-                    if (foundOrder != null){
-                        result.add(foundOrder);
-                    }
-
-                    return result;
-
-                //empty list
-                }catch (NumberFormatException e){
-                    return new ArrayList<>();
-                }
-
-            case "Tìm kiếm theo ID nhân viên thực hiện":
-                //less bullshittery because it actually return a list
-                try{
-                    int intKeyword = Integer.parseInt(keyword);
-                    return OrderData.searchOrder_ByStaffID(intKeyword);
-                }catch (NumberFormatException e){
-                    return new ArrayList<>();
-                }
-
-            case "Tìm kiếm theo SĐT khách hàng":
-                //the method below was practically made made for this BLL method
-                //so its short like that
-                return OrderData.searchOrder_ByCustomerPhone(keyword);
-
-            //if it doesnt fit any of the above
-            //just return everything
-            default:
-                return getAllOrder_BLL();
-        }
+        return false;
     }
 
-    public static String updateOrder_BLL(Order order){
+    public static String updateOrder_BLL(Order order, String status){
         //so the id does exist and is valid
         if (order == null || order.getId() <= 0){
             return "Order doesnt exist/ have invalid ID";
+        }
+
+        if (!isValidStatus(order, status)) {
+            return "LỖI: Trạng thái '" + status + "' không hợp lệ cho đơn hàng " + order.getType();
         }
 
         //but does the order with that id actually exist in the database?
@@ -99,6 +74,8 @@ public class OrderBusiness {
         if (orderToUpdate == null){
             return "The order doesnt exist";
         }
+
+        order.setStatus(Order.orderStatus.valueOf(status));
 
         boolean isUpdated = OrderData.updateOrder(order);
 

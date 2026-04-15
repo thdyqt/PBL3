@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillReceiptController">
+   <children>
+      <BorderPane prefHeight="200.0" prefWidth="200.0">
+         <top>
+            <Region prefHeight="89.0" prefWidth="400.0" style="-fx-border-color: black; -fx-border-width: 0 0 2 0; -fx-border-style: segments(8, 5);" BorderPane.alignment="CENTER" />
+         </top>
+         <bottom>
+            <Region prefHeight="0.0" prefWidth="400.0" style="-fx-border-color: black; -fx-border-width: 0 0 2 0; -fx-border-style: segments(8, 5);" BorderPane.alignment="CENTER" />
+         </bottom>
+         <center>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label contentDisplay="CENTER" text="*** RECEIPT ***">
+                     <font>
+                        <Font name="System Bold" size="29.0" />
+                     </font>
+                     <graphic>
+                        <VBox prefHeight="200.0" prefWidth="100.0" />
+                     </graphic>
+                  </Label>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label fx:id="labelCashierID" prefHeight="16.0" prefWidth="105.0" text="Cashier ID">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></Label>
+                              <Label fx:id="labelCustomerID" prefHeight="16.0" prefWidth="105.0" text="Customer ID">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding></Label>
+                           </children>
+                        </VBox>
+                        <Region prefHeight="32.0" prefWidth="102.0" />
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label fx:id="labelOrderID" prefHeight="16.0" prefWidth="105.0" text="Order ID" />
+                              <Label fx:id="labelDate" prefHeight="16.0" prefWidth="124.0" text="Date" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;">
+         <content>
+            <VBox fx:id="vboxContent" prefHeight="200.0" prefWidth="100.0" />
+         </content>
+      </ScrollPane>
+      <Region prefHeight="0.0" prefWidth="400.0" style="-fx-border-color: black; -fx-border-width: 0 0 2 0; -fx-border-style: segments(8, 5);" />
+      <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="labelTotal" text="Total money" />
+         </children>
+         <padding>
+            <Insets right="30.0" top="10.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

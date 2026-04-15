@@ -75,6 +75,28 @@ public class Others {
         clock.play();
     }
 
+    // ANIMATION KHI ẤN NÚT
+    // Resize up and down slightly to make button clicking more tactile
+    public static void playButtonAnimation(Node node){
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100),node);
+        scaleDown.setToX(0.95);
+        scaleDown.setToY(0.95);
+
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100),node);
+        scaleUp.setToX(1);
+        scaleUp.setToY(1);
+
+        node.setOnMousePressed(mouseEvent -> {
+            scaleUp.stop();
+            scaleDown.playFromStart();
+        });
+
+        node.setOnMouseReleased(mouseEvent -> {
+            scaleDown.stop();
+            scaleUp.playFromStart();
+        });
+    }
+
     // ANIMATION KHI FORM HIỂN THỊ
     public static void playFormAnimation(Node formNode) {
         formNode.setOpacity(0);
