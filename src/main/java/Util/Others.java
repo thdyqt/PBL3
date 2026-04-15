@@ -6,10 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -165,6 +162,37 @@ public class Others {
         stage.showAndWait();
 
         return isConfirmed[0];
+    }
+
+    public static void showWarning(String message){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        alert.showAndWait();
+    }
+
+    // ANIMATION KHI ẤN NÚT
+    // Resize up and down slightly to make button clicking more tactile
+    public static void playButtonAnimation(Node node){
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100),node);
+        scaleDown.setToX(0.95);
+        scaleDown.setToY(0.95);
+
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100),node);
+        scaleUp.setToX(1);
+        scaleUp.setToY(1);
+
+        node.setOnMousePressed(mouseEvent -> {
+            scaleUp.stop();
+            scaleDown.playFromStart();
+        });
+
+        node.setOnMouseReleased(mouseEvent -> {
+            scaleDown.stop();
+            scaleUp.playFromStart();
+        });
     }
 
     // ANIMATION KHI FORM HIỂN THỊ

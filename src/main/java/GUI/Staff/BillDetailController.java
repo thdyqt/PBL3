@@ -20,6 +20,8 @@ import javafx.scene.layout.BorderPane;
 import org.w3c.dom.Entity;
 
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -96,7 +98,6 @@ public class BillDetailController{
     }
 
     private void setupTable(){
-        col_Price.setCellValueFactory(new PropertyValueFactory<>("price"));
         col_ItemID.setCellValueFactory(cellData -> {
             if (cellData.getValue().getProduct() != null) {
                 int itemID = cellData.getValue().getProduct().getProductID();
@@ -122,7 +123,54 @@ public class BillDetailController{
         });
 
         col_ItemQuanity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+
+        col_Price.setCellValueFactory(new PropertyValueFactory<>("price"));
+        col_Price.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.OrderDetail, Integer>() {
+            private final java.text.DecimalFormat formatter;
+            {
+                java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+                symbols.setGroupingSeparator('.');
+                formatter = new java.text.DecimalFormat("#,###", symbols);
+            }
+
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(item) + "đ");
+                }
+            }
+        });
+
         col_TotalPrice.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
+        col_TotalPrice.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.OrderDetail, Integer>() {
+            private final java.text.DecimalFormat formatter;
+            {
+                java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+                symbols.setGroupingSeparator('.');
+                formatter = new java.text.DecimalFormat("#,###", symbols);
+            }
+
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(item) + "đ");
+                }
+            }
+        });
+
+
+        col_ItemID.setStyle("-fx-alignment: CENTER;");
+        col_ItemName.setStyle("-fx-alignment: CENTER;");
+        col_ItemCategoryID.setStyle("-fx-alignment: CENTER;");
+        col_ItemQuanity.setStyle("-fx-alignment: CENTER;");
+        col_Price.setStyle("-fx-alignment: CENTER;");
+        col_TotalPrice.setStyle("-fx-alignment: CENTER;");
     }
 
     private void setupSearch(){
@@ -166,6 +214,7 @@ public class BillDetailController{
         });
     }
 
+    //set up the 4 information buttons at the top
     public void setOrderDetails(EntityDTO.Order order) {
         label_OrderID.setText("ID hóa đơn: " + String.valueOf(order.getId()));
         label_ProcessTime.setText(order.getProcess_time().toString());
@@ -174,7 +223,7 @@ public class BillDetailController{
             label_StaffID.setText("ID nhân viên: " + order.getStaff().getId());
         }
         if (order.getCustomer() != null) {
-            label_CustomerID.setText("ID khách hàng: "+String.valueOf(order.getCustomer().getId()));
+            label_CustomerID.setText("ID khách hàng: " + String.valueOf(order.getCustomer().getId()));
         } else {
             label_CustomerID.setText("Khách vãng lai");
         }
@@ -188,7 +237,12 @@ public class BillDetailController{
             grandTotal += detail.getTotalPrice();
         }
 
-        totalAmountBox.setText(String.valueOf(grandTotal));
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator('.');
+        DecimalFormat formatter = new DecimalFormat("#,###", symbols);
+
+
+        totalAmountBox.setText(formatter.format(grandTotal) + "đ");
     }
 
 }

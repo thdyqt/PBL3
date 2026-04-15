@@ -1,6 +1,6 @@
 package GUI.Staff;
 
-import EntityDTO.Staff;
+
 import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,7 +9,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -28,6 +27,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+
+import static Util.Others.showWarning;
 
 
 public class BillManagementForm{
@@ -97,11 +98,13 @@ public class BillManagementForm{
     }
 
     private void setupButtons() {
+        Others.playButtonAnimation(buttonOrderDetail);
+        Others.playButtonAnimation(buttonOrderReceipt);
+
         buttonOrderDetail.setOnAction(event -> {
             handleOrderDetail();
         });
     }
-
 
     private void setupCombobox(){
         ObservableList<String> searchOptions = FXCollections.observableArrayList(
@@ -265,6 +268,7 @@ public class BillManagementForm{
         EntityDTO.Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
 
         if (selectedOrder == null){
+            showWarning("Chưa lựa chọn hóa đơn để xem chi tiết");
             return;
         }
 
