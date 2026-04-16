@@ -187,13 +187,13 @@ public class OrderData {
             stmt.setString(5, order.getType().name());
             stmt.setString(6, order.getPayment().name());
 
-            // Parameters 7, 8, 9: The new math values
+            // Parameters 7, 8, 9, 10: The new math values
             stmt.setInt(7, order.getSubTotal());
             stmt.setInt(8, order.getDiscountAmount());
             stmt.setString(9, order.getAppliedCode());
             stmt.setInt(10, order.getFinalAmount());
 
-            // Parameter 10: The Order ID used in the WHERE clause
+            // Parameter 11: The Order ID used in the WHERE clause
             stmt.setInt(11, order.getId());
 
             int rowsAffected = stmt.executeUpdate();

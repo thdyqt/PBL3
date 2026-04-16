@@ -107,4 +107,10 @@ public class OrderBusiness {
         }
     }
 
+    public static String calculateMoney(Order order){
+        int discount = 0;
+        String code = order.getAppliedCode();
+        return "";
+    }
+
 }

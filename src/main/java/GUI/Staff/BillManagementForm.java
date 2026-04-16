@@ -62,13 +62,8 @@ public class BillManagementForm{
     private TableColumn<EntityDTO.Order, String> col_OrderType;
 
     @FXML
-    private TableColumn<EntityDTO.Order, Order.orderPayment> col_OrderPayment;
-
-    @FXML
     private TableColumn<EntityDTO.Order, String> col_PhoneCustomer;
 
-    @FXML
-    private TableColumn<EntityDTO.Order, String> colProcessStaff_UserName;
 
 
     @FXML
@@ -179,22 +174,6 @@ public class BillManagementForm{
         });
 
         col_OrderType.setCellValueFactory(new PropertyValueFactory<>("type"));
-        col_OrderPayment.setCellValueFactory(new PropertyValueFactory<>("payment"));
-        col_OrderPayment.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, Order.orderPayment>() {
-            @Override
-            protected void updateItem(Order.orderPayment item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    switch (item) {
-                        case Cash: setText("Tiền mặt"); break;
-                        case Card: setText("Chuyển khoản"); break;
-                        default: setText(item.name());
-                    }
-                }
-            }
-        });
 
         //same thing as all the methods below
         //albeit modified to format the date
@@ -220,13 +199,6 @@ public class BillManagementForm{
             return new SimpleStringProperty("Name unspecified.");
         });
 
-        colProcessStaff_UserName.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getStaff() != null) {
-                return new SimpleStringProperty(cellData.getValue().getStaff().getUser());
-            }
-            return new SimpleStringProperty("Name unspecified.");
-        });
-
         col_CustomerName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getCustomer() != null) {
                 return new SimpleStringProperty(cellData.getValue().getCustomer().getName());
@@ -247,11 +219,8 @@ public class BillManagementForm{
         col_OrderStatus.setStyle("-fx-alignment: CENTER;");
         col_PhoneCustomer.setStyle("-fx-alignment: CENTER;");
         colProcessStaffName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
-        colProcessStaff_UserName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         colProcessTime.setStyle("-fx-alignment: CENTER;");
-        col_OrderType.setStyle("-fx-alignment: CENTER;");
-        col_OrderPayment.setStyle("-fx-alignment: CENTER;");
-    }
+        col_OrderType.setStyle("-fx-alignment: CENTER;");}
 
     private void search(){
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
