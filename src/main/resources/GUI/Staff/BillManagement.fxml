@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -25,11 +26,19 @@
 
                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 3);">
                     <children>
-                        <TextField fx:id="txtSearch" prefHeight="30.0" prefWidth="310.0" promptText="Chưa chọn tiêu chí tìm kiếm" style="-fx-background-color: #F1F5F9; -fx-background-radius: 6; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" />
-                        <ComboBox fx:id="cbbSearchOption" prefWidth="150.0" />
+                        <TextField fx:id="txtSearch" prefHeight="30.0" prefWidth="310.0" promptText="Chưa chọn tiêu chí tìm kiếm" style="-fx-background-color: #F1F5F9; -fx-background-radius: 6; -fx-border-color: #E2E8F0; -fx-border-radius: 6;" stylesheets="@../style.css" />
+                        <ComboBox fx:id="cbbSearchOption" prefWidth="150.0" styleClass="customer-combo-box" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <Button fx:id="buttonOrderDetail" mnemonicParsing="false" styleClass="btn-add-item" text="Xem chi tiết hóa đơn" />
-                        <Button fx:id="buttonOrderReceipt" mnemonicParsing="false" styleClass="btn-edit-item" text="Xuất hóa đơn" />
+                        <Button fx:id="buttonOrderDetail" mnemonicParsing="false" text="Xem chi tiết hóa đơn">
+                     <styleClass>
+                        <String fx:value="btn-add-item" />
+                        <String fx:value="action-btn" />
+                     </styleClass></Button>
+                        <Button fx:id="buttonOrderReceipt" mnemonicParsing="false" text="Xuất hóa đơn">
+                     <styleClass>
+                        <String fx:value="btn-edit-item" />
+                        <String fx:value="action-btn" />
+                     </styleClass></Button>
 
 
                     </children>

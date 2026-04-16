@@ -56,22 +56,28 @@ public class BillReceiptController {
         vboxContent.getChildren().clear();
         int total = 0;
 
-        for (OrderDetail item : details){
-            GridPane row = new GridPane();
-            row.setHgap(15);
+        GridPane itemGrid = new GridPane();
+        itemGrid.setHgap(20);
+        itemGrid.setVgap(5);
 
+        int rowIndex = 0;
+
+        for (OrderDetail item : details){
             Label labelName = new Label(item.getProduct().getProductName());
             Label labelQuanity = new Label("x" + item.getQuantity());
             Label labelItemTotal = new Label(formatter.format(item.getTotalPrice()) + "đ");
 
-            row.add(labelName, 0, 0);
-            row.add(labelQuanity, 1, 0);
-            row.add(labelItemTotal, 2, 0);
+            GridPane.setHalignment(labelItemTotal, javafx.geometry.HPos.RIGHT);
 
-            vboxContent.getChildren().add(row);
+            itemGrid.add(labelName, 0, rowIndex);
+            itemGrid.add(labelQuanity, 1, rowIndex);
+            itemGrid.add(labelItemTotal, 2, rowIndex);
 
             total += item.getTotalPrice();
+            rowIndex++;
         }
+
+        vboxContent.getChildren().add(itemGrid);
 
         if (labelTotal != null) {
             labelTotal.setText("Tổng tiền: " + formatter.format(total) + "đ");

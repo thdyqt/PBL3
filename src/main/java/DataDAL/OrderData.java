@@ -46,8 +46,8 @@ public class OrderData {
                 }
 
                 order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
-                order.setType(Order.orderType.valueOf(rs.getString("order_type")));
-                order.setPayment(Order.orderPayment.valueOf(rs.getString("order_payment")));
+                order.setType(Order.orderType.valueOf(rs.getString("type")));
+                order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
 
                 list.add(order);
             }
@@ -62,7 +62,7 @@ public class OrderData {
         //foreign keys are in here
         //specifically id_Staff and id_Customer
         //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -80,6 +80,8 @@ public class OrderData {
             }
 
             stmt.setString(4, order.getStatus().name());
+            stmt.setString(5, order.getType().name());
+            stmt.setString(6, order.getPayment().name());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -118,6 +120,9 @@ public class OrderData {
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
                 order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+                order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
+                order.setType(Order.orderType.valueOf(rs.getString("type")));
+                order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
 
                 Staff staff = new Staff();
                 staff.setId(rs.getInt("id_Staff"));
@@ -132,6 +137,7 @@ public class OrderData {
                     customer.setPhone(rs.getString("customer_phone"));
                     order.setCustomer(customer);
                 }
+
                 return order;
             }
 
@@ -143,7 +149,7 @@ public class OrderData {
 
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
-        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ? WHERE id_Order = ?";
+        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ? WHERE id_Order = ?";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -162,7 +168,10 @@ public class OrderData {
 
             //the id of the Order that need to be updated and its status
             stmt.setString(4, order.getStatus().name());
-            stmt.setInt(5, order.getId());
+            stmt.setString(5, order.getType().name());
+            stmt.setString(6, order.getPayment().name());
+
+            stmt.setInt(7, order.getId());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
