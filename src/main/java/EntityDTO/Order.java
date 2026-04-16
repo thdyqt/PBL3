@@ -30,6 +30,10 @@ public class Order {
     private orderStatus status;
     private orderType type;
     private orderPayment payment;
+    private int subTotal;
+    private int discountAmount;
+    private int finalAmount;
+
 
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();};
@@ -77,4 +81,13 @@ public class Order {
 
     public orderPayment getPayment(){return payment;}
     public void setPayment(orderPayment payment){this.payment = payment;}
+
+    public int getSubTotal(){return subTotal;}
+    public void setSubTotal(int subTotal){this.subTotal = subTotal;}
+
+    public int getDiscountAmount(){return discountAmount;}
+    public void setDiscountAmount(int discountAmount){this.discountAmount = discountAmount;}
+
+    public int getFinalAmount(){return finalAmount;}
+    public void setFinalAmount(int finalAmount){this.finalAmount = finalAmount;}
 }

@@ -41,6 +41,11 @@
                                  <padding>
                                     <Insets left="10.0" />
                                  </padding></Label>
+                              <Label fx:id="labelCustomerRank" text="Customer rank">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
                            </children>
                         </VBox>
                         <Region prefHeight="32.0" prefWidth="202.0" />
@@ -48,6 +53,7 @@
                            <children>
                               <Label fx:id="labelOrderID" text="Order ID" />
                               <Label fx:id="labelDate" text="Date" />
+                              <Label fx:id="labelCustomerPoint" text="Customer point" />
                            </children>
                         </VBox>
                      </children>

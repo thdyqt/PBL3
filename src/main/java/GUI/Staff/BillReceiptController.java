@@ -31,6 +31,12 @@ public class BillReceiptController {
     @FXML
     private VBox vboxContent;
 
+    @FXML
+    private Label labelCustomerPoint;
+
+    @FXML
+    private Label labelCustomerRank;
+
     private final DecimalFormat formatter;
 
     public BillReceiptController() {
@@ -44,6 +50,8 @@ public class BillReceiptController {
 
         if (order.getCustomer() != null) {
             labelCustomerID.setText("Tên khách hàng: " + String.valueOf(order.getCustomer().getName()));
+            labelCustomerPoint.setText("Tổng điểm thành viên: " + String.valueOf(order.getCustomer().getPoint()));
+            labelCustomerRank.setText("Bậc khách hàng: " + String.valueOf(order.getCustomer().getCustomer_rank()));
         } else {
             labelCustomerID.setText("Khách vãng lai");
         }
@@ -80,7 +88,7 @@ public class BillReceiptController {
         vboxContent.getChildren().add(itemGrid);
 
         if (labelTotal != null) {
-            labelTotal.setText("Tổng tiền: " + formatter.format(total) + "đ");
+            labelTotal.setText("Tổng cộng: " + formatter.format(total) + "đ");
         }
     }
 }
