@@ -15,20 +15,26 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -514,6 +520,133 @@ public class POS implements Initializable {
 
     @FXML
     void handlePayment(ActionEvent event) {
+        if (cartList.isEmpty()) {
+            Others.showAlert(mainPane, "Giỏ hàng đang trống, không thể thanh toán!", true);
+            return;
+        }
 
+        String totalPayStr = lblTotalPay.getText().replaceAll("[^0-9]", "");
+        int finalTotal = Integer.parseInt(totalPayStr);
+
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        dialogStage.initStyle(StageStyle.TRANSPARENT);
+
+        VBox root = new VBox(25);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(30, 40, 30, 40));
+
+        root.getStyleClass().add("modern-alert");
+
+        Label lblTitle = new Label("CHỌN PHƯƠNG THỨC THANH TOÁN");
+        lblTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+
+        Label lblAmount = new Label(String.format(vn, "%,d VNĐ", finalTotal));
+        lblAmount.setStyle("-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2563EB;");
+
+        HBox btnBox = new HBox(20);
+        btnBox.setAlignment(Pos.CENTER);
+
+        Button btnCash = new Button("💵 Tiền mặt");
+        btnCash.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 25; -fx-background-radius: 8; -fx-cursor: hand;");
+
+        Button btnTransfer = new Button("📱 Chuyển khoản");
+        btnTransfer.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 15 25; -fx-background-radius: 8; -fx-cursor: hand;");
+
+        btnBox.getChildren().addAll(btnCash, btnTransfer);
+
+        Button btnCancel = new Button("Hủy bỏ");
+        btnCancel.setStyle("-fx-background-color: transparent; -fx-text-fill: #64748B; -fx-font-size: 14px; -fx-cursor: hand; -fx-underline: true;");
+
+        root.getChildren().addAll(lblTitle, lblAmount, btnBox, btnCancel);
+
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        try {
+            scene.getStylesheets().add(getClass().getResource("/GUI/style.css").toExternalForm());
+        } catch (Exception e) {
+            System.out.println("Không load được CSS cho popup thanh toán.");
+        }
+        dialogStage.setScene(scene);
+
+        btnCancel.setOnAction(e -> dialogStage.close());
+
+        btnCash.setOnAction(e -> {
+            dialogStage.close();
+            // processCheckout("Tiền mặt", finalTotal);
+        });
+
+        btnTransfer.setOnAction(e -> {
+            dialogStage.close();
+            showVietQRAndCheckout(finalTotal);
+        });
+
+        dialogStage.showAndWait();
+    }
+
+    private void showVietQRAndCheckout(int amount) {
+        try {
+            String bankID = "MB";
+            String accountNo = "000002907";
+            String accountName = URLEncoder.encode("PHAN THANH DUY", "UTF-8").replace("+", "%20");
+            String addInfo = URLEncoder.encode("Thanh toan don hang DUT Bakery", "UTF-8").replace("+", "%20");
+
+            String qrUrl = String.format("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
+                    bankID, accountNo, amount, addInfo, accountName);
+
+            Image qrImage = new Image(qrUrl, false);
+
+            if (qrImage.isError()) {
+                throw new Exception("Không thể tải ảnh QR từ máy chủ!");
+            }
+
+            ImageView imageView = new ImageView(qrImage);
+            imageView.setFitWidth(500);
+            imageView.setFitHeight(500);
+            imageView.setPreserveRatio(true);
+
+            Stage qrStage = new Stage();
+            qrStage.initModality(Modality.APPLICATION_MODAL);
+            qrStage.setTitle("Thanh toán Chuyển khoản");
+            qrStage.setMaximized(true);
+
+            VBox root = new VBox(30);
+            root.setAlignment(Pos.CENTER);
+            root.setStyle("-fx-background-color: #F8FAFC;");
+
+            Label lblTitle = new Label("QUÉT MÃ ĐỂ THANH TOÁN");
+            lblTitle.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
+
+            Label lblAmount = new Label("Số tiền cần chuyển: " + String.format(vn, "%,d VNĐ", amount));
+            lblAmount.setStyle("-fx-font-size: 28px; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
+
+            HBox btnBox = new HBox(20);
+            btnBox.setAlignment(Pos.CENTER);
+
+            Button btnCancel = new Button("Đóng / Hủy");
+            btnCancel.setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
+
+            Button btnConfirm = new Button("✅ ĐÃ NHẬN ĐƯỢC TIỀN");
+            btnConfirm.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
+
+            btnBox.getChildren().addAll(btnCancel, btnConfirm);
+            root.getChildren().addAll(lblTitle, lblAmount, imageView, btnBox);
+
+            Scene scene = new Scene(root);
+            qrStage.setScene(scene);
+
+            btnCancel.setOnAction(e -> qrStage.close());
+
+            btnConfirm.setOnAction(e -> {
+                qrStage.close();
+                //processCheckout("Chuyển khoản", amount);
+            });
+
+            qrStage.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Others.showAlert(mainPane, "Lỗi khi tạo mã QR. Vui lòng kiểm tra mạng!", true);
+        }
     }
 }

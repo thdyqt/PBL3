@@ -45,10 +45,10 @@
                         <RowConstraints minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
-                        <Label text="Họ và Tên:" textFill="#334155" />
+                        <Label text="Họ và Tên:*" textFill="#334155" />
                         <TextField fx:id="txtName" prefHeight="38.0" promptText="VD: Nguyễn Văn A" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" />
 
-                        <Label text="Số điện thoại:" textFill="#334155" GridPane.rowIndex="1" />
+                        <Label text="Số điện thoại:*" textFill="#334155" GridPane.rowIndex="1" />
                         <TextField fx:id="txtPhone" prefHeight="38.0" promptText="VD: 0905..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
                         <Label text="Tài khoản:" textFill="#334155" GridPane.rowIndex="2" />

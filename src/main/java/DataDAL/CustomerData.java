@@ -37,7 +37,7 @@ public class CustomerData {
     }
 
     public static boolean isAccountExist(String username, String phone, int idToIgnore){
-        String sql = "SELECT id_khach_hang FROM Customer WHERE (username = ? OR phone = ?) AND id_khach_hang != ?";
+        String sql = "SELECT id_khach_hang FROM Customer WHERE ((username = ? AND username != '') OR phone = ?) AND id_khach_hang != ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -123,8 +123,15 @@ public class CustomerDialogController implements Initializable {
         String name = Others.standardizeName(txtName.getText());
         String phone = txtPhone.getText().trim();
         String username = txtUsername.getText().trim();
-        String rawPassword = txtPassword.getText().isEmpty() ? txtPhone.getText().trim() : txtPassword.getText().trim();
-        int point = currentCustomer.getPoint();
+
+        String rawPassword;
+        if (currentCustomer == null) {
+            rawPassword = txtPassword.getText().isEmpty() ? txtPhone.getText().trim() : txtPassword.getText().trim();
+        } else {
+            rawPassword = txtPassword.getText().trim();
+        }
+
+        int point = (currentCustomer != null) ? currentCustomer.getPoint() : 0;
 
         if (currentCustomer != null) {
             boolean isNameUnchanged = name.equals(currentCustomer.getName());
