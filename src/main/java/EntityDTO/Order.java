@@ -31,6 +31,7 @@ public class Order {
     private orderType type;
     private orderPayment payment;
     private int subTotal;
+    private String appliedCode;
     private int discountAmount;
     private int finalAmount;
 
@@ -87,6 +88,9 @@ public class Order {
 
     public int getDiscountAmount(){return discountAmount;}
     public void setDiscountAmount(int discountAmount){this.discountAmount = discountAmount;}
+
+    public String getAppliedCode(){return appliedCode;}
+    public void setAppliedCode(String appliedCode){this.appliedCode = appliedCode;}
 
     public int getFinalAmount(){return finalAmount;}
     public void setFinalAmount(int finalAmount){this.finalAmount = finalAmount;}

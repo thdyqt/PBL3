@@ -32,6 +32,7 @@ public class OrderData {
                 order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
                 order.setSubTotal(rs.getInt("subtotal"));
                 order.setDiscountAmount(rs.getInt("discount_amount"));
+                order.setAppliedCode(rs.getString("applied_promo_code"));
                 order.setFinalAmount(rs.getInt("final_total"));
 
                 Staff staff = new Staff();
@@ -66,7 +67,7 @@ public class OrderData {
         //foreign keys are in here
         //specifically id_Staff and id_Customer
         //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, final_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -89,7 +90,8 @@ public class OrderData {
 
             stmt.setInt(7, order.getSubTotal());
             stmt.setInt(8, order.getDiscountAmount());
-            stmt.setInt(9, order.getFinalAmount());
+            stmt.setString(9, order.getAppliedCode());
+            stmt.setInt(10, order.getFinalAmount());
 
 
             int rowsAffected = stmt.executeUpdate();
@@ -112,7 +114,7 @@ public class OrderData {
 
     //mutiple search methods (ID/Staff/Customer)
     public static Order searchOrder_ByID(int id_Order){
-        String sql = "SELECT o.*, s.full_name AS staff_name, c.full_name AS customer_name, c.phone AS customer_phone " +
+        String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, c.full_name AS customer_name, c.phone AS customer_phone " +
                 "FROM Orders o " +
                 "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
                 "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang " +
@@ -134,6 +136,7 @@ public class OrderData {
                 order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
                 order.setSubTotal(rs.getInt("subtotal"));
                 order.setDiscountAmount(rs.getInt("discount_amount"));
+                order.setAppliedCode(rs.getString("applied_promo_code"));
                 order.setFinalAmount(rs.getInt("final_total"));
 
                 Staff staff = new Staff();
@@ -163,7 +166,7 @@ public class OrderData {
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
         // 1. Updated SQL string with the 3 new columns added before the WHERE clause
-        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, final_total = ? WHERE id_Order = ?";
+        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ? WHERE id_Order = ?";
 
         try (
                 Connection conn = DBConnection.getConnection();
@@ -187,10 +190,11 @@ public class OrderData {
             // Parameters 7, 8, 9: The new math values
             stmt.setInt(7, order.getSubTotal());
             stmt.setInt(8, order.getDiscountAmount());
-            stmt.setInt(9, order.getFinalAmount());
+            stmt.setString(9, order.getAppliedCode());
+            stmt.setInt(10, order.getFinalAmount());
 
             // Parameter 10: The Order ID used in the WHERE clause
-            stmt.setInt(10, order.getId());
+            stmt.setInt(11, order.getId());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
