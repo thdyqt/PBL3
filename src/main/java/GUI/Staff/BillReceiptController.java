@@ -40,16 +40,16 @@ public class BillReceiptController {
     }
 
     public void setData(Order order){
-        labelCashierID.setText("Cashier ID: " + String.valueOf(order.getStaff().getId()));
+        labelCashierID.setText("Tên nhân viên: " + String.valueOf(order.getStaff().getName()));
 
         if (order.getCustomer() != null) {
-            labelCustomerID.setText("Customer ID: " + String.valueOf(order.getCustomer().getId()));
+            labelCustomerID.setText("Tên khách hàng: " + String.valueOf(order.getCustomer().getName()));
         } else {
             labelCustomerID.setText("Khách vãng lai");
         }
 
-        labelOrderID.setText("Order ID: #" + String.valueOf(order.getId()));
-        labelDate.setText(String.valueOf(order.getProcess_time()));
+        labelOrderID.setText("ID hóa đơn: #" + String.valueOf(order.getId()));
+        labelDate.setText("Thời gian thực hiện hóa đơn: " + String.valueOf(order.getProcess_time()));
 
         List<OrderDetail> details = BusinessBLL.OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
 

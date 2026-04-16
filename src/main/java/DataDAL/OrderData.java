@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT o.*, s.full_name AS staff_name, c.full_name AS customer_name, c.phone AS customer_phone " +
+        String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, c.full_name AS customer_name, c.phone AS customer_phone " +
                 "FROM Orders o " +
                 "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
                 "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang";
@@ -34,6 +34,7 @@ public class OrderData {
                 Staff staff = new Staff();
                 staff.setId(rs.getInt("id_Staff"));
                 staff.setName(rs.getString("staff_name"));
+                staff.setUser(rs.getString("staff_username"));
                 order.setStaff(staff);
 
                 int id_Customer = rs.getInt("id_Customer");

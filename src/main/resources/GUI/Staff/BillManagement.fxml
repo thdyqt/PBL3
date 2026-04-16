@@ -60,10 +60,9 @@
                     <columns>
                         <TableColumn fx:id="col_OrderID" prefWidth="30.0" text="ID" />
                         <TableColumn fx:id="colProcessTime" prefWidth="127.0" text="Thời gian xử lý" />
+                        <TableColumn fx:id="colProcessStaff_UserName" prefWidth="120.0" text="Username nhân viên" />
                         <TableColumn fx:id="colProcessStaffName" prefWidth="100.0" text="Nhân viên" />
-                        <TableColumn fx:id="col_StaffID" minWidth="0.0" text="ID Nhân viên" />
-                        <TableColumn fx:id="col_CustomerName" minWidth="0.0" prefWidth="178.0" text="Tên khách hàng" />
-                        <TableColumn fx:id="col_CustomerID" prefWidth="85.0" text="ID Khách hàng" />
+                        <TableColumn fx:id="col_CustomerName" minWidth="0.0" prefWidth="150.0" text="Khách hàng" />
                         <TableColumn fx:id="col_PhoneCustomer" text="SĐT Khách hàng" />
                         <TableColumn fx:id="col_OrderStatus" prefWidth="105.0" text="Trạng thái" />
                   <TableColumn fx:id="col_OrderType" prefWidth="85.0" text="Loại đơn hàng" />
