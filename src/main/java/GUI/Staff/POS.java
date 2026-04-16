@@ -3,12 +3,11 @@ package GUI.Staff;
 import BusinessBLL.CategoryBusiness;
 import BusinessBLL.CustomerBusiness;
 import BusinessBLL.ProductBusiness;
-import EntityDTO.Category;
-import EntityDTO.Customer;
-import EntityDTO.OrderDetail;
-import EntityDTO.Product;
+import BusinessBLL.PromoCodeBusiness;
+import EntityDTO.*;
 import Util.Others;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,7 +52,7 @@ public class POS implements Initializable {
     private ComboBox<Category> cbbCategory;
 
     @FXML
-    private ComboBox<EntityDTO.PromoCode> cbbDiscount;
+    private ComboBox<PromoCode> cbbDiscount;
 
     @FXML
     private TableView<OrderDetail> tableCart;
@@ -265,9 +264,14 @@ public class POS implements Initializable {
             }
         });
 
+        cbbDiscount.valueProperty().addListener((observable, oldValue, newValue) -> {
+            calculateTotal();
+        });
+
         allProducts = ProductBusiness.getAllProducts();
         tableCart.setItems(cartList);
         loadCategories();
+        loadPromoCodes();
         setupSearchAndFilter();
         displayProducts(allProducts);
     }
@@ -279,6 +283,15 @@ public class POS implements Initializable {
 
         cbbCategory.setItems(FXCollections.observableArrayList(listCat));
         cbbCategory.getSelectionModel().selectFirst();
+    }
+
+    private void loadPromoCodes() {
+        List<PromoCode> listCode = PromoCodeBusiness.getAllPromoCodes();
+        PromoCode allCode = new PromoCode("Không có", "Không có", 0, "AMOUNT", 0);
+        listCode.add(0, allCode);
+
+        cbbDiscount.setItems(FXCollections.observableArrayList(listCode));
+        cbbDiscount.getSelectionModel().selectFirst();
     }
 
     private void displayProducts(List<Product> listPro) {
@@ -346,6 +359,8 @@ public class POS implements Initializable {
     private void calculateTotal() {
         int subtotal = 0;
         int totalQty = 0;
+        int discountPercent = 0;
+        int discountAmount = 0;
 
         for (OrderDetail item : cartList) {
             subtotal += item.getTotalPrice();
@@ -355,11 +370,39 @@ public class POS implements Initializable {
         lblSubtotal.setText(String.format(vn, "%,d VNĐ", subtotal));
         lblTotalQuantity.setText(totalQty + " món");
 
-        int discountPercent = CustomerBusiness.getDiscountPercent(currentCustomer);
-        int discountAmount = (int)(subtotal * (discountPercent / 100.0));
+        int customerDiscount = CustomerBusiness.getDiscountPercent(currentCustomer);
+        PromoCode selectedPromo = cbbDiscount.getValue();
+
+        if (selectedPromo != null && !selectedPromo.getCode().equals("Không có")) {
+            if (subtotal < selectedPromo.getMinOrderValue()) {
+                Others.showAlert(mainPane, "Đơn hàng chưa đạt giá trị tối thiểu của mã giảm giá.", true);
+                Platform.runLater(() -> cbbDiscount.getSelectionModel().selectFirst());
+            }
+            else if (selectedPromo.getDiscountType().trim().equalsIgnoreCase("PERCENT")) {
+                int promoCodeDiscount = selectedPromo.getDiscountValue();
+                discountPercent = customerDiscount + promoCodeDiscount;
+                lblDiscountTitle.setText(String.format("Giảm giá (%d%%):", discountPercent));
+                discountAmount = (int)(subtotal * (discountPercent / 100.0));
+            }
+            else {
+                int promoCodeDiscount = selectedPromo.getDiscountValue();
+                discountPercent = customerDiscount;
+                lblDiscountTitle.setText(String.format("Giảm giá (%d%% + %,dđ):", discountPercent, promoCodeDiscount));
+                discountAmount = (int)(subtotal * (discountPercent / 100.0) + promoCodeDiscount);
+            }
+        }
+        else {
+            discountPercent = customerDiscount;
+            lblDiscountTitle.setText(String.format("Giảm giá (%d%%):", discountPercent));
+            discountAmount = (int)(subtotal * (discountPercent / 100.0));
+        }
+
+        if (discountAmount > subtotal) {
+            discountAmount = subtotal;
+        }
+
         int finalTotal = subtotal - discountAmount;
 
-        lblDiscountTitle.setText(String.format("Giảm giá (%d%%):", discountPercent));
         lblDiscountAmount.setText(String.format(vn, "-%,d VNĐ", discountAmount));
         lblTotalPay.setText(String.format(vn, "%,d VNĐ", finalTotal));
     }
@@ -462,6 +505,7 @@ public class POS implements Initializable {
 
             cartList.clear();
             tableCart.refresh();
+            cbbCategory.getSelectionModel().clearSelection();
             cbbDiscount.getSelectionModel().clearSelection();
             calculateTotal();
             txtSearchProduct.clear();

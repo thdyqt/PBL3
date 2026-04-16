@@ -14,4 +14,4 @@ INSERT INTO PromoCode (Code, Description, DiscountValue, DiscountType, MinOrderV
 VALUES 
 ('CHAO2026', N'Giảm 10% mừng năm mới', 10, 'PERCENT', 0, '2026-01-01', '2026-12-31'),
 ('GIAM20K', N'Giảm 20.000đ cho đơn từ 100k', 20000, 'AMOUNT', 100000, '2026-01-01', '2026-12-31'),
-('FREESHIP', N'Hỗ trợ 15k phí ship', 15000, 'AMOUNT', 50000, '2026-04-01', '2026-05-01');
+('FREESHIP', N'Giảm 10.000đ', 10000, 'AMOUNT', 0, '2026-04-01', '2026-05-01');

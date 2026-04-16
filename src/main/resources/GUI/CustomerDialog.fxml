@@ -55,7 +55,7 @@
                         <TextField fx:id="txtUsername" prefHeight="38.0" promptText="Tên đăng nhập" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                         <Label text="Mật khẩu:" textFill="#334155" GridPane.rowIndex="3" />
-                        <PasswordField fx:id="txtPassword" prefHeight="38.0" promptText="Mật khẩu đăng nhập" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <PasswordField fx:id="txtPassword" prefHeight="38.0" promptText="Mật khẩu mặc định là số điện thoại" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                     </children>
                 </GridPane>
 

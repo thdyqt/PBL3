@@ -7,7 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class CategoryData {
     public static Category mapResultSet(ResultSet rs) throws SQLException {
         return new Category(rs.getInt("category_id"),

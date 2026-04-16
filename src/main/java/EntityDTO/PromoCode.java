@@ -5,16 +5,16 @@ import java.sql.Date;
 public class PromoCode {
     private String code;
     private String description;
-    private double discountValue;
+    private int discountValue;
     private String discountType; // "PERCENT" hoặc "AMOUNT"
-    private double minOrderValue;
+    private int minOrderValue;
     private Date validFrom;
     private Date validTo;
     private String status;
 
     public PromoCode() {}
 
-    public PromoCode(String code, String description, double discountValue, String discountType, double minOrderValue) {
+    public PromoCode(String code, String description, int discountValue, String discountType, int minOrderValue) {
         this.code = code;
         this.description = description;
         this.discountValue = discountValue;
@@ -23,16 +23,16 @@ public class PromoCode {
     }
 
     public String getCode() { return code; }
-    public double getDiscountValue() { return discountValue; }
+    public int getDiscountValue() { return discountValue; }
     public String getDiscountType() { return discountType; }
-    public double getMinOrderValue() { return minOrderValue; }
+    public int getMinOrderValue() { return minOrderValue; }
 
     @Override
     public String toString() {
         if (discountType.equals("PERCENT")) {
             return code + " (Giảm " + (int)discountValue + "%)";
         } else {
-            return code + " (Giảm " + String.format("%,.0f", discountValue) + "đ)";
+            return code + " (Giảm " + String.format("%,d", discountValue) + "đ)";
         }
     }
 }
