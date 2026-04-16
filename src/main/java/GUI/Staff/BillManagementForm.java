@@ -64,6 +64,9 @@ public class BillManagementForm{
     private TableColumn<EntityDTO.Order, String> col_OrderType;
 
     @FXML
+    private TableColumn<EntityDTO.Order, String> col_OrderPayment;
+
+    @FXML
     private TableColumn<EntityDTO.Order, String> col_PhoneCustomer;
 
     @FXML
@@ -157,6 +160,7 @@ public class BillManagementForm{
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
         col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         col_OrderType.setCellValueFactory(new PropertyValueFactory<>("type"));
+        col_OrderPayment.setCellValueFactory(new PropertyValueFactory<>("payment"));
 
         //same thing as all the methods below
         //albeit modified to format the date
@@ -220,6 +224,7 @@ public class BillManagementForm{
         colProcessTime.setStyle("-fx-alignment: CENTER;");
         col_StaffID.setStyle("-fx-alignment: CENTER;");
         col_OrderType.setStyle("-fx-alignment: CENTER;");
+        col_OrderPayment.setStyle("-fx-alignment: CENTER;");
     }
 
     private void search(){

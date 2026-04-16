@@ -14,6 +14,10 @@ public class Order {
         Online, Offline;
     }
 
+    public enum orderPayment{
+        Cash, Card;
+    }
+
     //offline -> status = {Processing, Finished}
     //online -> status = {Created, Waiting_for_validation, Processing, Delivering, Finished, Cancelled}
 
@@ -25,6 +29,7 @@ public class Order {
     private List<OrderDetail> orderDetail;
     private orderStatus status;
     private orderType type;
+    private orderPayment payment;
 
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();};
@@ -69,4 +74,7 @@ public class Order {
 
     public orderType getType(){return type;}
     public void setType(orderType type){this.type = type;}
+
+    public orderPayment getPayment(){return payment;}
+    public void setPayment(orderPayment payment){this.payment = payment;}
 }
