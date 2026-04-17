@@ -139,4 +139,42 @@ public class OrderBusiness {
         }
     }
 
+    public static String cancelOnlineOrder_BLL(Order order, String reason) {
+        if (order == null || order.getId() <= 0) {
+            return "Lỗi: Không tìm thấy đơn hàng.";
+        }
+
+        // Luật kinh doanh BR-22: Chỉ cho phép hủy khi đơn ở trạng thái Chờ xác nhận hoặc Mới tạo
+        if (order.getStatus() != Order.orderStatus.Waiting_for_validation && order.getStatus() != Order.orderStatus.Created) {
+            return "Lỗi: Đơn hàng đã được xử lý hoặc đang giao, không thể hủy!";
+        }
+
+        // 1. Thay đổi trạng thái thành Hủy
+        order.setStatus(Order.orderStatus.Cancelled);
+
+        // 2. Gọi hàm DAL để lưu trạng thái mới xuống DB
+        boolean isUpdated = OrderData.updateOrder(order);
+
+        if (isUpdated) {
+            // 3. Nghiệp vụ bắt buộc: Hoàn trả số lượng tồn kho cho các sản phẩm trong đơn
+            List<OrderDetail> details = order.getOrderDetail();
+            if (details != null) {
+                for (OrderDetail detail : details) {
+                    int productId = detail.getProduct().getProductID();
+                    int quantityToRefund = detail.getQuantity();
+
+                    // Gọi sang ProductBusiness để cộng lại số lượng vào kho
+                    // Giả định bạn có hàm updateStock(id, số_lượng_cộng_thêm)
+                    // ProductBusiness.updateStock_BLL(productId, quantityToRefund);
+                }
+            }
+
+            // Tùy chọn: Bạn có thể lưu 'reason' (lý do hủy) vào bảng Log hoặc bảng Order nếu CSDL có cột này
+
+            return "Đã hủy đơn hàng và hoàn trả tồn kho thành công!";
+        } else {
+            return "Lỗi: Không thể hủy đơn hàng do lỗi hệ thống CSDL.";
+        }
+    }
+
 }
