@@ -35,90 +35,103 @@
                     </children>
                 </Pane>
 
-                <VBox alignment="CENTER" spacing="10.0">
+                <VBox alignment="CENTER" spacing="5.0">
                     <children>
-                        <StackPane maxHeight="70.0" maxWidth="70.0" prefHeight="70.0" prefWidth="70.0" style="-fx-background-color: white; -fx-background-radius: 35.0; -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 15, 0, 0, 0);">
+                        <StackPane maxHeight="65.0" maxWidth="65.0" prefHeight="65.0" prefWidth="65.0" style="-fx-background-color: white; -fx-background-radius: 35.0; -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 15, 0, 0, 0);">
                             <children>
-                                <SVGPath content="M12 2 L12 5 L8 5 L8 12 L4 12 L4 22 L20 22 L20 12 L16 12 L16 5 L12 5 Z M12 6.5 C13 6.5 14 7 14 8 C14 9 13 9.5 12 9.5 C11 9.5 10 9 10 8 C10 7 11 6.5 12 6.5 Z M8 13.5 C9 13.5 10 14 10 15 C10 16 9 16.5 8 16.5 C7 16.5 6 16 6 15 C6 14 7 13.5 8 13.5 Z M16 13.5 C17 13.5 18 14 18 15 C18 16 17 16.5 16 16.5 C15 16.5 14 16 14 15 C14 14 15 13.5 16 13.5 Z" fill="#2563EB" scaleX="2.0" scaleY="2.0" />
+                                <SVGPath content="M12 2 L12 5 L8 5 L8 12 L4 12 L4 22 L20 22 L20 12 L16 12 L16 5 L12 5 Z M12 6.5 C13 6.5 14 7 14 8 C14 9 13 9.5 12 9.5 C11 9.5 10 9 10 8 C10 7 11 6.5 12 6.5 Z M8 13.5 C9 13.5 10 14 10 15 C10 16 9 16.5 8 16.5 C7 16.5 6 16 6 15 C6 14 7 13.5 8 13.5 Z M16 13.5 C17 13.5 18 14 18 15 C18 16 17 16.5 16 16.5 C15 16.5 14 16 14 15 C14 14 15 13.5 16 13.5 Z" fill="#2563EB" scaleX="1.8" scaleY="1.8" />
                             </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
                         </StackPane>
                         <Label text="DUT BAKERY" textFill="WHITE">
-                            <font><Font name="System Bold" size="22.0" /></font>
+                            <font><Font name="System Bold" size="20.0" /></font>
                         </Label>
                         <Label text="Professional POS System" textFill="#BFDBFE">
-                            <font><Font name="System italic" size="12.0" /></font>
-                            <VBox.margin><Insets top="-6.0" /></VBox.margin>
+                            <font><Font name="System italic" size="11.0" /></font>
+                            <VBox.margin><Insets top="-4.0" /></VBox.margin>
                         </Label>
                     </children>
-                    <VBox.margin><Insets bottom="20.0" top="25.0" /></VBox.margin>
+                    <VBox.margin><Insets bottom="15.0" top="10.0" /></VBox.margin>
                 </VBox>
 
-                <VBox spacing="5.0">
+                <VBox spacing="12.0">
                     <children>
-                        <Button fx:id="btnHome" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnHomeClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Trang chủ Tổng quan">
+                        <Button fx:id="btnHome" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnHomeClick" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Trang chủ Tổng quan">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #3B82F6; -fx-background-radius: 10;">
-                                    <children><Label text="🏠" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #3B82F6; -fx-background-radius: 10;">
+                                    <children><Label text="🏠" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <padding><Insets left="15.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnOrder" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnOrderClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Màn hình Bán hàng">
+                        <Button fx:id="btnOrder" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnOrderClick" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Màn hình Bán hàng">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #FB923C; -fx-background-radius: 10;">
-                                    <children><Label text="🛒" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #FB923C; -fx-background-radius: 10;">
+                                    <children><Label text="🛒" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <padding><Insets left="15.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnOnline" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Đơn hàng Online">
+                        <Button fx:id="btnOnline" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Đơn hàng Online">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #60A5FA; -fx-background-radius: 10;">
-                                    <children><Label text="📦" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #60A5FA; -fx-background-radius: 10;">
+                                    <children><Label text="📦" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <padding><Insets left="15.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnBill" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnBillClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Lịch sử Giao dịch">
+                        <Button fx:id="btnBill" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnBillClick" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Lịch sử Giao dịch">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #94A3B8; -fx-background-radius: 10;">
-                                    <children><Label text="📃" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #94A3B8; -fx-background-radius: 10;">
+                                    <children><Label text="📃" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <padding><Insets left="15.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnCustomer" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnCustomerClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Khách hàng">
+                        <Button fx:id="btnCustomer" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnCustomerClick" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Khách hàng">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #4ADE80; -fx-background-radius: 10;">
-                                    <children><Label text="👥" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #4ADE80; -fx-background-radius: 10;">
+                                    <children><Label text="👥" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <padding><Insets left="15.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnStaff" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnStaffClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Nhân sự">
+                        <Button fx:id="btnStaff" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnStaffClick" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Nhân sự">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #A78BFA; -fx-background-radius: 10;">
-                                    <children><Label text="👨‍💼" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #A78BFA; -fx-background-radius: 10;">
+                                    <children><Label text="👨‍💼" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                             <padding><Insets left="15.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnProduct" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnProductClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Sản phẩm">
+                        <Button fx:id="btnProduct" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnProductClick" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Sản phẩm">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #F472B6; -fx-background-radius: 10;">
-                                    <children><Label text="🍰" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #F472B6; -fx-background-radius: 10;">
+                                    <children><Label text="🍰" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
+                                </StackPane>
+                            </graphic>
+                            <cursor><Cursor fx:constant="HAND" /></cursor>
+                            <padding><Insets left="15.0" /></padding>
+                        </Button>
+
+                        <Button fx:id="btnPromoCode" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnPromoCodeClick" prefHeight="50.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Quản lý Mã giảm giá">
+                            <graphic>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #818CF8; -fx-background-radius: 10;">
+                                    <children><Label text="🎟" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>
@@ -127,8 +140,8 @@
 
                         <Button fx:id="btnStatistic" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Thống kê báo cáo">
                             <graphic>
-                                <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #F59E0B; -fx-background-radius: 10;">
-                                    <children><Label text="📊" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
+                                <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #F59E0B; -fx-background-radius: 10;">
+                                    <children><Label text="📊" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>
                                 </StackPane>
                             </graphic>
                             <cursor><Cursor fx:constant="HAND" /></cursor>

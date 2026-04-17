@@ -53,6 +53,9 @@ public class StaffDashboardForm implements Initializable {
     private Button btnStaff;
 
     @FXML
+    private Button btnPromoCode;
+
+    @FXML
     private Button btnStatistic;
 
     @FXML
@@ -114,7 +117,7 @@ public class StaffDashboardForm implements Initializable {
         pt.setInterpolator(Interpolator.EASE_OUT);
         pt.play();
 
-        menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnStatistic};
+        menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnPromoCode, btnStatistic};
         loadUserProfile();
         Others.startClock(lblTime);
         btnHomeClick(null);
@@ -271,6 +274,18 @@ public class StaffDashboardForm implements Initializable {
     }
 
     @FXML
+    void btnBillClick(ActionEvent event){
+        setActiveMenu(btnBill);
+        switchForm("/GUI/Staff/BillManagement.fxml");
+    }
+
+    @FXML
+    void btnCustomerClick(ActionEvent event) {
+        setActiveMenu(btnCustomer);
+        switchForm("/GUI/Staff/CustomerManagement.fxml");
+    }
+
+    @FXML
     void btnStaffClick(ActionEvent event) {
         if (!UserSession.getInstance().getPosition().equals("Admin")){
             Others.showAlert(mainBorderPane, "Bạn không có quyền truy cập vào tính năng này", true);
@@ -278,12 +293,6 @@ public class StaffDashboardForm implements Initializable {
         }
         setActiveMenu(btnStaff);
         switchForm("/GUI/Staff/StaffManagement.fxml");
-    }
-
-    @FXML
-    void btnCustomerClick(ActionEvent event) {
-        setActiveMenu(btnCustomer);
-        switchForm("/GUI/Staff/CustomerManagement.fxml");
     }
 
     @FXML
@@ -297,9 +306,13 @@ public class StaffDashboardForm implements Initializable {
     }
 
     @FXML
-    void btnBillClick(ActionEvent event){
-        setActiveMenu(btnBill);
-        switchForm("/GUI/Staff/BillManagement.fxml");
+    void btnPromoCodeClick(ActionEvent event) {
+        if (!UserSession.getInstance().getPosition().equals("Admin")){
+            Others.showAlert(mainBorderPane, "Bạn không có quyền truy cập vào tính năng này", true);
+            return;
+        }
+        setActiveMenu(btnPromoCode);
+        switchForm("/GUI/Staff/PromoCodeManagement.fxml");
     }
 
     @FXML

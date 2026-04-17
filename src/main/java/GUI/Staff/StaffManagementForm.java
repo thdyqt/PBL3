@@ -1,6 +1,6 @@
 package GUI.Staff;
 
-import DataDAL.StaffData;
+import BusinessBLL.StaffBusiness;
 import EntityDTO.Staff;
 import Util.Others;
 import Util.UserSession;
@@ -157,7 +157,7 @@ public class StaffManagementForm implements Initializable {
     }
 
     private void loadTable() {
-        List<Staff> listFromDB = StaffData.getAllStaff();
+        List<Staff> listFromDB = StaffBusiness.getAllStaff();
         masterData.setAll(listFromDB);
         filteredData = new FilteredList<>(masterData, b -> true);
         SortedList<Staff> sortedData = new SortedList<>(filteredData);
@@ -214,7 +214,6 @@ public class StaffManagementForm implements Initializable {
 
             if (controller.isSaveSuccess()) {
                 loadTable();
-                Others.animateTableRows(tblStaff);
             }
 
         } catch (Exception e) {

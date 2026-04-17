@@ -6,8 +6,13 @@ import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Date;
+import java.util.List;
 
 public class StaffBusiness {
+    public static List<Staff> getAllStaff() {
+        return StaffData.getAllStaff();
+    }
+
     public static String login(String username, String password) {
         try {
             Staff dbStaff = StaffData.getStaffByUsernameOrPhone(username);

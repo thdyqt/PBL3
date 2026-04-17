@@ -103,11 +103,6 @@ public class StaffDialogController implements Initializable {
         stage.close();
     }
 
-    @FXML
-    void btnCancelClick(ActionEvent event) {
-        closeForm();
-    }
-
     public void setStaffData(Staff staff) {
         this.currentStaff = staff;
         if (staff == null) txtPassword.setText("123456");
@@ -225,6 +220,11 @@ public class StaffDialogController implements Initializable {
                 }
             });
         }).start();
+    }
+
+    @FXML
+    void btnCancelClick(ActionEvent event) {
+        closeForm();
     }
 
     public void setViewOnlyMode() {
