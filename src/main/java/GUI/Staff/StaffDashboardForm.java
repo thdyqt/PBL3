@@ -269,6 +269,11 @@ public class StaffDashboardForm implements Initializable {
         setActiveMenu(btnOrder);
         switchForm("/GUI/Staff/POS.fxml");
     }
+    @FXML
+    void btnOnlineClick(ActionEvent event){
+        setActiveMenu(btnOnline);
+        switchForm("/GUI/Staff/OrderManagement.fxml");
+    }
 
     @FXML
     void btnStaffClick(ActionEvent event) {
