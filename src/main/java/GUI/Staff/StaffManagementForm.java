@@ -28,38 +28,19 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class StaffManagementForm implements Initializable {
-    @FXML
-    private BorderPane mainPane;
-
-    @FXML
-    private Button btnAdd;
-
-    @FXML
-    private Button btnEdit;
-
-    @FXML
-    private TableColumn<Staff, Date> colDate;
-
-    @FXML
-    private TableColumn<Staff, Void> colSTT;
-
-    @FXML
-    private TableColumn<Staff, String> colName;
-
-    @FXML
-    private TableColumn<Staff, String> colPhone;
-
-    @FXML
-    private TableColumn<Staff, String> colRole;
-
-    @FXML
-    private TableColumn<Staff, String> colUsername;
-
-    @FXML
-    private TableView<Staff> tblStaff;
-
-    @FXML
-    private TextField txtSearch;
+    @FXML private BorderPane mainPane;
+    @FXML private Button btnAdd;
+    @FXML private Button btnEdit;
+    @FXML private Button btnToggleStatus;
+    @FXML private TableColumn<Staff, Date> colDate;
+    @FXML private TableColumn<Staff, Void> colSTT;
+    @FXML private TableColumn<Staff, String> colName;
+    @FXML private TableColumn<Staff, String> colPhone;
+    @FXML private TableColumn<Staff, String> colRole;
+    @FXML private TableColumn<Staff, String> colUsername;
+    @FXML private TableView<Staff> tblStaff;
+    @FXML private TextField txtSearch;
+    @FXML private CheckBox chkShowResigned;
 
     private ObservableList<Staff> masterData = FXCollections.observableArrayList();
     private FilteredList<Staff> filteredData;
@@ -143,14 +124,29 @@ public class StaffManagementForm implements Initializable {
 
         colDate.setCellFactory(column -> new TableCell<Staff, Date>() {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
             @Override
             protected void updateItem(Date item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
+                    setGraphic(null);
                 } else {
                     setText(sdf.format(item));
-                    setStyle("-fx-alignment: CENTER;");
+                    setAlignment(Pos.CENTER);
+                    setStyle("-fx-alignment: CENTER; -fx-padding: 0;");
+                }
+            }
+        });
+
+        tblStaff.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                if ("Active".equalsIgnoreCase(newValue.getStatus())) {
+                    btnToggleStatus.setText("🚫 Thôi việc");
+                    btnToggleStatus.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
+                } else {
+                    btnToggleStatus.setText("✅ Đi làm lại");
+                    btnToggleStatus.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
                 }
             }
         });
@@ -158,41 +154,66 @@ public class StaffManagementForm implements Initializable {
 
     private void loadTable() {
         List<Staff> listFromDB = StaffBusiness.getAllStaff();
-        masterData.setAll(listFromDB);
-        filteredData = new FilteredList<>(masterData, b -> true);
-        SortedList<Staff> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tblStaff.comparatorProperty());
-        tblStaff.setItems(sortedData);
+
+        if (filteredData == null) {
+            masterData.setAll(listFromDB);
+            filteredData = new FilteredList<>(masterData, b -> true);
+            SortedList<Staff> sortedData = new SortedList<>(filteredData);
+            sortedData.comparatorProperty().bind(tblStaff.comparatorProperty());
+            tblStaff.setItems(sortedData);
+        } else {
+            masterData.setAll(listFromDB);
+            updateFilter();
+        }
+
         Others.animateTableRows(tblStaff);
     }
 
-    private void setupSearch() {
+    private void updateFilter() {
+        if (filteredData == null) return;
+
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String searchKeyword = txtSearch.getText() == null ? "" : txtSearch.getText().toLowerCase().trim();
+        boolean isShowResigned = chkShowResigned.isSelected();
+
+        filteredData.setPredicate(staff -> {
+            String status = staff.getStatus();
+
+            if (isShowResigned && "Active".equalsIgnoreCase(status)) return false;
+            if (!isShowResigned && "Inactive".equalsIgnoreCase(status)) return false;
+
+            // 2. Lọc theo Text Tìm kiếm
+            if (searchKeyword.isEmpty()) {
+                return true;
+            }
+
+            String hireDateStr = "";
+            if (staff.getHire_date() != null) {
+                hireDateStr = sdf.format(staff.getHire_date());
+            }
+
+            if (staff.getName().toLowerCase().contains(searchKeyword) ||
+                    staff.getPhone().toLowerCase().contains(searchKeyword) ||
+                    staff.getUser().toLowerCase().contains(searchKeyword) ||
+                    (staff.getRole() != null && staff.getRole().toLowerCase().contains(searchKeyword)) ||
+                    hireDateStr.contains(searchKeyword)) {
+                return true;
+            }
+
+            return false;
+        });
+    }
+
+    private void setupSearch() {
+        chkShowResigned.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            updateFilter();
+        });
 
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(staff -> {
-                if (newValue == null || newValue.trim().isEmpty()) {
-                    return true;
-                }
-
-                String searchKeyword = newValue.toLowerCase();
-
-                String hireDateStr = "";
-                if (staff.getHire_date() != null) {
-                    hireDateStr = sdf.format(staff.getHire_date());
-                }
-
-                if (staff.getName().toLowerCase().contains(searchKeyword) ||
-                        staff.getPhone().toLowerCase().contains(searchKeyword) ||
-                        staff.getUser().toLowerCase().contains(searchKeyword) ||
-                        (staff.getRole() != null && staff.getRole().toLowerCase().contains(searchKeyword)) ||
-                        hireDateStr.contains(searchKeyword)) {
-                    return true;
-                }
-
-                return false;
-            });
+            updateFilter();
         });
+
+        updateFilter();
     }
 
     private void openStaffDialog(Staff staffToEdit) {
@@ -201,7 +222,6 @@ public class StaffManagementForm implements Initializable {
             Parent root = loader.load();
 
             StaffDialogController controller = loader.getController();
-
             controller.setStaffData(staffToEdit);
 
             Stage stage = new Stage();
@@ -237,7 +257,7 @@ public class StaffManagementForm implements Initializable {
     }
 
     @FXML
-    private void btnResignClick(ActionEvent event) {
+    private void btnToggleStatusClick(ActionEvent event) {
         Staff selectedStaff = tblStaff.getSelectionModel().getSelectedItem();
 
         if (selectedStaff == null){
@@ -246,23 +266,26 @@ public class StaffManagementForm implements Initializable {
         }
 
         if (selectedStaff.getId() == UserSession.getInstance().getId()){
-            Others.showAlert(mainPane, "Bạn không thể thôi việc chính mình!", true);
+            Others.showAlert(mainPane, "Bạn không thể tự thay đổi trạng thái của chính mình!", true);
             return;
         }
 
+        String currentStatus = selectedStaff.getStatus();
+        String newStatus = "Active".equalsIgnoreCase(currentStatus) ? "Inactive" : "Active";
+        String actionName = "Active".equalsIgnoreCase(newStatus) ? "Khôi phục làm việc" : "Thôi việc";
+
         boolean isConfirm = Others.showCustomConfirm(
-                "Thôi việc nhân viên",
-                "Bạn đang yêu cầu thôi việc nhân viên này khỏi hệ thống.\nBạn có chắc chắn muốn thực hiện không?",
+                actionName + " nhân viên",
+                "Bạn có chắc chắn muốn " + actionName.toLowerCase() + " nhân viên này không?",
                 "Xác nhận", "Hủy bỏ"
         );
 
         if (isConfirm) {
-            int result = BusinessBLL.StaffBusiness.resignStaff(selectedStaff.getId(), selectedStaff.getName(), selectedStaff.getUser());
+            int result = BusinessBLL.StaffBusiness.updateStaffStatus(selectedStaff.getId(), selectedStaff.getName(), selectedStaff.getUser(), newStatus);
 
             if (result == 1) {
-                Util.Others.showAlert(mainPane,"Cho thôi việc nhân viên thành công!", false);
+                Util.Others.showAlert(mainPane, "Đã " + actionName.toLowerCase() + " thành công!", false);
                 loadTable();
-                Util.Others.animateTableRows(tblStaff);
             } else {
                 Util.Others.showAlert(mainPane, "Lỗi kết nối máy chủ dữ liệu!", true);
             }

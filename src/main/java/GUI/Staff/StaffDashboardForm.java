@@ -200,7 +200,8 @@ public class StaffDashboardForm implements Initializable {
                     session.getName(),
                     session.getUsername(),
                     session.getPosition(),
-                    sqlHireDate
+                    sqlHireDate,
+                    "active"
             );
 
             controller.setStaffData(currentStaff);

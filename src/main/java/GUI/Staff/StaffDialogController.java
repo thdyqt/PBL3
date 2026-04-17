@@ -21,38 +21,17 @@ import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class StaffDialogController implements Initializable {
-    @FXML
-    private Label lblTitle;
-
-    @FXML
-    private Label lblDesc;
-
-    @FXML
-    private Button btnCancel;
-
-    @FXML
-    private Button btnSave;
-
-    @FXML
-    private ComboBox<String> cbRole;
-
-    @FXML
-    private DatePicker dpHireDate;
-
-    @FXML
-    private AnchorPane mainPanel;
-
-    @FXML
-    private TextField txtName;
-
-    @FXML
-    private PasswordField txtPassword;
-
-    @FXML
-    private TextField txtPhone;
-
-    @FXML
-    private TextField txtUsername;
+    @FXML private Label lblTitle;
+    @FXML private Label lblDesc;
+    @FXML private Button btnCancel;
+    @FXML private Button btnSave;
+    @FXML private ComboBox<String> cbRole;
+    @FXML private DatePicker dpHireDate;
+    @FXML private AnchorPane mainPanel;
+    @FXML private TextField txtName;
+    @FXML private PasswordField txtPassword;
+    @FXML private TextField txtPhone;
+    @FXML private TextField txtUsername;
 
     private Staff currentStaff = null;
     private boolean saveSuccess;
@@ -193,8 +172,8 @@ public class StaffDialogController implements Initializable {
         Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
 
         new Thread(() -> {
-            int status = (currentStaff == null) ? StaffBusiness.register(phone, name, user, pass, role, hire_date)
-                    : StaffBusiness.updateStaff(currentStaff.getId(), phone, name, user, pass, role, hire_date);
+            int status = (currentStaff == null) ? StaffBusiness.register(phone, name, user, pass, role, hire_date, "Active")
+                    : StaffBusiness.updateStaff(currentStaff.getId(), phone, name, user, pass, role, hire_date, currentStaff.getStatus());
 
             Platform.runLater(() -> {
                 btnCancel.setDisable(false);
