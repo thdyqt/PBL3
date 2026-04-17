@@ -75,7 +75,7 @@
                             <padding><Insets left="15.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnOnline" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Đơn hàng Online">
+                        <Button fx:id="btnOnline" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnOnlineClick" prefHeight="60.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Đơn hàng Online">
                             <graphic>
                                 <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0" style="-fx-background-color: #60A5FA; -fx-background-radius: 10;">
                                     <children><Label text="📦" textFill="WHITE"><font><Font size="17.0" /></font></Label></children>
