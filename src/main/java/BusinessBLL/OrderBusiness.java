@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OrderBusiness {
     public static String addOrder_BLL(Order order, List<OrderDetail> orderDetailList){
@@ -57,6 +58,37 @@ public class OrderBusiness {
         }
 
         return false;
+    }
+
+    public static List<Order> getOnlineOrders_BLL() {
+        // 1. Lấy danh sách nguyên bản từ DB (không bị lỗi mất thông tin)
+        List<Order> allOrders = OrderData.getAllOrders();
+
+        if (allOrders != null) {
+            // 2. Lọc ra các đơn Online
+            List<Order> onlineOrders = allOrders.stream()
+                    .filter(o -> o.getType() == Order.orderType.Online)
+                    .collect(Collectors.toList());
+
+            // 3. TÍNH TỔNG TIỀN CHO TỪNG ĐƠN HÀNG
+            for (Order order : onlineOrders) {
+                // Gọi BLL của Detail để lấy danh sách món ăn của hóa đơn này
+                List<OrderDetail> details = OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
+
+                int total = 0;
+                if (details != null) {
+                    for (OrderDetail detail : details) {
+                        total += detail.getTotalPrice(); // Cộng dồn tiền từng món
+                    }
+                }
+
+                // Lưu tổng tiền vào hóa đơn để mang lên GUI hiển thị
+                order.setTotalAmount(total);
+            }
+
+            return onlineOrders;
+        }
+        return null;
     }
 
     public static String updateOrder_BLL(Order order, String status){
