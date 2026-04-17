@@ -2,6 +2,7 @@ package GUI.Staff;
 
 import BusinessBLL.OrderBusiness;
 import EntityDTO.Order;
+import Util.Others;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -57,6 +58,9 @@ public class OrderManagementForm implements Initializable {
         // Tải dữ liệu ban đầu
         loadData();
 
+        //thêm animation cho nút
+        setupButtons();
+
         // Bắt sự kiện gõ phím để tìm kiếm theo thời gian thực
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             Search();
@@ -111,20 +115,20 @@ public class OrderManagementForm implements Initializable {
                         switch (item) {
                             case "Waiting_for_validation":
                             case "Created":
-                                setStyle("-fx-text-fill: #F59E0B; -fx-font-weight: bold;"); // Màu Vàng/Cam (Cảnh báo chờ)
+                                setStyle("-fx-text-fill: #F59E0B; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Vàng/Cam (Cảnh báo chờ)
                                 break;
                             case "Processing":
                             case "Delivering":
-                                setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold;"); // Màu Xanh dương (Đang tiến hành)
+                                setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Xanh dương (Đang tiến hành)
                                 break;
                             case "Finished":
-                                setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold;"); // Màu Xanh lá (Hoàn thành)
+                                setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Xanh lá (Hoàn thành)
                                 break;
                             case "Cancelled":
-                                setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold;"); // Màu Đỏ (Đã hủy)
+                                setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Đỏ (Đã hủy)
                                 break;
                             default:
-                                setStyle("-fx-text-fill: #1E293B;"); // Màu mặc định
+                                setStyle("-fx-text-fill: #1E293B; -fx-alignment: CENTER;"); // Màu mặc định
                                 break;
                         }
                     }
@@ -141,8 +145,17 @@ public class OrderManagementForm implements Initializable {
             orderList = FXCollections.observableArrayList(onlineOrders);
             filteredData = new FilteredList<>(orderList, b -> true);
             tableOrder.setItems(filteredData);
+            Others.animateTableRows(tableOrder);
         }
     }
+    private void setupButtons() {
+        Others.playButtonAnimation(btnCancel);
+        Others.playButtonAnimation(btnDetail);
+        Others.playButtonAnimation(btnUpdate);
+
+    }
+
+
 
     @FXML
     void Search() {
