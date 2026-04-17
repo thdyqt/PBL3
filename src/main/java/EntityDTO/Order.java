@@ -30,6 +30,7 @@ public class Order {
     private orderStatus status;
     private orderType type;
     private orderPayment payment;
+    private int totalAmount; // Mới thêm
 
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();};
@@ -77,4 +78,8 @@ public class Order {
 
     public orderPayment getPayment(){return payment;}
     public void setPayment(orderPayment payment){this.payment = payment;}
+
+    //Mới thêm
+    public int getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(int totalAmount) { this.totalAmount = totalAmount; }
 }
