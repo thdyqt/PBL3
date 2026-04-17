@@ -7,7 +7,7 @@ CREATE TABLE PromoCode (
     MinOrderValue INT DEFAULT 0,      -- Đơn hàng tối thiểu để áp dụng
     ValidFrom DATE,                     -- Ngày bắt đầu
     ValidTo DATE,                       -- Ngày kết thúc
-    status ENUM('Active', 'Inactive') DEFAULT 'Active'
+    status ENUM('Active', 'Paused', 'Upcoming', 'Expired') DEFAULT 'Active'
 );
 
 INSERT INTO PromoCode (Code, Description, DiscountValue, DiscountType, MinOrderValue, ValidFrom, ValidTo)

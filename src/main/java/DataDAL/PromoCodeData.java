@@ -115,4 +115,23 @@ public class PromoCodeData {
             return false;
         }
     }
+
+    public static void refreshAllPromoStatuses() {
+        String sqlActive = "UPDATE PromoCode SET status = 'Active' WHERE ValidFrom <= CURRENT_TIMESTAMP AND (ValidTo IS NULL OR ValidTo >= CURRENT_TIMESTAMP) AND status = 'Upcoming'";
+
+        String sqlExpired = "UPDATE PromoCode SET status = 'Expired' " +
+                "WHERE ValidTo < CURRENT_TIMESTAMP " +
+                "AND status IN ('Active', 'Paused', 'Upcoming')";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt1 = conn.prepareStatement(sqlActive);
+             PreparedStatement stmt2 = conn.prepareStatement(sqlExpired)) {
+
+            stmt1.executeUpdate();
+            stmt2.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi tự động cập nhật trạng thái PromoCode: " + e.getMessage());
+        }
+    }
 }

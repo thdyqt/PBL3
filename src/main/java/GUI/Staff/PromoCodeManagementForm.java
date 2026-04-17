@@ -9,13 +9,18 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.Date;
@@ -194,13 +199,16 @@ public class PromoCodeManagementForm implements Initializable {
 
                     if ("Active".equalsIgnoreCase(status)) {
                         lblStatus.setText("Đang chạy");
-                        lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #10B981;"); // Màu Xanh lá
-                    } else if ("Inactive".equalsIgnoreCase(status)) {
+                        lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #10B981;"); // Xanh lá
+                    } else if ("Paused".equalsIgnoreCase(status)) {
                         lblStatus.setText("Tạm ngưng");
-                        lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #EF4444;"); // Màu Đỏ
-                    } else {
-                        lblStatus.setText(status);
-                        lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #64748B;"); // Màu Xám cho các TH khác
+                        lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #F59E0B;"); // Vàng cam
+                    } else if ("Upcoming".equalsIgnoreCase(status)) {
+                        lblStatus.setText("Sắp diễn ra");
+                        lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #3B82F6;"); // Xanh dương
+                    } else if ("Expired".equalsIgnoreCase(status)) {
+                        lblStatus.setText("Đã hết hạn");
+                        lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #EF4444;"); // Đỏ
                     }
 
                     setGraphic(lblStatus);
@@ -254,9 +262,18 @@ public class PromoCodeManagementForm implements Initializable {
                     endDateStr = sdf.format(promoCode.getValidTo());
                 }
 
+                String statusVN = "";
+                String rawStatus = promoCode.getStatus();
+                if (rawStatus != null) {
+                    if ("Active".equalsIgnoreCase(rawStatus)) statusVN = "đang chạy";
+                    else if ("Paused".equalsIgnoreCase(rawStatus)) statusVN = "tạm ngưng";
+                    else if ("Upcoming".equalsIgnoreCase(rawStatus)) statusVN = "sắp diễn ra";
+                    else if ("Expired".equalsIgnoreCase(rawStatus)) statusVN = "đã hết hạn";
+                }
+
                 if (promoCode.getCode().toLowerCase().contains(searchKeyword) ||
                         (promoCode.getDescription() != null && promoCode.getDescription().toLowerCase().contains(searchKeyword)) ||
-                        (promoCode.getStatus() != null && promoCode.getStatus().toLowerCase().contains(searchKeyword)) ||
+                        statusVN.contains(searchKeyword) ||
                         String.valueOf(promoCode.getMinOrderValue()).contains(searchKeyword) ||
                         startDateStr.contains(searchKeyword) ||
                         endDateStr.contains(searchKeyword)) {
@@ -270,18 +287,18 @@ public class PromoCodeManagementForm implements Initializable {
 
     private void openPromoCodeDialog(PromoCode promo) {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/GUI/Staff/PromoCodeDialog.fxml"));
-            javafx.scene.Parent root = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/PromoCodeDialog.fxml"));
+            Parent root = loader.load();
             PromoCodeDialogController controller = loader.getController();
 
             if (promo != null) {
                 controller.setData(promo);
             }
 
-            javafx.stage.Stage stage = new javafx.stage.Stage();
+            Stage stage = new Stage();
             stage.setTitle(promo == null ? "Thêm Mã Giảm Giá Mới" : "Cập Nhật Mã Giảm Giá");
-            stage.setScene(new javafx.scene.Scene(root));
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
             if (controller.isSaveSuccess()) {
@@ -318,8 +335,14 @@ public class PromoCodeManagementForm implements Initializable {
         }
 
         String currentStatus = selected.getStatus();
-        String newStatus = "Active".equalsIgnoreCase(currentStatus) ? "Inactive" : "Active";
-        String actionName = "Active".equals(newStatus) ? "Tiếp tục" : "Tạm ngưng";
+
+        if ("Expired".equalsIgnoreCase(currentStatus)) {
+            Others.showAlert(mainPane, "Mã này đã hết hạn, không thể tiếp tục!", true);
+            return;
+        }
+
+        String newStatus = "Active".equalsIgnoreCase(currentStatus) ? "Paused" : "Active";
+        String actionName = "Active".equals(newStatus) ? "Kích hoạt" : "Tạm ngưng";
 
         if (Others.showCustomConfirm("Xác nhận", "Bạn có chắc muốn " + actionName + " mã giảm giá: " + selected.getCode() + "?", "Đồng ý", "Hủy")) {
             if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), newStatus)) {

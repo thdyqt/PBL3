@@ -9,6 +9,7 @@ import java.util.List;
 
 public class PromoCodeBusiness {
     public static List<PromoCode> getAllPromoCodes() {
+        PromoCodeData.refreshAllPromoStatuses();
         return PromoCodeData.getAllPromoCodes();
     }
 
@@ -21,8 +22,10 @@ public class PromoCodeBusiness {
             LocalDate localFromDate = fromDate.toLocalDate();
             LocalDate today = LocalDate.now();
 
-            if (localFromDate.isAfter(today) || (toDate != null && toDate.toLocalDate().isBefore(today))) {
-                status = "Inactive";
+            if (localFromDate.isAfter(today)) {
+                status = "Upcoming";
+            } else if (toDate != null && toDate.toLocalDate().isBefore(today)) {
+                status = "Expired";
             } else {
                 status = "Active";
             }
@@ -42,8 +45,10 @@ public class PromoCodeBusiness {
             LocalDate localFromDate = fromDate.toLocalDate();
             LocalDate today = LocalDate.now();
 
-            if (localFromDate.isAfter(today) || (toDate != null && toDate.toLocalDate().isBefore(today))) {
-                status = "Inactive";
+            if (localFromDate.isAfter(today)) {
+                status = "Upcoming";
+            } else if (toDate != null && toDate.toLocalDate().isBefore(today)) {
+                status = "Expired";
             } else {
                 status = "Active";
             }
