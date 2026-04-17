@@ -29,6 +29,9 @@ public class LoginForm implements Initializable {
     private Button btnRegister;
 
     @FXML
+    private Button btnGuest;
+
+    @FXML
     private HBox mainForm;
 
     @FXML
@@ -142,6 +145,22 @@ public class LoginForm implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
             Others.showAlert(rootPane, "Không thể mở màn hình đăng ký!", true);
+        }
+    }
+
+    @FXML
+    void btnGuestClick(ActionEvent event) {
+        Util.UserSession.getInstance().setGuest();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerDashboard.fxml"));
+            Parent root = loader.load();
+
+            btnGuest.getScene().setRoot(root);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Others.showAlert(rootPane, "Không thể chuyển sang giao diện mua hàng!", true);
         }
     }
 

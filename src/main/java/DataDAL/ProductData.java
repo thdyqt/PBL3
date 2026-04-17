@@ -1,6 +1,6 @@
 package DataDAL;
-import  EntityDTO.Product;
 
+import EntityDTO.Product;
 import Util.DBConnection;
 
 import java.sql.*;
@@ -18,6 +18,7 @@ public class ProductData {
         }
     }
 
+    // ĐÃ SỬA: Map đầy đủ các cột mới, theo đúng thứ tự constructor của Product.java
     private static Product mapResultSet(ResultSet rs) throws SQLException {
         return new Product(
                 rs.getInt("ProductID"),
@@ -25,10 +26,14 @@ public class ProductData {
                 rs.getInt("CategoryID"),
                 rs.getInt("ProductPrice"),
                 rs.getInt("quantity"),
-                rs.getBoolean("isAvailable"),
+                rs.getString("status"),
+                rs.getString("description"),
+                rs.getString("ingredients"),
+                rs.getDouble("rating"),
                 rs.getString("image")
         );
     }
+
     //====Lấy tất cả====
     public static List<Product> getAllProduct(){
         List<Product> list = new ArrayList<>();
@@ -47,10 +52,11 @@ public class ProductData {
         return list;
     }
 
-//====THÊM SẢN PHẨM===
+    //====THÊM SẢN PHẨM===
     public static boolean addProduct(Product product) {
-        String sql = "INSERT INTO Product (ProductName, CategoryID, ProductPrice, quantity,image) "
-                + "VALUES (?, ?, ?, ?, ?)";
+        // ĐÃ SỬA: Thêm các cột mới vào câu lệnh INSERT
+        String sql = "INSERT INTO Product (ProductName, CategoryID, ProductPrice, quantity, status, description, ingredients, rating, image) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -59,8 +65,13 @@ public class ProductData {
             stmt.setInt(2, product.getCategoryID());
             stmt.setInt(3, product.getProductPrice());
             stmt.setInt(4, product.getQuantity());
-            stmt.setString(5, product.getImage());
 
+            // Nếu status null thì mặc định là Active, rating mặc định 5.0
+            stmt.setString(5, product.getStatus() != null ? product.getStatus() : "Active");
+            stmt.setString(6, product.getDescription());
+            stmt.setString(7, product.getIngredients());
+            stmt.setDouble(8, product.getRating() > 0 ? product.getRating() : 5.0);
+            stmt.setString(9, product.getImage());
 
             int rows = stmt.executeUpdate();
 
@@ -79,8 +90,9 @@ public class ProductData {
 
     // ===== UPDATE =====
     public static boolean updateProduct(Product product) {
+        // ĐÃ SỬA: Cập nhật thêm các cột description, ingredients, rating
         String sql = "UPDATE Product SET ProductName = ?, CategoryID = ?, "
-                + "ProductPrice = ?, quantity = ?, image = ?"  // ← bỏ isAvailable
+                + "ProductPrice = ?, quantity = ?, status = ?, description = ?, ingredients = ?, rating = ?, image = ? "
                 + "WHERE ProductID = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -89,8 +101,12 @@ public class ProductData {
             stmt.setInt(2, product.getCategoryID());
             stmt.setInt(3, product.getProductPrice());
             stmt.setInt(4, product.getQuantity());
-            stmt.setString(5, product.getImage());
-            stmt.setInt(6, product.getProductID());  //
+            stmt.setString(5, product.getStatus());
+            stmt.setString(6, product.getDescription());
+            stmt.setString(7, product.getIngredients());
+            stmt.setDouble(8, product.getRating());
+            stmt.setString(9, product.getImage());
+            stmt.setInt(10, product.getProductID());
 
             return stmt.executeUpdate() > 0;
 
@@ -99,6 +115,7 @@ public class ProductData {
         }
         return false;
     }
+
     // ===== NGỪNG KINH DOANH =====
     public static boolean stopBusiness(int productID) {
         String sql = "UPDATE Product SET status = 'Inactive' WHERE ProductID = ?";
@@ -112,6 +129,7 @@ public class ProductData {
         }
         return false;
     }
+
     // ===== MỞ LẠI KINH DOANH =====
     public static boolean restartBusiness(int productID) {
         String sql = "UPDATE Product SET status = 'Active' WHERE ProductID = ?";
@@ -147,6 +165,7 @@ public class ProductData {
         }
         return list;
     }
+
     public static List<Product> getByCategory(int categoryID) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE CategoryID = ? AND status = 'Active'";
@@ -163,6 +182,7 @@ public class ProductData {
         }
         return list;
     }
+
     public static Product getByID(int productID) {
         String sql = "SELECT * FROM Product WHERE ProductID = ?";
 
@@ -178,6 +198,7 @@ public class ProductData {
         }
         return null;
     }
+
     public static boolean isProductExist(String productName) {
         String sql = "SELECT 1 FROM Product WHERE ProductName = ?";
 
@@ -193,23 +214,7 @@ public class ProductData {
         }
         return false;
     }
-    // ===== GHI LOG =====
-    public static void addLog(int productID, String productName,
-                               String action, String note) {
-        String sql = "INSERT INTO ActivityLog (username, action,created_at) "
-                + "VALUES (?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, "admin");
-            stmt.setString(2, note);
-            java.time.LocalDateTime now = java.time.LocalDateTime.now();
-            stmt.setTimestamp(3,Timestamp.valueOf(now));
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi addLog: " + e.getMessage());
-        }
-    }
     public static boolean isInactive(int productID) {
         String sql = "SELECT 1 FROM Product WHERE ProductID = ? AND status = 'Inactive'";
 
@@ -225,6 +230,7 @@ public class ProductData {
         }
         return false;
     }
+
     public static String getImage(int productID) {
         String sql = "SELECT image FROM Product WHERE ProductID = ?";
 

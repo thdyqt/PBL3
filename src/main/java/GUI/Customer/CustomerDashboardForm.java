@@ -29,12 +29,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class CustomerDashboardForm implements Initializable {
-
     @FXML
     private Button btnCart;
 
     @FXML
     private Button btnExit;
+
+    @FXML private Button btnLoginGuest;
 
     @FXML
     private Button btnHome;
@@ -76,9 +77,6 @@ public class CustomerDashboardForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        menuInfo.setOnAction(event -> openProfileDialog(true));
-        menuEditAcc.setOnAction(event -> openProfileDialog(false));
-
         mainBorderPane.setOpacity(0);
         mainBorderPane.setScaleX(0.95);
         mainBorderPane.setScaleY(0.95);
@@ -97,9 +95,31 @@ public class CustomerDashboardForm implements Initializable {
         pt.play();
 
         menuButtons = new Button[]{btnHome, btnProducts, btnCart, btnOrders};
-        loadUserProfile();
         Others.startClock(lblTime);
         btnHomeClick(null);
+
+        if (UserSession.getInstance().isGuest()) {
+            menuAcc.setVisible(false);
+            menuAcc.setManaged(false);
+            btnExit.setVisible(false);
+            btnExit.setManaged(false);
+
+            btnLoginGuest.setVisible(true);
+            btnLoginGuest.setManaged(true);
+
+        } else {
+            btnLoginGuest.setVisible(false);
+            btnLoginGuest.setManaged(false);
+
+            menuAcc.setVisible(true);
+            menuAcc.setManaged(true);
+            btnExit.setVisible(true);
+            btnExit.setManaged(true);
+
+            menuInfo.setOnAction(event -> openProfileDialog(true));
+            menuEditAcc.setOnAction(event -> openProfileDialog(false));
+            loadUserProfile();
+        }
     }
 
     private void loadUserProfile() {
@@ -141,11 +161,6 @@ public class CustomerDashboardForm implements Initializable {
     }
 
     @FXML
-    void btnCartClick(ActionEvent event) {
-
-    }
-
-    @FXML
     void btnExitClick(ActionEvent event) {
         boolean isConfirm = Util.Others.showCustomConfirm(
                 "Đăng xuất",
@@ -165,6 +180,21 @@ public class CustomerDashboardForm implements Initializable {
     }
 
     @FXML
+    void btnLoginGuestClick(ActionEvent event) {
+        UserSession.getInstance().clearSession();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Login.fxml"));
+            Parent root = loader.load();
+
+            btnLoginGuest.getScene().setRoot(root);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Others.showAlert(mainBorderPane, "Lỗi khi quay lại trang đăng nhập!", true);
+        }
+    }
+
+    @FXML
     void btnHomeClick(ActionEvent event) {
 
     }
@@ -176,6 +206,11 @@ public class CustomerDashboardForm implements Initializable {
 
     @FXML
     void btnProductsClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void btnCartClick(ActionEvent event) {
 
     }
 

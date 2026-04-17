@@ -5,6 +5,8 @@ import EntityDTO.Product;
 
 import java.util.List;
 
+import static BusinessBLL.LogBusiness.saveLog;
+
 public class ProductBusiness {
     public static List<Product> getAllProducts(){
         return ProductData.getAllProduct();
@@ -14,9 +16,7 @@ public class ProductBusiness {
         if (ProductData.isProductExist(product.getProductName())) {
             return "Sản phẩm đã tồn tại!";
         } else if (ProductData.addProduct(product)) {
-            ProductData.addLog(product.getProductID(),
-                    product.getProductName(),
-                    "ADD", "Thêm sản phẩm mới");
+            saveLog("Thêm sản phẩm " + product.getProductName());
             return "success";
         } else {
             return "Thêm sản phẩm thất bại, vui lòng thử lại!";
@@ -28,9 +28,7 @@ public class ProductBusiness {
         if (ProductData.getByID(product.getProductID()) == null) {
             return "Sản phẩm không tồn tại!";
         } else if (ProductData.updateProduct(product)) {
-            ProductData.addLog(product.getProductID(),
-                    product.getProductName(),
-                    "UPDATE", "Cập nhật thông tin sản phẩm");
+            saveLog("Chỉnh sửa sản phẩm " + product.getProductName());
             return "success";
         } else {
             return "Cập nhật sản phẩm thất bại, vui lòng thử lại!";
@@ -45,9 +43,7 @@ public class ProductBusiness {
         } else if (ProductData.isInactive(productID)) {
             return "Sản phẩm đã ngừng kinh doanh trước đó!";
         } else if (ProductData.stopBusiness(productID)) {
-            ProductData.addLog(productID,
-                    p.getProductName(),
-                    "STOP_BUSINESS", "Ngừng kinh doanh sản phẩm");
+            saveLog("Ngừng kinh doanh sản phẩm " + p.getProductName());
             return "success";
         } else {
             return "Ngừng kinh doanh thất bại, vui lòng thử lại!";
@@ -62,9 +58,7 @@ public class ProductBusiness {
         } else if (!ProductData.isInactive(productID)) {
             return "Sản phẩm đang được kinh doanh rồi!";
         } else if (ProductData.restartBusiness(productID)) {
-            ProductData.addLog(productID,
-                    p.getProductName(),
-                    "RESTART_BUSINESS", "Mở lại kinh doanh sản phẩm");
+            saveLog("Mở lại kinh doanh sản phẩm " + p.getProductName());
             return "success";
         } else {
             return "Mở lại kinh doanh thất bại, vui lòng thử lại!";
