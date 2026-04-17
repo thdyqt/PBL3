@@ -14,6 +14,7 @@ public class UserSession {
     private String position;
     private Date hire_date;
     private int point;
+    private boolean isGuest;
 
     private UserSession() {}
 
@@ -43,6 +44,13 @@ public class UserSession {
         this.point = point;
     }
 
+    public void setGuest() {
+        clearSession();
+        this.id = 0;
+        this.name = "Khách vãng lai";
+        this.isGuest = true;
+    }
+
     public void clearSession() {
         this.id = -1;
         this.phone = null;
@@ -51,6 +59,7 @@ public class UserSession {
         this.password = null;
         this.position = null;
         this.hire_date = null;
+        this.isGuest = false;
     }
 
     public int getId() {
@@ -83,5 +92,9 @@ public class UserSession {
 
     public int getPoint() {
         return point;
+    }
+
+    public boolean isGuest() {
+        return isGuest;
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class StaffData {
     public static List<Staff> getAllStaff() {
         List<Staff> list = new ArrayList<>();
-        String sql = "SELECT id_nhan_vien, phone, full_name, username, position, hire_date FROM Staff WHERE status = 'Active'";
+        String sql = "SELECT * FROM Staff";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -27,7 +27,8 @@ public class StaffData {
                         rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("position"),
-                        rs.getDate("hire_date")
+                        rs.getDate("hire_date"),
+                        rs.getString("status")
                 ));
             }
         } catch (SQLException e) {
@@ -78,13 +79,14 @@ public class StaffData {
         }
     }
 
-    public static boolean resignStaff(int id) {
-        String sql = "UPDATE Staff SET status = 'Inactive' WHERE id_nhan_vien = ?";
+    public static boolean updateStaffStatus(int id, String status) {
+        String sql = "UPDATE Staff SET status = ? WHERE id_nhan_vien = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, id);
+            stmt.setString(1, status);
+            stmt.setInt(2, id);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -128,7 +130,7 @@ public class StaffData {
     }
 
     public static Staff getStaffByUsernameOrPhone(String user) {
-        String sql = "SELECT id_nhan_vien, phone, full_name, username, pass_word, position, hire_date FROM Staff WHERE (username = ? OR phone = ?) AND status = 'Active'";
+        String sql = "SELECT * FROM Staff WHERE (username = ? OR phone = ?) AND status = 'Active'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -145,7 +147,8 @@ public class StaffData {
                             rs.getString("username"),
                             rs.getString("pass_word"),
                             rs.getString("position"),
-                            rs.getDate("hire_date")
+                            rs.getDate("hire_date"),
+                            rs.getString("status")
                     );
                 }
                 return null;

@@ -5,7 +5,13 @@ import EntityDTO.Customer;
 import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.List;
+
 public class CustomerBusiness {
+    public static List<Customer> getAllCustomers() {
+        return CustomerData.getAllCustomers();
+    }
+
     public static String login(String username, String password) {
         try {
             Customer dbCustomer = CustomerData.getCustomerByUsernameOrPhone(username);

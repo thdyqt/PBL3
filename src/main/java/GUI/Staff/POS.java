@@ -5,6 +5,7 @@ import BusinessBLL.CustomerBusiness;
 import BusinessBLL.ProductBusiness;
 import BusinessBLL.PromoCodeBusiness;
 import EntityDTO.*;
+import Util.CartManager;
 import Util.Others;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
@@ -108,7 +109,7 @@ public class POS implements Initializable {
     @FXML
     private TextField txtSearchProduct;
 
-    private ObservableList<OrderDetail> cartList = FXCollections.observableArrayList();
+    private ObservableList<OrderDetail> cartList;
     private List<Product> allProducts;
     private Customer currentCustomer = null;
 
@@ -275,6 +276,7 @@ public class POS implements Initializable {
         });
 
         allProducts = ProductBusiness.getAllProducts();
+        cartList = CartManager.getInstance().getCartItems();
         tableCart.setItems(cartList);
         loadCategories();
         loadPromoCodes();
@@ -293,7 +295,7 @@ public class POS implements Initializable {
 
     private void loadPromoCodes() {
         List<PromoCode> listCode = PromoCodeBusiness.getAllPromoCodes();
-        PromoCode allCode = new PromoCode("Không có", "Không có", 0, "AMOUNT", 0);
+        PromoCode allCode = new PromoCode("Không có", "Không có", 0, "AMOUNT", 0, null, null, "Active");
         listCode.add(0, allCode);
 
         cbbDiscount.setItems(FXCollections.observableArrayList(listCode));

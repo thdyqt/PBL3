@@ -86,6 +86,9 @@
                     </graphic>
                     <HBox.margin><Insets right="25.0" /></HBox.margin>
                 </Label>
+                <Button fx:id="btnLoginGuest" mnemonicParsing="false" onAction="#btnLoginGuestClick" prefHeight="45.0" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 0 20 0 20;" text="👋 Đăng nhập / Đăng ký" visible="false" managed="false">
+                    <cursor><Cursor fx:constant="HAND" /></cursor>
+                </Button>
 
                 <MenuButton fx:id="menuAcc" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" popupSide="BOTTOM" style="-fx-background-color: transparent; -fx-padding: 0;">
                     <graphic>

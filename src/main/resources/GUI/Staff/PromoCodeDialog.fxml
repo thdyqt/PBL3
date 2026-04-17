@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainPanel" prefHeight="620.0" prefWidth="500.0" style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.PromoCodeDialogController">
+    <children>
+        <VBox spacing="25.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="25.0">
+            <children>
+                <VBox spacing="5.0">
+                    <children>
+                        <Label fx:id="lblTitle" text="THÔNG TIN MÃ GIẢM GIÁ" textFill="#1E293B">
+                            <font>
+                                <Font name="System Bold" size="20.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="lblDesc" text="Vui lòng điền thông tin chương trình khuyến mãi" textFill="#64748B" />
+                    </children>
+                </VBox>
+
+                <GridPane hgap="15.0" vgap="18.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0" prefWidth="120.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="300.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Mã Code:" textFill="#475569" GridPane.rowIndex="0">
+                            <font><Font size="14.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtCode" prefHeight="38.0" promptText="VD: BANHMI10" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                        <Label text="Loại giảm:" textFill="#475569" GridPane.rowIndex="1">
+                            <font><Font size="14.0" /></font>
+                        </Label>
+                        <ComboBox fx:id="cbbDiscountType" prefHeight="38.0" prefWidth="320.0" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                        <Label text="Giá trị giảm:" textFill="#475569" GridPane.rowIndex="2">
+                            <font><Font size="14.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtDiscountValue" prefHeight="38.0" promptText="Số % hoặc số tiền" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                        <Label text="Đơn tối thiểu:" textFill="#475569" GridPane.rowIndex="3">
+                            <font><Font size="14.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtMinOrderValue" prefHeight="38.0" promptText="VD: 50000" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                        <Label text="Ngày bắt đầu:" textFill="#475569" GridPane.rowIndex="4">
+                            <font><Font size="14.0" /></font>
+                        </Label>
+                        <DatePicker fx:id="dpValidFrom" prefHeight="38.0" prefWidth="320.0" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                        <Label text="Ngày kết thúc:" textFill="#475569" GridPane.rowIndex="5">
+                            <font><Font size="14.0" /></font>
+                        </Label>
+                        <DatePicker fx:id="dpValidTo" prefHeight="38.0" prefWidth="320.0" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                        <Label text="Mô tả:" textFill="#475569" GridPane.rowIndex="6" GridPane.valignment="TOP">
+                            <font><Font size="14.0" /></font>
+                            <GridPane.margin><Insets top="8.0" /></GridPane.margin>
+                        </Label>
+                        <TextArea fx:id="txtDescription" prefHeight="100.0" prefWidth="320.0" promptText="Mô tả chi tiết chương trình..." style="-fx-control-inner-background: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                    </children>
+                </GridPane>
+
+                <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                    <children>
+                        <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#btnCancelClick" prefHeight="40.0" prefWidth="110.0" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-background-radius: 6; -fx-font-size: 14px;" text="Hủy bỏ">
+                            <cursor><Cursor fx:constant="HAND" /></cursor>
+                        </Button>
+                        <Button fx:id="btnSave" mnemonicParsing="false" onAction="#btnSaveClick" prefHeight="40.0" prefWidth="130.0" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-font-size: 14px;" text="Lưu thông tin">
+                            <cursor><Cursor fx:constant="HAND" /></cursor>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

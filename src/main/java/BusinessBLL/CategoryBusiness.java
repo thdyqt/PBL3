@@ -71,4 +71,18 @@ public class CategoryBusiness {
             return "Mở lại kinh doanh thất bại, vui lòng thử lại!";
         }
     }
+
+    public static int getCategoryIDByName(String categoryName) {
+        List<Category> categories = CategoryData.getAll();
+        for (Category c : categories) {
+            if (c.getCategoryName().equals(categoryName)) {
+                return c.getCategoryID();
+            }
+        }
+        return -1;
+    }
+
+    public static Category getCategoryByID(int ID) {
+        return CategoryData.getByID(ID);
+    }
 }

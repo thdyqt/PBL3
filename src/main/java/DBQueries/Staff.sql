@@ -7,7 +7,7 @@ CREATE TABLE Staff (
     pass_word VARCHAR(255) NOT NULL,
     position NVARCHAR(30) NOT NULL,
     hire_date DATE NOT NULL,
-    PromoCodestatus ENUM('Active', 'Inactive') DEFAULT 'Active'
+    status ENUM('Active', 'Inactive') DEFAULT 'Active'
 );
 
 INSERT INTO Staff (phone, full_name, username, pass_word, position, hire_date) 

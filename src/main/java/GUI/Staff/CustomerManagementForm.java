@@ -1,6 +1,6 @@
 package GUI.Staff;
 
-import DataDAL.CustomerData;
+import BusinessBLL.CustomerBusiness;
 import EntityDTO.Customer;
 import GUI.CustomerDialogController;
 import Util.Others;
@@ -165,7 +165,7 @@ public class CustomerManagementForm implements Initializable {
     }
 
     private void loadTable() {
-        List<Customer> listFromDB = CustomerData.getAllCustomers();
+        List<Customer> listFromDB = CustomerBusiness.getAllCustomers();
         masterData.setAll(listFromDB);
         filteredData = new FilteredList<>(masterData, b -> true);
         SortedList<Customer> sortedData = new SortedList<>(filteredData);
@@ -255,7 +255,6 @@ public class CustomerManagementForm implements Initializable {
 
             if(controller.isSaveSuccess()) {
                 loadTable();
-                Others.animateTableRows(tableCustomer);
             }
 
         } catch (Exception e) {

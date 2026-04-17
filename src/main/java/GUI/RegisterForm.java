@@ -106,9 +106,6 @@ public class RegisterForm implements Initializable{
                 int registerStatus = CustomerBusiness.register(phone, name, user, pass);
 
                 Platform.runLater(() -> {
-                    btnSubmitRegister.setDisable(false);
-                    btnBackToLogin.setDisable(false);
-
                     if (registerStatus == 1){
                         Others.showAlert(rootPane,"Đăng ký tài khoản thành công! Vui lòng đăng nhập.", false);
                         txtPhone.clear();
@@ -121,11 +118,16 @@ public class RegisterForm implements Initializable{
                         delay.setOnFinished(e -> btnBackToLoginClick(null));
                         delay.play();
                     }
-                    else if (registerStatus == -1){
-                        Others.showAlert(rootPane, "Tên đăng nhập hoặc Số điện thoại đã được sử dụng!", true);
-                    }
-                    else {
-                        Others.showAlert(rootPane, "Lỗi kết nối máy chủ dữ liệu!", true);
+                    else{
+                        btnSubmitRegister.setDisable(false);
+                        btnBackToLogin.setDisable(false);
+
+                        if (registerStatus == -1){
+                            Others.showAlert(rootPane, "Tên đăng nhập hoặc Số điện thoại đã được sử dụng!", true);
+                        }
+                        else {
+                            Others.showAlert(rootPane, "Lỗi kết nối máy chủ dữ liệu!", true);
+                        }
                     }
                 });
             }).start();

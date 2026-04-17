@@ -29,6 +29,9 @@ public class LoginForm implements Initializable {
     private Button btnRegister;
 
     @FXML
+    private Button btnGuest;
+
+    @FXML
     private HBox mainForm;
 
     @FXML
@@ -86,9 +89,6 @@ public class LoginForm implements Initializable {
                 String loginStatus = (rbCustomer.isSelected()) ? CustomerBusiness.login(user, pass) : StaffBusiness.login(user, pass);
 
                 Platform.runLater(() -> {
-                    btnLogin.setDisable(false);
-                    btnRegister.setDisable(false);
-
                     if (loginStatus.equals("SUCCESS")){
                         failedAttempts = 0;
                         Others.showAlert(rootPane,"Đăng nhập thành công!", false);
@@ -111,18 +111,23 @@ public class LoginForm implements Initializable {
                         });
                         delay.play();
                     }
-                    else if (loginStatus.equals("WRONG PASSWORD")){
-                        handleFailedLogin("Mật khẩu không chính xác!");
-                        txtPass.clear();
-                        txtPass.requestFocus();
-                    }
-                    else if (loginStatus.equals("NOT FOUND")){
-                        handleFailedLogin("Tài khoản không tồn tại!");
-                        txtUser.clear();
-                        txtUser.requestFocus();
-                    }
-                    else {
-                        Others.showAlert(rootPane, "Lỗi kết nối máy chủ dữ liệu!", true);
+                    else{
+                        btnLogin.setDisable(false);
+                        btnRegister.setDisable(false);
+
+                        if (loginStatus.equals("WRONG PASSWORD")){
+                            handleFailedLogin("Mật khẩu không chính xác!");
+                            txtPass.clear();
+                            txtPass.requestFocus();
+                        }
+                        else if (loginStatus.equals("NOT FOUND")){
+                            handleFailedLogin("Tài khoản không tồn tại!");
+                            txtUser.clear();
+                            txtUser.requestFocus();
+                        }
+                        else {
+                            Others.showAlert(rootPane, "Lỗi kết nối máy chủ dữ liệu!", true);
+                        }
                     }
                 });
             }).start();
@@ -140,6 +145,22 @@ public class LoginForm implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
             Others.showAlert(rootPane, "Không thể mở màn hình đăng ký!", true);
+        }
+    }
+
+    @FXML
+    void btnGuestClick(ActionEvent event) {
+        Util.UserSession.getInstance().setGuest();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerDashboard.fxml"));
+            Parent root = loader.load();
+
+            btnGuest.getScene().setRoot(root);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Others.showAlert(rootPane, "Không thể chuyển sang giao diện mua hàng!", true);
         }
     }
 
