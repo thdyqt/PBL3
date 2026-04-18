@@ -2,12 +2,11 @@
 //hence why the return type are all String so the one who actually use this can know what is the exact problem
 package BusinessBLL;
 
-import DataDAL.OrderDetailData;
+import DataDAL.OrderData;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
-import DataDAL.OrderData;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,27 +114,6 @@ public class OrderBusiness {
             return "Order updated successfully";
         }else {
             return "Order failed to update";
-        }
-    }
-
-    public static String deleteOrder_BLL(int OrderID){
-        Order foundOrder = OrderData.searchOrder_ByID(OrderID);
-
-        if (foundOrder == null){
-            return "ERROR: Order doesnt exist";
-        }
-
-        boolean orderDetailDeleted = OrderDetailBusiness.deleteALLItemsFromOrder_BLL(OrderID);
-        if (!orderDetailDeleted){
-            return "ERROR: OrderDetail deletion failed";
-        }
-
-        boolean orderDeleted = OrderData.deleteOrder(OrderID);
-        if (!orderDeleted){
-            return "ERROR: Order deletion failed";
-        }
-        else{
-            return "Sucessfully deleted order with id: " + OrderID;
         }
     }
 
