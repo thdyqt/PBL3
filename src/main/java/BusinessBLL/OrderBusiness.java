@@ -6,6 +6,7 @@ import DataDAL.OrderDetailData;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import DataDAL.OrderData;
+import EntityDTO.PromoCode;
 import org.w3c.dom.Entity;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,9 @@ public class OrderBusiness {
         order.setProcess_time(LocalDateTime.now());
         order.setStatus(EntityDTO.Order.orderStatus.Created);
 
+        order.setOrderDetail(orderDetailList);
+        String mathStatus = calculateMoney(order);
+
         int createdOrderID = OrderData.addOrder(order);
         if (createdOrderID <= 0){
             return "ERROR: Order created with invalid ID";
@@ -38,7 +42,7 @@ public class OrderBusiness {
             return "ERROR: Save failed";
         }
 
-        return "OrderBusiness success";
+        return "OrderBusiness success " + mathStatus;
     }
 
     public static List<Order> getAllOrder_BLL(){
@@ -179,6 +183,7 @@ public class OrderBusiness {
         }
     }
 
+    //all things money related of order
     public static String calculateMoney(Order order){
         //calculate subtotal
         int calSubTotal = 0;
@@ -189,63 +194,81 @@ public class OrderBusiness {
         }
         order.setSubTotal(calSubTotal);
 
+        //discount stack multiplicatively
         //calculate discount
-        int calDiscount = 0;
-        String code = order.getAppliedCode();
-        String statusMessage = "Áp mã thành công";
-
-        if (code != null && !code.trim().isEmpty()){
-            code = code.trim();
-            EntityDTO.PromoCode promo = DataDAL.PromoCodeData.getPromoCode(code);
-
-            if (promo == null || !promo.getCode().equals(code)) {
-                calDiscount = 0;
-                order.setAppliedCode(null);
-                statusMessage = "LỖI: Mã giảm giá không tồn tại hoặc sai chữ hoa/thường!";
-            } else {
-                java.time.LocalDateTime now = java.time.LocalDateTime.now();
-
-                if (promo.getStatus() != EntityDTO.PromoCode.codeStatus.Active) {
-                    calDiscount = 0;
-                    order.setAppliedCode(null);
-                    statusMessage = "LỖI: Mã giảm giá đã hết hạn hoặc bị khóa!";
-                }
-
-                else if (now.isBefore(promo.getValidFrom()) || now.isAfter(promo.getValidTo())) {
-                    calDiscount = 0;
-                    order.setAppliedCode(null);
-                    statusMessage = "LỖI: Mã giảm giá không nằm trong thời gian áp dụng!";
-                }
-
-                else if (calSubTotal < promo.getMinOrderValue()) {
-                    calDiscount = 0;
-                    order.setAppliedCode(null);
-
-                    java.text.DecimalFormat formatter = new java.text.DecimalFormat("#,###");
-                    statusMessage = "LỖI: Đơn hàng chưa đạt giá trị tối thiểu (" + formatter.format(promo.getMinOrderValue()) + "đ)!";
-                }
-                else {
-                    if (promo.getDiscountType() == EntityDTO.PromoCode.codeType.Percent) {
-                        calDiscount = (int) (calDiscount * (promo.getDiscountValue() / 100.0));
-                    } else if (promo.getDiscountType() == EntityDTO.PromoCode.codeType.Amount) {
-                        calDiscount = promo.getDiscountValue();
-                    }
-
-                    statusMessage = "Thành công: " + promo.getDescription();
-                }
+        //discount from rank
+        int rankDiscount = 0;
+        String rankMessage = "";
+        if (order.getCustomer() != null){
+            int rankPercent = CustomerBusiness.getDiscountPercent(order.getCustomer());
+            if (rankPercent > 0){
+                rankDiscount = (int) (calSubTotal * (rankPercent / 100.0));
+                rankMessage = "Hạng " + order.getCustomer().getCustomer_rank().name() + " (-" + rankPercent + "%). ";
             }
-        } else {
-            order.setAppliedCode(null);
         }
 
-        int finalTotal = calSubTotal - calDiscount;
+        //multiplicative discount post-rank but pre-promo
+        int discoutedTotal_Post = calSubTotal - rankDiscount;
+
+        //discount from code
+        int promoDiscount = 0;
+        String code = order.getAppliedCode();
+        String promoMessage = "Tính tiền thành công.";
+
+        //code is not empty
+        if (code != null && !code.trim().isEmpty()){
+            code = code.trim();
+            //fetch
+            EntityDTO.PromoCode promoCode = DataDAL.PromoCodeData.getPromoCode(code);
+
+            //code doesnt exist/ doesnt match
+            if (promoCode == null || !promoCode.getCode().equals(code)){
+                order.setAppliedCode(null);
+                promoMessage = "ERROR: code doesnt exist/ doesnt match.";
+            }else {
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+                //code exist but is inactive
+                if (promoCode.getStatus() != EntityDTO.PromoCode.codeStatus.Active){
+                    order.setAppliedCode(null);
+                    promoMessage = "ERROR: code is inactive.";
+                //before the code can even be used/ after the code has been expired
+                } else if (now.isBefore(promoCode.getValidFrom()) || now.isAfter(promoCode.getValidTo())){
+                    order.setAppliedCode(null);
+                    promoMessage = "ERROR: code is not used within the active timespan.";
+                //value of order is lower than min threshold
+                } else if (calSubTotal < promoCode.getMinOrderValue()) {
+                    order.setAppliedCode(null);
+                    promoMessage = "ERROR: order has lower value than min threshold of code.";
+                //valid code, calculate its discount value
+                } else{
+                    if (promoCode.getDiscountType() == EntityDTO.PromoCode.codeType.Percent){
+                        promoDiscount = (int) (discoutedTotal_Post * (promoCode.getDiscountValue() / 100.0));
+                    } else if (promoCode.getDiscountType() == EntityDTO.PromoCode.codeType.Amount){
+                        promoDiscount = promoCode.getDiscountValue();
+                    }
+                }
+            }
+        }
+
+        //calculate final
+        int totalDiscount = rankDiscount + promoDiscount;
+        int finalTotal = calSubTotal - totalDiscount;
         if (finalTotal < 0){
             finalTotal = 0;
         }
 
-        order.setDiscountAmount(calDiscount);
+        order.setDiscountAmount(totalDiscount);
         order.setFinalAmount(finalTotal);
 
-        return statusMessage;
+        //display message
+        if (rankMessage.isEmpty() && promoMessage.isEmpty()){
+            return "Tính tiền thành công.";
+        } else if (!rankMessage.isEmpty() && promoMessage.isEmpty() || promoMessage.startsWith("ERROR")) {
+            //rank sucess, promo failed
+            return rankMessage + promoMessage;
+        } else {
+            return rankMessage + promoMessage;
+        }
     }
 }
