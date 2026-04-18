@@ -1,20 +1,29 @@
 package EntityDTO;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 public class PromoCode {
+
+    public enum codeType{
+        Percent, Amount;
+    }
+
+    public enum codeStatus{
+        Active, Paused,Upcoming, Expired;
+    }
+
     private String code;
     private String description;
     private int discountValue;
-    private String discountType; // "PERCENT" hoặc "AMOUNT"
+    private codeType discountType; // "PERCENT" hoặc "AMOUNT"
     private int minOrderValue;
-    private Date validFrom;
-    private Date validTo;
-    private String status;
+    private LocalDateTime validFrom;
+    private LocalDateTime validTo;
+    private codeStatus status;
 
     public PromoCode() {}
 
-    public PromoCode(String code, String description, int discountValue, String discountType, int minOrderValue, Date validFrom, Date validTo, String status) {
+    public PromoCode(String code, String description, int discountValue, codeType discountType, int minOrderValue, LocalDateTime validFrom, LocalDateTime validTo, codeStatus status) {
         this.code = code;
         this.description = description;
         this.discountValue = discountValue;
@@ -30,15 +39,15 @@ public class PromoCode {
         return description;
     }
     public int getDiscountValue() { return discountValue; }
-    public String getDiscountType() { return discountType; }
+    public codeType getDiscountType() { return discountType; }
     public int getMinOrderValue() { return minOrderValue; }
-    public Date getValidFrom() {
+    public LocalDateTime getValidFrom() {
         return validFrom;
     }
-    public Date getValidTo() {
+    public LocalDateTime getValidTo() {
         return validTo;
     }
-    public String getStatus() {
+    public codeStatus getStatus() {
         return status;
     }
 
@@ -54,7 +63,7 @@ public class PromoCode {
         this.discountValue = discountValue;
     }
 
-    public void setDiscountType(String discountType) {
+    public void setDiscountType(codeType discountType) {
         this.discountType = discountType;
     }
 
@@ -62,15 +71,15 @@ public class PromoCode {
         this.minOrderValue = minOrderValue;
     }
 
-    public void setValidFrom(Date validFrom) {
+    public void setValidFrom(LocalDateTime validFrom) {
         this.validFrom = validFrom;
     }
 
-    public void setValidTo(Date validTo) {
+    public void setValidTo(LocalDateTime validTo) {
         this.validTo = validTo;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(codeStatus status) {
         this.status = status;
     }
 

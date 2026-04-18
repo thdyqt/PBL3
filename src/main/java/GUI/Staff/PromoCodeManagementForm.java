@@ -220,7 +220,7 @@ public class PromoCodeManagementForm implements Initializable {
 
         tblPromoCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                if ("Active".equalsIgnoreCase(newValue.getStatus())) {
+                if ("Active".equalsIgnoreCase(String.valueOf(newValue.getStatus()))) {
                     btnToggleStatus.setText("🚫 Tạm ngưng");
                     btnToggleStatus.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
                 } else {
@@ -263,7 +263,7 @@ public class PromoCodeManagementForm implements Initializable {
                 }
 
                 String statusVN = "";
-                String rawStatus = promoCode.getStatus();
+                String rawStatus = String.valueOf(promoCode.getStatus());
                 if (rawStatus != null) {
                     if ("Active".equalsIgnoreCase(rawStatus)) statusVN = "đang chạy";
                     else if ("Paused".equalsIgnoreCase(rawStatus)) statusVN = "tạm ngưng";
@@ -334,7 +334,7 @@ public class PromoCodeManagementForm implements Initializable {
             return;
         }
 
-        String currentStatus = selected.getStatus();
+        String currentStatus = String.valueOf(selected.getStatus());
 
         if ("Expired".equalsIgnoreCase(currentStatus)) {
             Others.showAlert(mainPane, "Mã này đã hết hạn, không thể tiếp tục!", true);
@@ -345,7 +345,7 @@ public class PromoCodeManagementForm implements Initializable {
         String actionName = "Active".equals(newStatus) ? "Kích hoạt" : "Tạm ngưng";
 
         if (Others.showCustomConfirm("Xác nhận", "Bạn có chắc muốn " + actionName + " mã giảm giá: " + selected.getCode() + "?", "Đồng ý", "Hủy")) {
-            if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), newStatus)) {
+            if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), PromoCode.codeStatus.valueOf(newStatus))) {
                 Others.showAlert(mainPane, "Đã " + actionName + " thành công!", false);
                 loadTable();
             } else {

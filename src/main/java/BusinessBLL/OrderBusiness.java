@@ -83,7 +83,7 @@ public class OrderBusiness {
                 }
 
                 // Lưu tổng tiền vào hóa đơn để mang lên GUI hiển thị
-                order.setTotalAmount(total);
+                order.setFinalAmount(total);
             }
 
             return onlineOrders;
@@ -176,5 +176,7 @@ public class OrderBusiness {
             return "Lỗi: Không thể hủy đơn hàng do lỗi hệ thống CSDL.";
         }
     }
+
+
 
 }
