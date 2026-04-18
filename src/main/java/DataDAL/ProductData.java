@@ -8,17 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductData {
-    private static Connection connection;
-
-    static {
-        try {
-            connection = DBConnection.getConnection();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // ĐÃ SỬA: Map đầy đủ các cột mới, theo đúng thứ tự constructor của Product.java
     private static Product mapResultSet(ResultSet rs) throws SQLException {
         return new Product(
                 rs.getInt("ProductID"),
@@ -39,7 +28,8 @@ public class ProductData {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE status = 'Active'";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -54,19 +44,17 @@ public class ProductData {
 
     //====THÊM SẢN PHẨM===
     public static boolean addProduct(Product product) {
-        // ĐÃ SỬA: Thêm các cột mới vào câu lệnh INSERT
         String sql = "INSERT INTO Product (ProductName, CategoryID, ProductPrice, quantity, status, description, ingredients, rating, image) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, product.getProductName());
             stmt.setInt(2, product.getCategoryID());
             stmt.setInt(3, product.getProductPrice());
             stmt.setInt(4, product.getQuantity());
 
-            // Nếu status null thì mặc định là Active, rating mặc định 5.0
             stmt.setString(5, product.getStatus() != null ? product.getStatus() : "Active");
             stmt.setString(6, product.getDescription());
             stmt.setString(7, product.getIngredients());
@@ -75,7 +63,6 @@ public class ProductData {
 
             int rows = stmt.executeUpdate();
 
-            // Gán lại ID do DB tự sinh
             if (rows > 0) {
                 ResultSet keys = stmt.getGeneratedKeys();
                 if (keys.next()) product.setProductID(keys.getInt(1));
@@ -90,12 +77,12 @@ public class ProductData {
 
     // ===== UPDATE =====
     public static boolean updateProduct(Product product) {
-        // ĐÃ SỬA: Cập nhật thêm các cột description, ingredients, rating
         String sql = "UPDATE Product SET ProductName = ?, CategoryID = ?, "
                 + "ProductPrice = ?, quantity = ?, status = ?, description = ?, ingredients = ?, rating = ?, image = ? "
                 + "WHERE ProductID = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, product.getProductName());
             stmt.setInt(2, product.getCategoryID());
@@ -120,7 +107,8 @@ public class ProductData {
     public static boolean stopBusiness(int productID) {
         String sql = "UPDATE Product SET status = 'Inactive' WHERE ProductID = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, productID);
             return stmt.executeUpdate() > 0;
 
@@ -134,7 +122,8 @@ public class ProductData {
     public static boolean restartBusiness(int productID) {
         String sql = "UPDATE Product SET status = 'Active' WHERE ProductID = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, productID);
             return stmt.executeUpdate() > 0;
 
@@ -151,7 +140,8 @@ public class ProductData {
                 "AND ProductPrice BETWEEN ? AND ? " +
                 "AND status = 'Active'";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + keyword + "%");
             stmt.setInt(2, minPrice);
             stmt.setInt(3, maxPrice);
@@ -170,7 +160,8 @@ public class ProductData {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE CategoryID = ? AND status = 'Active'";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, categoryID);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -186,7 +177,8 @@ public class ProductData {
     public static Product getByID(int productID) {
         String sql = "SELECT * FROM Product WHERE ProductID = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, productID);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -202,7 +194,8 @@ public class ProductData {
     public static boolean isProductExist(String productName) {
         String sql = "SELECT 1 FROM Product WHERE ProductName = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, productName);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -218,7 +211,8 @@ public class ProductData {
     public static boolean isInactive(int productID) {
         String sql = "SELECT 1 FROM Product WHERE ProductID = ? AND status = 'Inactive'";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, productID);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -229,21 +223,5 @@ public class ProductData {
             System.err.println("Lỗi isInactive Product: " + e.getMessage());
         }
         return false;
-    }
-
-    public static String getImage(int productID) {
-        String sql = "SELECT image FROM Product WHERE ProductID = ?";
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, productID);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) return rs.getString("image");
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi getImage Product: " + e.getMessage());
-        }
-        return null;
     }
 }

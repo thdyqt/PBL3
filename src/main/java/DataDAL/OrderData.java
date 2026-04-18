@@ -204,22 +204,4 @@ public class OrderData {
             return false;
         }
     }
-
-    public static boolean deleteOrder(int OrderID){
-        String sql = "DELETE FROM Orders WHERE id_Order = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, OrderID);
-
-            // Returns true if 1 or more rows were deleted
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 }

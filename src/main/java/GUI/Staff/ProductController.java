@@ -31,7 +31,6 @@ public class ProductController implements Initializable, IContentArea {
     private ObservableList<Product> masterData = FXCollections.observableArrayList();
     private FilteredList<Product> filteredData;
 
-    // CACHE GIÚP CHỐNG LAG
     private Map<Integer, String> categoryCache = new HashMap<>();
     private Map<String, Image> imageCache = new HashMap<>();
 
@@ -55,7 +54,7 @@ public class ProductController implements Initializable, IContentArea {
         loadCategories();
         loadProducts();
         setupFiltering();
-        Others.animateTableRows(tblProduct); // Hiệu ứng trượt từng dòng
+        Others.animateTableRows(tblProduct);
     }
 
     private void setupTableColumns() {
@@ -70,7 +69,6 @@ public class ProductController implements Initializable, IContentArea {
         colProductPrice.setCellValueFactory(new PropertyValueFactory<>("productPrice"));
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
-        // Lấy danh mục từ Cache (⚡ Tốc độ cao)
         colCategory.setCellValueFactory(c -> {
             String name = categoryCache.getOrDefault(c.getValue().getCategoryID(), "N/A");
             return new javafx.beans.property.SimpleStringProperty(name);
@@ -84,7 +82,6 @@ public class ProductController implements Initializable, IContentArea {
             }
         });
 
-        // Load ảnh ngầm (⚡ Chống giật lag)
         colImage.setCellFactory(c -> new TableCell<>() {
             private final ImageView iv = new ImageView();
             @Override protected void updateItem(String imgName, boolean empty) {

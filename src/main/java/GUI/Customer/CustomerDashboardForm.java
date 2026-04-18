@@ -200,12 +200,13 @@ public class CustomerDashboardForm implements Initializable {
     }
 
     @FXML
-    void btnOrdersClick(ActionEvent event) {
-
+    void btnProductsClick(ActionEvent event) {
+        setActiveMenu(btnProducts);
+        switchForm("/GUI/Customer/CustomerProduct.fxml");
     }
 
     @FXML
-    void btnProductsClick(ActionEvent event) {
+    void btnOrdersClick(ActionEvent event) {
 
     }
 

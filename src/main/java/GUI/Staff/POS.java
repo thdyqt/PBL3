@@ -7,6 +7,7 @@ import BusinessBLL.PromoCodeBusiness;
 import EntityDTO.*;
 import Util.CartManager;
 import Util.Others;
+import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -39,8 +40,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import static Util.Others.vn;
 
 public class POS implements Initializable {
     @FXML
@@ -169,7 +168,7 @@ public class POS implements Initializable {
                 if (empty || price == null) {
                     setText(null);
                 } else {
-                    setText(String.format(vn, "%,d", price));
+                    setText(Others.formatPrice(price));
                 }
             }
         });
@@ -182,7 +181,7 @@ public class POS implements Initializable {
                 if (empty || price == null) {
                     setText(null);
                 } else {
-                    setText(String.format(vn, "%,d", price));
+                    setText(Others.formatPrice(price));
                 }
             }
         });
@@ -294,7 +293,7 @@ public class POS implements Initializable {
     }
 
     private void loadPromoCodes() {
-        List<PromoCode> listCode = PromoCodeBusiness.getAllPromoCodes();
+        List<PromoCode> listCode = PromoCodeBusiness.getAllActivePromoCodes();
         PromoCode allCode = new PromoCode("Không có", "Không có", 0, "AMOUNT", 0, null, null, "Active");
         listCode.add(0, allCode);
 
@@ -324,6 +323,11 @@ public class POS implements Initializable {
                 });
 
                 flowPaneProducts.getChildren().add(card);
+
+                FadeTransition ft = new FadeTransition(Duration.millis(400), card);
+                ft.setFromValue(0.0);
+                ft.setToValue(1.0);
+                ft.play();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -375,7 +379,7 @@ public class POS implements Initializable {
             totalQty += item.getQuantity();
         }
 
-        lblSubtotal.setText(String.format(vn, "%,d VNĐ", subtotal));
+        lblSubtotal.setText(Others.formatPrice(subtotal));
         lblTotalQuantity.setText(totalQty + " món");
 
         int customerDiscount = CustomerBusiness.getDiscountPercent(currentCustomer);
@@ -411,8 +415,8 @@ public class POS implements Initializable {
 
         int finalTotal = subtotal - discountAmount;
 
-        lblDiscountAmount.setText(String.format(vn, "-%,d VNĐ", discountAmount));
-        lblTotalPay.setText(String.format(vn, "%,d VNĐ", finalTotal));
+        lblDiscountAmount.setText(Others.formatPrice(discountAmount));
+        lblTotalPay.setText(Others.formatPrice(finalTotal));
     }
 
     private void setupSearchAndFilter() {
@@ -543,7 +547,7 @@ public class POS implements Initializable {
         Label lblTitle = new Label("CHỌN PHƯƠNG THỨC THANH TOÁN");
         lblTitle.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
 
-        Label lblAmount = new Label(String.format(vn, "%,d VNĐ", finalTotal));
+        Label lblAmount = new Label(Others.formatPrice(finalTotal));
         lblAmount.setStyle("-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2563EB;");
 
         HBox btnBox = new HBox(20);
@@ -619,7 +623,7 @@ public class POS implements Initializable {
             Label lblTitle = new Label("QUÉT MÃ ĐỂ THANH TOÁN");
             lblTitle.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
 
-            Label lblAmount = new Label("Số tiền cần chuyển: " + String.format(vn, "%,d VNĐ", amount));
+            Label lblAmount = new Label("Số tiền cần chuyển: " + Others.formatPrice(amount));
             lblAmount.setStyle("-fx-font-size: 28px; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
 
             HBox btnBox = new HBox(20);

@@ -8,6 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -18,12 +20,20 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Others {
-    public static Locale vn = new Locale("vi", "VN");
+    private static final Map<String, Image> imageCache = new HashMap<>();
+    private static final NumberFormat priceFormatter = NumberFormat.getNumberInstance(new java.util.Locale("vi", "VN"));
+
+    // CHUẨN HÓA GIÁ TIỀN
+    public static String formatPrice(int price) {
+        return priceFormatter.format(price) + " đ";
+    }
 
     // SET ĐỘ DÀI TỐI ĐA CHO TEXTFIELD
     public static void setMaxLength(TextField textField, int maxLength) {
@@ -58,6 +68,27 @@ public class Others {
         if (fullName == null || fullName.trim().isEmpty()) return "";
         String[] parts = fullName.trim().split("\\s+");
         return parts[parts.length - 1];
+    }
+
+    // LOAD IMAGE
+    public static void loadImage(String imageName, ImageView imgView, int width, int height) {
+        try {
+            if (imageName == null || imageName.isEmpty()) imageName = "default.png";
+
+            if (imageCache.containsKey(imageName)) {
+                imgView.setImage(imageCache.get(imageName));
+                return;
+            }
+
+            java.net.URL imageUrl = Others.class.getResource("/images/" + imageName);
+            if (imageUrl != null) {
+                javafx.scene.image.Image image = new javafx.scene.image.Image(imageUrl.toExternalForm(), width, height, true, true, true);
+                imageCache.put(imageName, image);
+                imgView.setImage(image);
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi load ảnh: " + imageName);
+        }
     }
 
     // CHAY THOI GIAN
