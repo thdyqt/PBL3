@@ -12,7 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -21,10 +21,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CustomerProductController implements Initializable {
-
-    // ==========================================
-    // 1. KHAI BÁO CÁC THÀNH PHẦN GIAO DIỆN
-    // ==========================================
     @FXML private VBox paneFilter;
     @FXML private Button btnToggleFilter;
     @FXML private Label lblResultCount;
@@ -37,11 +33,8 @@ public class CustomerProductController implements Initializable {
 
     @FXML private ComboBox<String> cbSort;
     @FXML private ScrollPane scrollPane;
-    @FXML private GridPane gridProducts;
+    @FXML private FlowPane flowProducts;
 
-    // ==========================================
-    // 2. BIẾN DỮ LIỆU VÀ CACHE
-    // ==========================================
     private List<Product> allProducts = new ArrayList<>();
     private Map<Integer, String> categoryCache = new HashMap<>();
     private boolean isFilterVisible = true;
@@ -50,16 +43,13 @@ public class CustomerProductController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setupSortOptions();
         setupInputValidation();
+        flowProducts.prefWrapLengthProperty().bind(scrollPane.widthProperty().subtract(40));
 
         loadCategories();
         refreshData();
-
         setupListeners();
     }
 
-    // ==========================================
-    // 3. CẤU HÌNH HỆ THỐNG
-    // ==========================================
     private void setupSortOptions() {
         cbSort.setItems(FXCollections.observableArrayList(
                 "Mặc định",
@@ -90,9 +80,6 @@ public class CustomerProductController implements Initializable {
         cbSort.valueProperty().addListener((o, ov, nv) -> applyFilterAndSort());
     }
 
-    // ==========================================
-    // 4. XỬ LÝ DỮ LIỆU
-    // ==========================================
     private void loadCategories() {
         cbCategory.getItems().setAll("Tất cả món");
         List<Category> list = CategoryBusiness.getAllCategories();
@@ -109,7 +96,7 @@ public class CustomerProductController implements Initializable {
     }
 
     private void applyFilterAndSort() {
-        // BƯỚC 1: LỌC (FILTER)
+        // LỌC (FILTER)
         String keyword = txtSearch.getText().toLowerCase().trim();
         String selectedCate = cbCategory.getValue();
 
@@ -125,10 +112,9 @@ public class CustomerProductController implements Initializable {
                 .filter(p -> p.getProductPrice() >= minPrice && p.getProductPrice() <= maxPrice)
                 .collect(Collectors.toList());
 
-        // BƯỚC 2: SẮP XẾP (SORT) - Đã tích hợp đẩy sản phẩm Hết hàng xuống cuối
+        // SẮP XẾP (SORT)
         String sortType = cbSort.getValue();
 
-        // Tiêu chí phụ: Theo lựa chọn của khách hàng
         Comparator<Product> secondarySort = Comparator.comparing(Product::getProductName); // Mặc định
 
         if (sortType != null) {
@@ -142,24 +128,16 @@ public class CustomerProductController implements Initializable {
             }
         }
 
-        // Tiêu chí chính (Ưu tiên số 1): Còn hàng đưa lên đầu (isAvailable() = true sẽ được ưu tiên nhờ .reversed())
         Comparator<Product> primarySort = Comparator.comparing(Product::isAvailable).reversed();
 
-        // Gộp 2 tiêu chí lại: Sắp xếp theo Tình trạng kho TRƯỚC, sau đó mới tới Tên/Giá
         result.sort(primarySort.thenComparing(secondarySort));
 
-        // BƯỚC 3: HIỂN THỊ
         displayProducts(result);
         lblResultCount.setText("Hiển thị " + result.size() + " sản phẩm");
     }
 
     private void displayProducts(List<Product> products) {
-        gridProducts.getChildren().clear();
-        int column = 0;
-        int row = 0;
-
-        // Cố định 3 cột để thẻ bánh có đủ không gian thở, không bị ép
-        int maxColumns = 3;
+        flowProducts.getChildren().clear();
 
         for (Product p : products) {
             try {
@@ -179,13 +157,7 @@ public class CustomerProductController implements Initializable {
                     }
                 });
 
-                if (column == maxColumns) {
-                    column = 0;
-                    row++;
-                }
-
-                gridProducts.add(card, column++, row);
-                // ❌ ĐÃ XÓA dòng GridPane.setMargin ở đây để Card không bị ép tràn viền!
+                flowProducts.getChildren().add(card);
 
                 FadeTransition ft = new FadeTransition(Duration.millis(500), card);
                 ft.setFromValue(0); ft.setToValue(1); ft.play();
@@ -197,15 +169,12 @@ public class CustomerProductController implements Initializable {
         }
     }
 
-    // ==========================================
-    // 5. XỬ LÝ SỰ KIỆN
-    // ==========================================
     @FXML
     private void handleToggleFilter(ActionEvent event) {
         isFilterVisible = !isFilterVisible;
         paneFilter.setVisible(isFilterVisible);
         paneFilter.setManaged(isFilterVisible);
-        btnToggleFilter.setText(isFilterVisible ? "󰈺 Ẩn bộ lọc" : "󰈺 Hiện bộ lọc");
+        btnToggleFilter.setText(isFilterVisible ? "Ẩn bộ lọc" : "Hiện bộ lọc");
     }
 
     @FXML
@@ -219,10 +188,10 @@ public class CustomerProductController implements Initializable {
     }
 
     private void handleViewDetails(Product product) {
-        Others.showAlert(gridProducts, "Xem chi tiết: " + product.getProductName(), false);
+        Others.showAlert(flowProducts, "Xem chi tiết: " + product.getProductName(), false);
     }
 
     private void handleAddToCart(Product product) {
-        Others.showAlert(gridProducts, "Đã thêm " + product.getProductName() + " vào giỏ hàng!", false);
+        Others.showAlert(flowProducts, "Đã thêm " + product.getProductName() + " vào giỏ hàng!", false);
     }
 }

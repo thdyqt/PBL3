@@ -5,12 +5,24 @@ import EntityDTO.PromoCode;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PromoCodeBusiness {
     public static List<PromoCode> getAllPromoCodes() {
         PromoCodeData.refreshAllPromoStatuses();
         return PromoCodeData.getAllPromoCodes();
+    }
+
+    public static List<PromoCode> getAllActivePromoCodes() {
+        PromoCodeData.refreshAllPromoStatuses();
+        List<PromoCode> activeList = new ArrayList<>();
+        for (PromoCode code : PromoCodeData.getAllPromoCodes()) {
+            if (code.getStatus().equals("Active")) {
+                activeList.add(code);
+            }
+        }
+        return activeList;
     }
 
     public static int addPromoCode(String code, String description, int value, String type, int minOrder, Date fromDate, Date toDate) {
