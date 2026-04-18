@@ -6,6 +6,8 @@ import DataDAL.OrderDetailData;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import DataDAL.OrderData;
+import org.w3c.dom.Entity;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,6 +179,73 @@ public class OrderBusiness {
         }
     }
 
+    public static String calculateMoney(Order order){
+        //calculate subtotal
+        int calSubTotal = 0;
+        if (order.getOrderDetail() != null){
+            for (EntityDTO.OrderDetail item : order.getOrderDetail()){
+                calSubTotal += item.getTotalPrice();
+            }
+        }
+        order.setSubTotal(calSubTotal);
 
+        //calculate discount
+        int calDiscount = 0;
+        String code = order.getAppliedCode();
+        String statusMessage = "Áp mã thành công";
 
+        if (code != null && !code.trim().isEmpty()){
+            code = code.trim();
+            EntityDTO.PromoCode promo = DataDAL.PromoCodeData.getPromoCode(code);
+
+            if (promo == null || !promo.getCode().equals(code)) {
+                calDiscount = 0;
+                order.setAppliedCode(null);
+                statusMessage = "LỖI: Mã giảm giá không tồn tại hoặc sai chữ hoa/thường!";
+            } else {
+                java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+                if (promo.getStatus() != EntityDTO.PromoCode.codeStatus.Active) {
+                    calDiscount = 0;
+                    order.setAppliedCode(null);
+                    statusMessage = "LỖI: Mã giảm giá đã hết hạn hoặc bị khóa!";
+                }
+
+                else if (now.isBefore(promo.getValidFrom()) || now.isAfter(promo.getValidTo())) {
+                    calDiscount = 0;
+                    order.setAppliedCode(null);
+                    statusMessage = "LỖI: Mã giảm giá không nằm trong thời gian áp dụng!";
+                }
+
+                else if (calSubTotal < promo.getMinOrderValue()) {
+                    calDiscount = 0;
+                    order.setAppliedCode(null);
+
+                    java.text.DecimalFormat formatter = new java.text.DecimalFormat("#,###");
+                    statusMessage = "LỖI: Đơn hàng chưa đạt giá trị tối thiểu (" + formatter.format(promo.getMinOrderValue()) + "đ)!";
+                }
+                else {
+                    if (promo.getDiscountType() == EntityDTO.PromoCode.codeType.Percent) {
+                        calDiscount = (int) (calDiscount * (promo.getDiscountValue() / 100.0));
+                    } else if (promo.getDiscountType() == EntityDTO.PromoCode.codeType.Amount) {
+                        calDiscount = promo.getDiscountValue();
+                    }
+
+                    statusMessage = "Thành công: " + promo.getDescription();
+                }
+            }
+        } else {
+            order.setAppliedCode(null);
+        }
+
+        int finalTotal = calSubTotal - calDiscount;
+        if (finalTotal < 0){
+            finalTotal = 0;
+        }
+
+        order.setDiscountAmount(calDiscount);
+        order.setFinalAmount(finalTotal);
+
+        return statusMessage;
+    }
 }
