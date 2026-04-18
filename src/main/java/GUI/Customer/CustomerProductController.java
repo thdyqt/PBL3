@@ -11,7 +11,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -159,8 +158,11 @@ public class CustomerProductController implements Initializable {
         int column = 0;
         int row = 0;
 
-        try {
-            for (Product p : products) {
+        // Cố định 3 cột để thẻ bánh có đủ không gian thở, không bị ép
+        int maxColumns = 3;
+
+        for (Product p : products) {
+            try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerProductCard.fxml"));
                 VBox card = loader.load();
 
@@ -177,19 +179,21 @@ public class CustomerProductController implements Initializable {
                     }
                 });
 
-                if (column == 3) {
+                if (column == maxColumns) {
                     column = 0;
                     row++;
                 }
 
                 gridProducts.add(card, column++, row);
-                GridPane.setMargin(card, new Insets(10));
+                // ❌ ĐÃ XÓA dòng GridPane.setMargin ở đây để Card không bị ép tràn viền!
 
                 FadeTransition ft = new FadeTransition(Duration.millis(500), card);
                 ft.setFromValue(0); ft.setToValue(1); ft.play();
+
+            } catch (Exception e) {
+                System.err.println("❌ Không thể tải Card cho bánh: " + p.getProductName());
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
