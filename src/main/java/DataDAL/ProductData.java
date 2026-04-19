@@ -176,7 +176,23 @@ public class ProductData {
         }
         return list;
     }
+    // ===== LẤY SẢN PHẨM ĐÃ NGỪNG KINH DOANH =====
+    public static List<Product> getInactiveProducts() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM Product WHERE status = 'Inactive'";
 
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) list.add(mapResultSet(rs));
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getInactiveProducts: " + e.getMessage());
+        }
+        return list;
+    }
     public static Product getByID(int productID) {
         String sql = "SELECT * FROM Product WHERE ProductID = ?";
 
