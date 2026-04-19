@@ -16,10 +16,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="700.0" prefWidth="950.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #E2E8F0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Customer.ProductDetailController">
-
+<BorderPane minHeight="700.0" minWidth="950.0" prefHeight="700.0" prefWidth="950.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-border-radius: 20; -fx-border-color: #E2E8F0;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Customer.ProductDetailController">
     <top>
-        <HBox alignment="CENTER_RIGHT" prefHeight="40.0">
+        <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" prefHeight="40.0">
             <children>
                 <Button fx:id="btnClose" mnemonicParsing="false" onAction="#handleClose" style="-fx-background-color: transparent; -fx-text-fill: #94A3B8;" text="✕">
                     <font><Font name="System Bold" size="22.0" /></font>
@@ -29,7 +28,6 @@
             <padding><Insets right="15.0" top="10.0" /></padding>
         </HBox>
     </top>
-
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
             <content>
@@ -38,11 +36,9 @@
                         <Insets bottom="40.0" left="45.0" right="45.0" top="10.0" />
                     </padding>
                     <children>
-
                         <HBox spacing="50.0">
                             <children>
-
-                                <VBox alignment="TOP_CENTER" minWidth="400.0" prefWidth="400.0">
+                                <VBox alignment="TOP_CENTER" maxHeight="400.0" maxWidth="400.0" minWidth="400.0" prefWidth="400.0">
                                     <children>
                                         <AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #F8FAFC; -fx-background-radius: 20; -fx-border-color: #F1F5F9; -fx-border-radius: 20;">
                                             <children>
@@ -52,63 +48,58 @@
                                     </children>
                                 </VBox>
 
-                                <VBox spacing="22.0" HBox.hgrow="ALWAYS">
+                                <VBox minWidth="420.0" spacing="22.0" HBox.hgrow="ALWAYS">
                                     <children>
                                         <VBox spacing="5.0">
                                             <children>
-                                                <Label fx:id="lblProductName" text="Tên Sản Phẩm" textFill="#0F172A">
+                                                <Label fx:id="lblProductName" minHeight="-Infinity" text="Tên Sản Phẩm" textFill="#0F172A" wrapText="true">
                                                     <font><Font name="System Bold" size="32.0" /></font>
                                                 </Label>
                                                 <HBox alignment="CENTER_LEFT" spacing="12.0">
                                                     <children>
-                                                        <Label fx:id="lblPrice" text="0 đ" textFill="#E11D48">
+                                                        <Label fx:id="lblPrice" minHeight="-Infinity" text="0 đ" textFill="#E11D48">
                                                             <font><Font name="System Bold" size="26.0" /></font>
                                                         </Label>
-                                                        <Label fx:id="lblStock" style="-fx-background-color: #DCFCE7; -fx-text-fill: #166534; -fx-background-radius: 6; -fx-padding: 4 12;" text="Còn hàng">
+                                                        <Label fx:id="lblStock" minHeight="-Infinity" style="-fx-background-color: #DCFCE7; -fx-text-fill: #166534; -fx-background-radius: 6; -fx-padding: 4 12;" text="Còn hàng">
                                                             <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                     </children>
                                                 </HBox>
                                             </children>
                                         </VBox>
-
-                                        <Separator />
-
+                                        <Separator minHeight="-Infinity" />
                                         <VBox spacing="10.0">
                                             <children>
-                                                <Label text="Mô tả món ăn" textFill="#475569">
+                                                <Label minHeight="-Infinity" text="Mô tả món ăn" textFill="#475569">
                                                     <font><Font name="System Bold" size="15.0" /></font>
                                                 </Label>
-                                                <Label fx:id="lblDescription" text="Mô tả chi tiết về hương vị và đặc điểm của món bánh này." textFill="#64748B" wrapText="true">
+                                                <Label fx:id="lblDescription" minHeight="-Infinity" text="Mô tả chi tiết về hương vị và đặc điểm của món bánh này." textFill="#64748B" wrapText="true">
                                                     <font><Font size="15.0" /></font>
                                                 </Label>
                                             </children>
                                         </VBox>
-
                                         <VBox spacing="10.0">
                                             <children>
-                                                <Label text="Nguyên liệu chính" textFill="#475569">
+                                                <Label minHeight="-Infinity" text="Nguyên liệu chính" textFill="#475569">
                                                     <font><Font name="System Bold" size="15.0" /></font>
                                                 </Label>
-                                                <Label fx:id="lblIngredients" text="Danh sách các thành phần nguyên liệu sạch được sử dụng." textFill="#64748B" wrapText="true">
+                                                <Label fx:id="lblIngredients" minHeight="-Infinity" text="Danh sách các thành phần nguyên liệu sạch được sử dụng." textFill="#64748B" wrapText="true">
                                                     <font><Font size="15.0" /></font>
                                                 </Label>
                                             </children>
                                         </VBox>
-
-                                        <Region VBox.vgrow="ALWAYS" />
-
+                                        <Region minHeight="20.0" VBox.vgrow="ALWAYS" />
                                         <HBox alignment="BOTTOM_LEFT" spacing="25.0">
                                             <children>
                                                 <VBox spacing="8.0">
                                                     <children>
-                                                        <Label text="Số lượng mua" textFill="#64748B">
+                                                        <Label minHeight="-Infinity" text="Số lượng mua" textFill="#64748B">
                                                             <font><Font name="System Bold" size="13.0" /></font>
                                                         </Label>
                                                         <Spinner fx:id="spinQuantity" editable="true" prefHeight="45.0" prefWidth="130.0" />
                                                     </children>
                                                 </VBox>
-                                                <Button fx:id="btnAddToCart" mnemonicParsing="false" onAction="#handleAddToCart" prefHeight="55.0" prefWidth="250.0" style="-fx-background-color: #D4891A; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12;" text="THÊM VÀO GIỎ HÀNG">
+                                                <Button fx:id="btnAddToCart" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleAddToCart" prefHeight="55.0" prefWidth="250.0" style="-fx-background-color: #D4891A; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12;" text="THÊM VÀO GIỎ HÀNG">
                                                     <font><Font size="16.0" /></font>
                                                     <cursor><Cursor fx:constant="HAND" /></cursor>
                                                 </Button>
@@ -118,53 +109,46 @@
                                 </VBox>
                             </children>
                         </HBox>
-
-                        <Separator />
+                        <Separator minHeight="-Infinity" />
 
                         <VBox spacing="25.0">
                             <children>
                                 <HBox alignment="CENTER_LEFT" spacing="15.0">
                                     <children>
-                                        <Label text="Đánh giá từ khách hàng" textFill="#0F172A">
+                                        <Label minHeight="-Infinity" text="Đánh giá từ khách hàng" textFill="#0F172A">
                                             <font><Font name="System Bold" size="20.0" /></font>
                                         </Label>
-                                        <Label fx:id="lblAverageRating" text="(4.8 ★)" textFill="#D4891A">
+                                        <Label fx:id="lblAverageRating" minHeight="-Infinity" text="(4.8 ★)" textFill="#D4891A">
                                             <font><Font name="System Bold" size="16.0" /></font>
                                         </Label>
                                     </children>
                                 </HBox>
-
-                                <VBox fx:id="paneWriteReview" spacing="18.0" style="-fx-background-color: #F8FAFC; -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: #E2E8F0; -fx-border-radius: 15;">
+                                <VBox fx:id="paneWriteReview" minHeight="-Infinity" spacing="18.0" style="-fx-background-color: #F8FAFC; -fx-padding: 25; -fx-background-radius: 15; -fx-border-color: #E2E8F0; -fx-border-radius: 15;">
                                     <children>
                                         <HBox alignment="CENTER_LEFT" spacing="20.0">
                                             <children>
-                                                <Label text="Xếp hạng của bạn:" textFill="#475569">
+                                                <Label minHeight="-Infinity" text="Xếp hạng của bạn:" textFill="#475569">
                                                     <font><Font name="System Bold" size="15.0" /></font>
                                                 </Label>
-                                                <HBox fx:id="starRatingContainer" spacing="8.0">
-                                                </HBox>
+                                                <HBox fx:id="starRatingContainer" spacing="8.0" />
                                             </children>
                                         </HBox>
-
-                                        <TextArea fx:id="txtReviewComment" prefHeight="120.0" promptText="Hãy chia sẻ trải nghiệm của bạn về món bánh này..." style="-fx-background-radius: 10; -fx-border-radius: 10;" wrapText="true">
+                                        <TextArea fx:id="txtReviewComment" minHeight="120.0" prefHeight="120.0" promptText="Hãy chia sẻ trải nghiệm của bạn về món bánh này..." style="-fx-background-radius: 10; -fx-border-radius: 10;" wrapText="true">
                                             <font><Font size="14.0" /></font>
                                         </TextArea>
-
                                         <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                             <children>
-                                                <Label fx:id="lblReviewStatus" text="Bạn chỉ có thể đánh giá sau khi đã mua sản phẩm." textFill="#94A3B8">
+                                                <Label fx:id="lblReviewStatus" minHeight="-Infinity" text="Bạn chỉ có thể đánh giá sau khi đã mua sản phẩm." textFill="#94A3B8">
                                                     <font><Font name="System Italic" size="13.0" /></font>
                                                 </Label>
-                                                <Button fx:id="btnSubmitReview" mnemonicParsing="false" onAction="#handleSubmitReview" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="Gửi Đánh Giá" />
+                                                <Button fx:id="btnSubmitReview" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleSubmitReview" prefHeight="40.0" prefWidth="150.0" style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10;" text="Gửi Đánh Giá" />
                                             </children>
                                         </HBox>
                                     </children>
                                 </VBox>
-
                                 <VBox fx:id="vboxOtherReviews" spacing="15.0" />
                             </children>
                         </VBox>
-
                     </children>
                 </VBox>
             </content>

@@ -11,11 +11,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,9 +69,13 @@ public class CustomerProductController implements Initializable {
     }
 
     private void setupInputValidation() {
+        Others.setMaxLength(txtMinPrice, 8);
+        Others.setMaxLength(txtMaxPrice, 8);
+
         txtMinPrice.textProperty().addListener((obs, old, nv) -> {
             if (!nv.matches("\\d*")) txtMinPrice.setText(nv.replaceAll("[^\\d]", ""));
         });
+
         txtMaxPrice.textProperty().addListener((obs, old, nv) -> {
             if (!nv.matches("\\d*")) txtMaxPrice.setText(nv.replaceAll("[^\\d]", ""));
         });
@@ -188,7 +197,21 @@ public class CustomerProductController implements Initializable {
     }
 
     private void handleViewDetails(Product product) {
-        Others.showAlert(flowProducts, "Xem chi tiết: " + product.getProductName(), false);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/ProductDetail.fxml"));
+            Parent root = loader.load();
+
+            ProductDetailController controller = loader.getController();
+            controller.setData(product);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Chi tiết: " + product.getProductName());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleAddToCart(Product product) {

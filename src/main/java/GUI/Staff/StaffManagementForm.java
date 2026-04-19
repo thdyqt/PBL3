@@ -182,7 +182,6 @@ public class StaffManagementForm implements Initializable {
             if (isShowResigned && "Active".equalsIgnoreCase(status)) return false;
             if (!isShowResigned && "Inactive".equalsIgnoreCase(status)) return false;
 
-            // 2. Lọc theo Text Tìm kiếm
             if (searchKeyword.isEmpty()) {
                 return true;
             }
@@ -281,13 +280,13 @@ public class StaffManagementForm implements Initializable {
         );
 
         if (isConfirm) {
-            int result = BusinessBLL.StaffBusiness.updateStaffStatus(selectedStaff.getId(), selectedStaff.getName(), selectedStaff.getUser(), newStatus);
+            int result = StaffBusiness.updateStaffStatus(selectedStaff.getId(), selectedStaff.getName(), selectedStaff.getUser(), newStatus);
 
             if (result == 1) {
-                Util.Others.showAlert(mainPane, "Đã " + actionName.toLowerCase() + " thành công!", false);
+                Others.showAlert(mainPane, "Đã " + actionName.toLowerCase() + " thành công!", false);
                 loadTable();
             } else {
-                Util.Others.showAlert(mainPane, "Lỗi kết nối máy chủ dữ liệu!", true);
+                Others.showAlert(mainPane, "Lỗi kết nối máy chủ dữ liệu!", true);
             }
         }
     }
