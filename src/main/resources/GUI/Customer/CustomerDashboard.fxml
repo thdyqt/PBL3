@@ -65,10 +65,20 @@
                             <padding><Insets left="20.0" right="20.0" /></padding>
                         </Button>
 
-                        <Button fx:id="btnCart" mnemonicParsing="false" onAction="#btnCartClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🛒  Giỏ hàng">
-                            <cursor><Cursor fx:constant="HAND" /></cursor>
-                            <padding><Insets left="20.0" right="20.0" /></padding>
-                        </Button>
+                        <StackPane alignment="TOP_RIGHT" maxHeight="-Infinity">
+                            <children>
+                                <Button fx:id="btnCart" mnemonicParsing="false" onAction="#btnCartClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🛒  Giỏ hàng">
+                                    <cursor><Cursor fx:constant="HAND" /></cursor>
+                                    <padding><Insets left="20.0" right="20.0" /></padding>
+                                </Button>
+
+                                <Label fx:id="lblCartBadge" alignment="CENTER" minHeight="20.0" minWidth="20.0" style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 12; -fx-font-weight: bold;" text="0" translateX="-10.0" translateY="2.0" visible="false">
+                                    <padding>
+                                        <Insets left="5.0" right="5.0" />
+                                    </padding>
+                                </Label>
+                            </children>
+                        </StackPane>
 
                         <Button fx:id="btnOrders" mnemonicParsing="false" onAction="#btnOrdersClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="📦  Đơn hàng của tôi">
                             <cursor><Cursor fx:constant="HAND" /></cursor>

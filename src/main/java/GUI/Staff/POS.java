@@ -275,7 +275,7 @@ public class POS implements Initializable {
         });
 
         allProducts = ProductBusiness.getAllProducts();
-        cartList = CartManager.getInstance().getCartItems();
+        cartList = CartManager.getInstance().getPosCart();
         tableCart.setItems(cartList);
         loadCategories();
         loadPromoCodes();

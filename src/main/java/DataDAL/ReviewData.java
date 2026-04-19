@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ReviewData {
     public static boolean addReview(ProductReview review) {
-        String sql = "INSERT INTO ProductReview (ProductID, CustomerID, Rating, Comment, ReviewDate) VALUES (?, ?, ?, ?, GETDATE())";
+        String sql = "INSERT INTO ProductReview (ProductID, CustomerID, RatingValue, Comment, ReviewDate) VALUES (?, ?, ?, ?, GETDATE())";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -45,8 +45,8 @@ public class ReviewData {
                             rs.getInt("ReviewID"),
                             rs.getInt("ProductID"),
                             rs.getInt("CustomerID"),
-                            rs.getString("CustomerName"),
-                            rs.getInt("Rating"),
+                            rs.getString("full_name"),
+                            rs.getInt("RatingValue"),
                             rs.getString("Comment"),
                             rs.getTimestamp("ReviewDate")
                     ));

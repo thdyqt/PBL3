@@ -3,6 +3,7 @@ package GUI.Customer;
 import BusinessBLL.ReviewBusiness;
 import EntityDTO.Product;
 import EntityDTO.ProductReview;
+import Util.CartManager;
 import Util.Others;
 import Util.UserSession;
 import javafx.event.ActionEvent;
@@ -29,7 +30,6 @@ public class ProductDetailController implements Initializable {
     @FXML private ImageView imgProduct;
     @FXML private Text lblProductName, lblPrice, lblStock, lblDescription, lblIngredients, lblAverageRating, lblReviewStatus;
     @FXML private HBox boxStock;
-
     @FXML private Spinner<Integer> spinQuantity;
     @FXML private Button btnAddToCart, btnSubmitReview;
     @FXML private TextArea txtReviewComment;
@@ -103,7 +103,7 @@ public class ProductDetailController implements Initializable {
             btnSubmitReview.setDisable(true);
             txtReviewComment.setDisable(true);
             starRatingContainer.setDisable(true);
-            lblReviewStatus.setText("Bạn cần mua sản phẩm hoặc đã đánh giá rồi.");
+            lblReviewStatus.setText("Bạn cần mua sản phẩm hoặc bạn đã đánh giá rồi.");
             lblReviewStatus.setFill(Color.RED);
         } else {
             paneWriteReview.setOpacity(1.0);
@@ -154,6 +154,8 @@ public class ProductDetailController implements Initializable {
         if (list == null || list.isEmpty()) {
             Label lblEmpty = new Label("Chưa có đánh giá nào. Hãy là người đầu tiên trải nghiệm!");
             lblEmpty.setStyle("-fx-text-fill: #94A3B8; -fx-font-style: italic; -fx-font-size: 14;");
+
+            lblEmpty.setMinHeight(Region.USE_PREF_SIZE);
             vboxOtherReviews.getChildren().add(lblEmpty);
             return;
         }
@@ -168,23 +170,28 @@ public class ProductDetailController implements Initializable {
 
             Label lblName = new Label(review.getCustomerName());
             lblName.setStyle("-fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-font-size: 14;");
+            lblName.setMinHeight(Region.USE_PREF_SIZE);
 
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 5; i++) sb.append(i < review.getRating() ? "★" : "☆");
             Label lblStars = new Label(sb.toString());
             lblStars.setStyle("-fx-text-fill: #D4891A; -fx-font-size: 14;");
+            lblStars.setMinHeight(Region.USE_PREF_SIZE);
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            Label lblDate = new Label(sdf.format(review.getReviewDate()));
+            String dateStr = (review.getReviewDate() != null) ? sdf.format(review.getReviewDate()) : "Không rõ thời gian";
+            Label lblDate = new Label(dateStr);
             lblDate.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 12;");
+            lblDate.setMinHeight(Region.USE_PREF_SIZE);
 
             headerBox.getChildren().addAll(lblName, lblStars, spacer, lblDate);
 
             Label lblComment = new Label(review.getComment());
             lblComment.setWrapText(true);
             lblComment.setStyle("-fx-text-fill: #475569; -fx-font-size: 14;");
+            lblComment.setMinHeight(Region.USE_PREF_SIZE);
 
             reviewBox.getChildren().addAll(headerBox, lblComment);
             vboxOtherReviews.getChildren().add(reviewBox);
@@ -194,7 +201,13 @@ public class ProductDetailController implements Initializable {
     @FXML
     void handleAddToCart(ActionEvent event) {
         int quantity = spinQuantity.getValue();
-        Others.showAlert(lblProductName, "Đã thêm " + quantity + " " + currentProduct.getProductName() + " vào giỏ hàng!", false);
+        boolean success = CartManager.getInstance().addToCustomerCart(currentProduct, quantity);
+
+        if (success) {
+            Others.showAlert(lblProductName, "Đã thêm " + quantity + " " + currentProduct.getProductName() + " vào giỏ hàng!", false);
+        } else {
+            Others.showAlert(lblProductName, "Rất tiếc, kho không đủ số lượng bạn yêu cầu!", true);
+        }
     }
 
     @FXML

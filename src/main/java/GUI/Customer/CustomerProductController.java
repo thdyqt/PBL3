@@ -4,6 +4,7 @@ import BusinessBLL.CategoryBusiness;
 import BusinessBLL.ProductBusiness;
 import EntityDTO.Category;
 import EntityDTO.Product;
+import Util.CartManager;
 import Util.Others;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -215,6 +216,12 @@ public class CustomerProductController implements Initializable {
     }
 
     private void handleAddToCart(Product product) {
-        Others.showAlert(flowProducts, "Đã thêm " + product.getProductName() + " vào giỏ hàng!", false);
+        boolean success = CartManager.getInstance().addToCustomerCart(product, 1);
+
+        if (success) {
+            Others.showAlert(flowProducts, "Đã thêm " + product.getProductName() + " vào giỏ hàng!", false);
+        } else {
+            Others.showAlert(flowProducts, "Sản phẩm này đã hết hàng trong kho!", true);
+        }
     }
 }

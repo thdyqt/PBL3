@@ -2,6 +2,7 @@ package GUI.Customer;
 
 import EntityDTO.Customer;
 import GUI.CustomerDialogController;
+import Util.CartManager;
 import Util.Others;
 import Util.UserSession;
 import javafx.animation.FadeTransition;
@@ -62,6 +63,9 @@ public class CustomerDashboardForm implements Initializable {
     private Label lblTime;
 
     @FXML
+    private Label lblCartBadge;
+
+    @FXML
     private BorderPane mainBorderPane;
 
     @FXML
@@ -120,6 +124,16 @@ public class CustomerDashboardForm implements Initializable {
             menuEditAcc.setOnAction(event -> openProfileDialog(false));
             loadUserProfile();
         }
+
+        CartManager.getInstance().customerTotalCountProperty().addListener((observable, oldValue, newValue) -> {
+            int count = newValue.intValue();
+            if (count > 0) {
+                lblCartBadge.setText(String.valueOf(count));
+                lblCartBadge.setVisible(true);
+            } else {
+                lblCartBadge.setVisible(false);
+            }
+        });
     }
 
     private void loadUserProfile() {
