@@ -25,6 +25,9 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -45,7 +48,7 @@ public class PromoCodeManagementForm implements Initializable {
     private TableColumn<PromoCode, String> colDesc;
 
     @FXML
-    private TableColumn<PromoCode, Date> colEnd;
+    private TableColumn<PromoCode, LocalDateTime> colEnd;
 
     @FXML
     private TableColumn<PromoCode, Integer> colMinValue;
@@ -54,10 +57,10 @@ public class PromoCodeManagementForm implements Initializable {
     private TableColumn<PromoCode, Integer> colSTT;
 
     @FXML
-    private TableColumn<PromoCode, Date> colStart;
+    private TableColumn<PromoCode, LocalDateTime> colStart;
 
     @FXML
-    private TableColumn<PromoCode, String> colStatus;
+    private TableColumn<PromoCode, PromoCode.codeStatus> colStatus;
 
     @FXML
     private BorderPane mainPane;
@@ -158,37 +161,40 @@ public class PromoCodeManagementForm implements Initializable {
             }
         });
 
-        colStart.setCellFactory(column -> new TableCell<PromoCode, Date>() {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        colStart.setCellFactory(column -> new TableCell<PromoCode, LocalDateTime>() {
+            //format into d/m/y
+            private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
             @Override
-            protected void updateItem(Date item, boolean empty) {
+            protected void updateItem(LocalDateTime item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(sdf.format(item));
+                    setText(formatter.format(item));
                     setStyle("-fx-alignment: CENTER;");
                 }
             }
         });
 
-        colEnd.setCellFactory(column -> new TableCell<PromoCode, Date>() {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        colEnd.setCellFactory(column -> new TableCell<PromoCode, LocalDateTime>() {
+            private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
             @Override
-            protected void updateItem(Date item, boolean empty) {
+            protected void updateItem(LocalDateTime item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(sdf.format(item));
+                    setText(formatter.format(item));
                     setStyle("-fx-alignment: CENTER;");
                 }
             }
         });
 
-        colStatus.setCellFactory(column -> new TableCell<PromoCode, String>() {
+        colStatus.setCellFactory(column -> new TableCell<PromoCode, PromoCode.codeStatus>() {
             @Override
-            protected void updateItem(String status, boolean empty) {
+            protected void updateItem(PromoCode.codeStatus status, boolean empty) {
                 super.updateItem(status, empty);
                 if (empty || status == null) {
                     setGraphic(null);
@@ -197,16 +203,16 @@ public class PromoCodeManagementForm implements Initializable {
                     Label lblStatus = new Label();
                     lblStatus.setStyle("-fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 4 12; -fx-background-radius: 12;");
 
-                    if ("Active".equalsIgnoreCase(status)) {
+                    if (status == PromoCode.codeStatus.Active) {
                         lblStatus.setText("Đang chạy");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #10B981;"); // Xanh lá
-                    } else if ("Paused".equalsIgnoreCase(status)) {
+                    } else if (status == PromoCode.codeStatus.Paused) {
                         lblStatus.setText("Tạm ngưng");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #F59E0B;"); // Vàng cam
-                    } else if ("Upcoming".equalsIgnoreCase(status)) {
+                    } else if (status == PromoCode.codeStatus.Upcoming) {
                         lblStatus.setText("Sắp diễn ra");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #3B82F6;"); // Xanh dương
-                    } else if ("Expired".equalsIgnoreCase(status)) {
+                    } else if (status == PromoCode.codeStatus.Expired) {
                         lblStatus.setText("Đã hết hạn");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #EF4444;"); // Đỏ
                     }
@@ -220,7 +226,7 @@ public class PromoCodeManagementForm implements Initializable {
 
         tblPromoCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                if ("Active".equalsIgnoreCase(newValue.getStatus())) {
+                if ("Active".equalsIgnoreCase(String.valueOf(newValue.getStatus()))) {
                     btnToggleStatus.setText("🚫 Tạm ngưng");
                     btnToggleStatus.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
                 } else {
@@ -263,7 +269,7 @@ public class PromoCodeManagementForm implements Initializable {
                 }
 
                 String statusVN = "";
-                String rawStatus = promoCode.getStatus();
+                String rawStatus = String.valueOf(promoCode.getStatus());
                 if (rawStatus != null) {
                     if ("Active".equalsIgnoreCase(rawStatus)) statusVN = "đang chạy";
                     else if ("Paused".equalsIgnoreCase(rawStatus)) statusVN = "tạm ngưng";
@@ -334,7 +340,7 @@ public class PromoCodeManagementForm implements Initializable {
             return;
         }
 
-        String currentStatus = selected.getStatus();
+        String currentStatus = String.valueOf(selected.getStatus());
 
         if ("Expired".equalsIgnoreCase(currentStatus)) {
             Others.showAlert(mainPane, "Mã này đã hết hạn, không thể tiếp tục!", true);
@@ -345,7 +351,7 @@ public class PromoCodeManagementForm implements Initializable {
         String actionName = "Active".equals(newStatus) ? "Kích hoạt" : "Tạm ngưng";
 
         if (Others.showCustomConfirm("Xác nhận", "Bạn có chắc muốn " + actionName + " mã giảm giá: " + selected.getCode() + "?", "Đồng ý", "Hủy")) {
-            if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), newStatus)) {
+            if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), PromoCode.codeStatus.valueOf(newStatus))) {
                 Others.showAlert(mainPane, "Đã " + actionName + " thành công!", false);
                 loadTable();
             } else {

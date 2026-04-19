@@ -1,6 +1,7 @@
 package GUI.Staff;
 
 
+import EntityDTO.Order;
 import Util.Others;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -49,28 +50,21 @@ public class BillManagementForm{
     private TableColumn<EntityDTO.Order, java.time.LocalDateTime> colProcessTime;
 
     @FXML
-    private TableColumn<EntityDTO.Order, Integer> col_CustomerID;
-
-    @FXML
     private TableColumn<EntityDTO.Order, String> col_CustomerName;
 
     @FXML
     private TableColumn<EntityDTO.Order, Integer> col_OrderID;
 
     @FXML
-    private TableColumn<EntityDTO.Order, String> col_OrderStatus;
+    private TableColumn<EntityDTO.Order, EntityDTO.Order.orderStatus> col_OrderStatus;
 
     @FXML
     private TableColumn<EntityDTO.Order, String> col_OrderType;
 
     @FXML
-    private TableColumn<EntityDTO.Order, String> col_OrderPayment;
-
-    @FXML
     private TableColumn<EntityDTO.Order, String> col_PhoneCustomer;
 
-    @FXML
-    private TableColumn<EntityDTO.Order, Integer> col_StaffID;
+
 
     @FXML
     private BorderPane mainPane;
@@ -159,8 +153,27 @@ public class BillManagementForm{
         //only use for those 2 because the naming of the getters in Order concidently
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
         col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        col_OrderStatus.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, EntityDTO.Order.orderStatus>() {
+            @Override
+            protected void updateItem(EntityDTO.Order.orderStatus item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    switch (item) {
+                        case Created: setText("Mới tạo"); break;
+                        case Waiting_for_validation: setText("Chờ xác nhận"); break;
+                        case Processing: setText("Đang xử lý"); break;
+                        case Delivering: setText("Đang giao hàng"); break;
+                        case Finished: setText("Đã hoàn thành"); break;
+                        case Cancelled: setText("Đã hủy"); break;
+                        default: setText(item.name());
+                    }
+                }
+            }
+        });
+
         col_OrderType.setCellValueFactory(new PropertyValueFactory<>("type"));
-        col_OrderPayment.setCellValueFactory(new PropertyValueFactory<>("payment"));
 
         //same thing as all the methods below
         //albeit modified to format the date
@@ -186,20 +199,6 @@ public class BillManagementForm{
             return new SimpleStringProperty("Name unspecified.");
         });
 
-        col_StaffID.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getStaff() != null) {
-                return new SimpleObjectProperty<>(cellData.getValue().getStaff().getId());
-            }
-            return new SimpleObjectProperty<>(null);
-        });
-
-        col_CustomerID.setCellValueFactory(cellData -> {
-            if (cellData.getValue().getCustomer() != null && cellData.getValue().getCustomer().getId() > 0) {
-                return new SimpleObjectProperty<>(cellData.getValue().getCustomer().getId());
-            }
-            return new SimpleObjectProperty<>(null);
-        });
-
         col_CustomerName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getCustomer() != null) {
                 return new SimpleStringProperty(cellData.getValue().getCustomer().getName());
@@ -215,17 +214,13 @@ public class BillManagementForm{
         });
 
         //css
-        col_CustomerID.setStyle("-fx-alignment: CENTER;");
         col_OrderID.setStyle("-fx-alignment: CENTER;");
-        col_CustomerName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+        col_CustomerName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         col_OrderStatus.setStyle("-fx-alignment: CENTER;");
         col_PhoneCustomer.setStyle("-fx-alignment: CENTER;");
-        colProcessStaffName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+        colProcessStaffName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         colProcessTime.setStyle("-fx-alignment: CENTER;");
-        col_StaffID.setStyle("-fx-alignment: CENTER;");
-        col_OrderType.setStyle("-fx-alignment: CENTER;");
-        col_OrderPayment.setStyle("-fx-alignment: CENTER;");
-    }
+        col_OrderType.setStyle("-fx-alignment: CENTER;");}
 
     private void search(){
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {

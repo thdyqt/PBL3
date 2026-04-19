@@ -47,7 +47,7 @@ public class CategoryController implements Initializable, IContentArea {
     @FXML private Label   lblProductCount;
     @FXML private Label   lblStatus;
     @FXML private Label   lblCount;
-
+    @FXML private CheckBox chkShowInactive;
     @FXML private TableView<Product>           tblProduct;
     @FXML private TableColumn<Product, Integer> colSTT;
     @FXML private TableColumn<Product, Integer> colProductID;
@@ -61,7 +61,7 @@ public class CategoryController implements Initializable, IContentArea {
     private ObservableList<Category> masterCategory = FXCollections.observableArrayList();
     private FilteredList<Category>   filteredCategory;
     private ObservableList<Product>  productList    = FXCollections.observableArrayList();
-
+    private boolean showingInactive = false;
     // ===== INITIALIZE =====
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -93,15 +93,28 @@ public class CategoryController implements Initializable, IContentArea {
 
     // ===== LOAD DANH MỤC =====
     private void loadCategories() {
-        List<Category> listFromDB = CategoryData.getAll();
+        List<Category> listFromDB = showingInactive
+                ? CategoryData.getInactiveCategories()  // ← danh mục đã ngừng
+                : CategoryData.getAll();                 // ← danh mục đang hoạt động
+
         masterCategory.setAll(listFromDB);
         filteredCategory = new FilteredList<>(masterCategory, b -> true);
         SortedList<Category> sortedData = new SortedList<>(filteredCategory);
         lvCategory.setItems(sortedData);
         lblCount.setText(masterCategory.size() + " danh mục");
-        lblStatus.setText("Tải dữ liệu thành công!");
     }
+    @FXML
+    private void handleShowInactive() {
+        showingInactive = chkShowInactive.isSelected();
 
+        if (showingInactive) {
+            btnStopCategory.setText("✅ Bán lại");
+        } else {
+            btnStopCategory.setText("⛔ Ngừng");
+        }
+
+        loadCategories();
+    }
     // ===== TÌM KIẾM DANH MỤC =====
     private void setupSearch() {
         txtSearchCategory.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -246,29 +259,57 @@ public class CategoryController implements Initializable, IContentArea {
     private void handleStopCategory() {
         Category selected = lvCategory.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("⚠️ Vui lòng chọn danh mục cần ngừng kinh doanh!");
+            showAlert(showingInactive ? "⚠️ Vui lòng chọn danh mục cần bán lại!" :
+                    "⚠️ Vui lòng chọn danh mục bán muốn ngừng kinh doanh!");
+
             return;
         }
+        if(showingInactive){
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Xác nhận");
+            confirm.setHeaderText("Kinh doanh lại danh mục?");
+            confirm.setContentText("Bạn có chắc muốn kinh doanh lại: "+ selected.getCategoryName() +" ?");
+            confirm.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    String result = CategoryBusiness.restartBusiness(selected.getCategoryID());
+                    if (result.equals("success")) {
+                        showAlert("✅ Kinh doanh lại thành công!");
+                        productList.clear();
+                        loadCategories();
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Xác nhận");
-        confirm.setHeaderText("Ngừng kinh doanh danh mục?");
-        confirm.setContentText("Bạn có chắc muốn ngừng: " + selected.getCategoryName() + "?");
+                        lblCategoryTitle.setText("Chọn danh mục để xem sản phẩm");
+                        lblProductCount.setText("");
 
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                String result = CategoryBusiness.stopBusiness(selected.getCategoryID());
-                if (result.equals("success")) {
-                    showAlert("✅ Ngừng kinh doanh thành công!");
-                    loadCategories();
-                    tblProduct.getItems().clear();
-                    lblCategoryTitle.setText("Chọn danh mục để xem sản phẩm");
-                    lblProductCount.setText("");
-                } else {
-                    showAlert("❌ " + result);
+                    } else {
+                        showAlert("❌ " + result);
+
+                    }
                 }
-            }
-        });
+            });
+        } else{
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Xác nhận");
+            confirm.setHeaderText("Ngừng kinh doanh danh mục?");
+            confirm.setContentText("Bạn có chắc muốn ngừng: " + selected.getCategoryName() + "?");
+
+            confirm.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    String result = CategoryBusiness.stopBusiness(selected.getCategoryID());
+                    if (result.equals("success")) {
+                        showAlert("✅ Ngừng kinh doanh thành công!");
+                        productList.clear();
+                        loadCategories();
+
+                        lblCategoryTitle.setText("Chọn danh mục để xem sản phẩm");
+                        lblProductCount.setText("");
+                        switchForm("categoryView.fxml");
+                    } else {
+                        showAlert("❌ " + result);
+
+                    }
+                }
+            });}
+
     }
 
 

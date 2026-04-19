@@ -10,9 +10,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.w3c.dom.Entity;
 
 import java.net.URL;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 public class PromoCodeDialogController implements Initializable {
@@ -29,7 +31,7 @@ public class PromoCodeDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cbbDiscountType.setItems(FXCollections.observableArrayList("PERCENT", "AMOUNT"));
+        cbbDiscountType.setItems(FXCollections.observableArrayList("Percent", "Amount"));
 
         Others.setMaxLength(txtCode, 20);
         Others.setMaxLength(txtDiscountValue, 10);
@@ -66,7 +68,7 @@ public class PromoCodeDialogController implements Initializable {
         txtCode.setEditable(false);
         txtDiscountValue.setText(String.valueOf(promo.getDiscountValue()));
         txtMinOrderValue.setText(String.valueOf(promo.getMinOrderValue()));
-        cbbDiscountType.setValue(promo.getDiscountType());
+        cbbDiscountType.setValue(String.valueOf(promo.getDiscountType()));
 
         if (promo.getValidFrom() != null) dpValidFrom.setValue(promo.getValidFrom().toLocalDate());
         if (promo.getValidTo() != null) dpValidTo.setValue(promo.getValidTo().toLocalDate());
@@ -77,13 +79,13 @@ public class PromoCodeDialogController implements Initializable {
     @FXML
     void btnSaveClick(ActionEvent event) {
         String code = txtCode.getText().trim();
-        String type = cbbDiscountType.getValue();
+        PromoCode.codeType type = PromoCode.codeType.valueOf(cbbDiscountType.getValue());
         String valueStr = txtDiscountValue.getText().trim();
         String minStr = txtMinOrderValue.getText().trim();
         String desc = txtDescription.getText().trim();
 
-        Date fromDate = dpValidFrom.getValue() != null ? Date.valueOf(dpValidFrom.getValue()) : null;
-        Date toDate = dpValidTo.getValue() != null ? Date.valueOf(dpValidTo.getValue()) : null;
+        LocalDateTime fromDate = dpValidFrom.getValue() != null ? dpValidFrom.getValue().atStartOfDay() : null;
+        LocalDateTime toDate = dpValidTo.getValue() != null ? dpValidTo.getValue().atTime(23, 59, 59) : null;
 
         if (currentPromo != null) {
             boolean isCodeUnchanged = code.equals(currentPromo.getCode());
@@ -111,13 +113,13 @@ public class PromoCodeDialogController implements Initializable {
         int value = Integer.parseInt(valueStr);
         int minOrder = Integer.parseInt(minStr);
 
-        if ("PERCENT".equals(type) && value > 100) {
+        if (type == PromoCode.codeType.Percent && value > 100) {
             Others.showAlert(mainPanel, "Giảm theo phần trăm không được vượt quá 100%!", true);
             txtDiscountValue.requestFocus();
             return;
         }
 
-        if (fromDate != null && toDate != null && fromDate.after(toDate)) {
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
             Others.showAlert(mainPanel, "Ngày bắt đầu không được lớn hơn ngày kết thúc!", true);
             return;
         }

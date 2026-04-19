@@ -80,7 +80,7 @@ public class OrderManagementForm implements Initializable {
         ));
 
         colTotal.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%,d đ", cellData.getValue().getTotalAmount()))
+                new SimpleStringProperty(String.format("%,d đ", cellData.getValue().getFinalAmount()))
         );
 
 // CSS cho cột

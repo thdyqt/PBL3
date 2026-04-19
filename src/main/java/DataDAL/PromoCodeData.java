@@ -12,11 +12,38 @@ import java.util.List;
 
 public class PromoCodeData {
     public static PromoCode mapResultSet(ResultSet rs) throws SQLException {
-        return new PromoCode(rs.getString("Code"),
-                rs.getString("Description"), rs.getInt("DiscountValue"),
-                rs.getString("DiscountType"), rs.getInt("MinOrderValue"),
-                rs.getDate("ValidFrom"), rs.getDate("ValidTo"),
-                rs.getString("status"));
+        String type = rs.getString("DiscountType");
+        String status = rs.getString("status");
+
+        return new PromoCode(
+                rs.getString("Code"),
+                rs.getString("Description"),
+                rs.getInt("DiscountValue"),
+                PromoCode.codeType.valueOf(type),
+                rs.getInt("MinOrderValue"),
+                rs.getTimestamp("ValidFrom").toLocalDateTime(),
+                rs.getTimestamp("ValidTo").toLocalDateTime(),
+                PromoCode.codeStatus.valueOf(status)
+        );
+    }
+
+    public static PromoCode getPromoCode(String code){
+        String sql = "SELECT * FROM PromoCode WHERE BINARY Code = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setString(1, code);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi getPromoCode: " + e.getMessage());
+        }
+        return null;
     }
 
     public static List<PromoCode> getAllPromoCodes(){
@@ -61,11 +88,11 @@ public class PromoCodeData {
             stmt.setString(1, p.getCode());
             stmt.setString(2, p.getDescription());
             stmt.setInt(3, p.getDiscountValue());
-            stmt.setString(4, p.getDiscountType());
+            stmt.setString(4, p.getDiscountType().name());
             stmt.setInt(5, p.getMinOrderValue());
-            stmt.setDate(6, p.getValidFrom());
-            stmt.setDate(7, p.getValidTo());
-            stmt.setString(8, p.getStatus());
+            stmt.setTimestamp(6, java.sql.Timestamp.valueOf(p.getValidFrom()));
+            stmt.setTimestamp(7, java.sql.Timestamp.valueOf(p.getValidTo()));;
+            stmt.setString(8, p.getStatus().name());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -84,11 +111,11 @@ public class PromoCodeData {
 
             stmt.setString(1, p.getDescription());
             stmt.setInt(2, p.getDiscountValue());
-            stmt.setString(3, p.getDiscountType());
+            stmt.setString(3, p.getDiscountType().name());
             stmt.setInt(4, p.getMinOrderValue());
-            stmt.setDate(5, p.getValidFrom());
-            stmt.setDate(6, p.getValidTo());
-            stmt.setString(7, p.getStatus());
+            stmt.setTimestamp(5, java.sql.Timestamp.valueOf(p.getValidFrom()));
+            stmt.setTimestamp(6, java.sql.Timestamp.valueOf(p.getValidTo()));
+            stmt.setString(7, p.getStatus().name());
             stmt.setString(8, p.getCode());
 
             return stmt.executeUpdate() > 0;

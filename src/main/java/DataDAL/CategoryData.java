@@ -176,6 +176,18 @@ public class CategoryData {
         }
         return false;
     }
+    public static List<Category> getInactiveCategories() {
+        List<Category> list = new ArrayList<>();
+        String sql = "SELECT * FROM Category WHERE status = 'Inactive'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) list.add(mapResultSet(rs));
+        } catch (SQLException e) {
+            System.err.println("Lỗi getInactiveCategories: " + e.getMessage());
+        }
+        return list;
+    }
 
     // ===== KIỂM TRA TRẠNG THÁI =====
     public static boolean isInactive(int categoryID) {
