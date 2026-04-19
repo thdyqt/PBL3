@@ -59,6 +59,10 @@ public class ProductController implements Initializable, IContentArea {
         loadCategories();
         loadProducts();
         setupFiltering();
+
+        if (btnAdd != null) Others.playButtonAnimation(btnAdd);
+        if (btnEdit != null) Others.playButtonAnimation(btnEdit);
+        if (btnDisable != null) Others.playButtonAnimation(btnDisable);
         Others.animateTableRows(tblProduct);
     }
 
@@ -92,16 +96,16 @@ public class ProductController implements Initializable, IContentArea {
             private final ImageView iv = new ImageView();
             @Override protected void updateItem(String imgName, boolean empty) {
                 super.updateItem(imgName, empty);
-                if (empty) { setGraphic(null); return; }
-                iv.setFitWidth(50); iv.setFitHeight(50); iv.setPreserveRatio(true);
-                String path = (imgName == null || imgName.isEmpty()) ? "default.png" : imgName;
-                if (!imageCache.containsKey(path)) {
-                    try {
-                        String url = getClass().getResource("/images/" + path).toExternalForm();
-                        imageCache.put(path, new Image(url, 50, 50, true, true, true));
-                    } catch (Exception e) { imageCache.put(path, null); }
+                if (empty) {
+                    setGraphic(null);
+                    return;
                 }
-                iv.setImage(imageCache.get(path));
+
+                iv.setFitWidth(50);
+                iv.setFitHeight(50);
+                iv.setPreserveRatio(true);
+
+                Others.loadImage(imgName, iv, 50, 50);
                 setGraphic(iv);
             }
         });

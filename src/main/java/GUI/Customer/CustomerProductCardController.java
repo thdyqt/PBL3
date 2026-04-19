@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 public class CustomerProductCardController {
-
     @FXML private VBox cardBox;
     @FXML private ImageView imgProduct;
     @FXML private Label lblName;
