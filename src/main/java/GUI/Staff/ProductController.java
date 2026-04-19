@@ -22,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +83,7 @@ public class ProductController implements Initializable, IContentArea {
                 setText(empty ? null : (item ? "✅ Còn hàng" : "❌ Hết hàng"));
             }
         });
-        colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
+
         colImage.setCellFactory(c -> new TableCell<>() {
             private final ImageView iv = new ImageView();
             @Override protected void updateItem(String imgName, boolean empty) {
@@ -162,23 +163,26 @@ public class ProductController implements Initializable, IContentArea {
             }
         }
     }
-    private void switchForm(String fxmlFileName) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
-            Node node = loader.load();
-            Object controller = loader.getController();
-            if (controller instanceof IContentArea ctrl) {
-                ctrl.setContentArea(this.contentArea);
-            }
 
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(node);
-        } catch (Exception e) {
-            System.out.println("Lỗi khi tải trang: " + fxmlFileName);
-            e.printStackTrace();
-        }
-    }
     @FXML private void handleBack() {
-        switchForm("ProductMenu.fxml");
+        if (contentArea != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/ProductMenu.fxml"));
+                Node view = loader.load();
+
+                Object controller = loader.getController();
+                if (controller instanceof IContentArea) {
+                    ((IContentArea) controller).setContentArea(contentArea);
+                }
+
+                contentArea.getChildren().setAll(view);
+
+            } catch (IOException e) {
+                System.err.println("❌ Lỗi khi quay lại màn hình trước: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("⚠️ Cảnh báo: contentArea đang bị Null, không thể chuyển trang!");
+        }
     }
 }
