@@ -5,6 +5,7 @@ import EntityDTO.PromoCode;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,21 +26,20 @@ public class PromoCodeBusiness {
         return activeList;
     }
 
-    public static int addPromoCode(String code, String description, int value, String type, int minOrder, Date fromDate, Date toDate) {
+    public static int addPromoCode(String code, String description, int value, PromoCode.codeType type, int minOrder, LocalDateTime fromDate, LocalDateTime toDate) {
         if (PromoCodeData.isPromoCodeExist(code)) return -1;
 
-        String status = "Active";
+        PromoCode.codeStatus status = PromoCode.codeStatus.Active;
 
         if (fromDate != null) {
-            LocalDate localFromDate = fromDate.toLocalDate();
-            LocalDate today = LocalDate.now();
+            LocalDateTime now = LocalDateTime.now();
 
-            if (localFromDate.isAfter(today)) {
-                status = "Upcoming";
-            } else if (toDate != null && toDate.toLocalDate().isBefore(today)) {
-                status = "Expired";
+            if (fromDate.isAfter(now)) {
+                status = PromoCode.codeStatus.Upcoming;
+            } else if (toDate != null && toDate.isBefore(now)) {
+                status = PromoCode.codeStatus.Expired;
             } else {
-                status = "Active";
+                status = PromoCode.codeStatus.Active;
             }
         }
 
@@ -50,19 +50,18 @@ public class PromoCodeBusiness {
         return 0;
     }
 
-    public static int updatePromoCode(String code, String description, int value, String type, int minOrder, Date fromDate, Date toDate) {
-        String status = "Active";
+    public static int updatePromoCode(String code, String description, int value, PromoCode.codeType type, int minOrder, LocalDateTime fromDate, LocalDateTime toDate) {
+        PromoCode.codeStatus status = PromoCode.codeStatus.Active;
 
         if (fromDate != null) {
-            LocalDate localFromDate = fromDate.toLocalDate();
-            LocalDate today = LocalDate.now();
+            LocalDateTime now = LocalDateTime.now();
 
-            if (localFromDate.isAfter(today)) {
-                status = "Upcoming";
-            } else if (toDate != null && toDate.toLocalDate().isBefore(today)) {
-                status = "Expired";
+            if (fromDate.isAfter(now)) {
+                status = PromoCode.codeStatus.Upcoming;
+            } else if (toDate != null && toDate.isBefore(now)) {
+                status = PromoCode.codeStatus.Expired;
             } else {
-                status = "Active";
+                status = PromoCode.codeStatus.Active;
             }
         }
 
@@ -73,9 +72,9 @@ public class PromoCodeBusiness {
         return 0;
     }
 
-    public static boolean updatePromoStatus(String code, String status) {
-        if (PromoCodeData.updatePromoStatus(code, status)) {
-            LogBusiness.saveLog("Thay đổi trạng thái của mã giảm giá " + code + " thành " + status);
+    public static boolean updatePromoStatus(String code, PromoCode.codeStatus status) {
+        if (PromoCodeData.updatePromoStatus(code, status.name())) {
+            LogBusiness.saveLog("Thay đổi trạng thái của mã giảm giá " + code + " thành " + status.name());
             return true;
         }
         return false;

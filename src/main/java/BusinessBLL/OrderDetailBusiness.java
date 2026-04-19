@@ -132,9 +132,5 @@ public class OrderDetailBusiness {
         }else {
             return "ERROR: failure to update order with id: " + id_Order;
         }
-
     }
-
-
-
 }

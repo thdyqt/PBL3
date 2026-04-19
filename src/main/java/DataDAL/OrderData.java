@@ -13,7 +13,8 @@ import java.util.List;
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT o.*, s.full_name AS staff_name, c.full_name AS customer_name, c.phone AS customer_phone " +
+        String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, " +
+                "c.full_name AS customer_name, c.phone AS customer_phone, c.point AS customer_point " +
                 "FROM Orders o " +
                 "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
                 "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang";
@@ -30,10 +31,15 @@ public class OrderData {
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
                 order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+                order.setSubTotal(rs.getInt("subtotal"));
+                order.setDiscountAmount(rs.getInt("discount_amount"));
+                order.setAppliedCode(rs.getString("applied_promo_code"));
+                order.setFinalAmount(rs.getInt("final_total"));
 
                 Staff staff = new Staff();
                 staff.setId(rs.getInt("id_Staff"));
                 staff.setName(rs.getString("staff_name"));
+                staff.setUser(rs.getString("staff_username"));
                 order.setStaff(staff);
 
                 int id_Customer = rs.getInt("id_Customer");
@@ -42,6 +48,18 @@ public class OrderData {
                     customer.setId(id_Customer);
                     customer.setName(rs.getString("customer_name"));
                     customer.setPhone(rs.getString("customer_phone"));
+                    int customerPoint = rs.getInt("customer_point");
+                    if (customerPoint < 100) {
+                        customer.setCustomer_rank(Customer.rank.Bronze);
+                    } else if (customerPoint < 500) {
+                        customer.setCustomer_rank(Customer.rank.Silver);
+                    } else if (customerPoint < 1000) {
+                        customer.setCustomer_rank(Customer.rank.Gold);
+                    } else if (customerPoint < 2000) {
+                        customer.setCustomer_rank(Customer.rank.Diamond);
+                    } else {
+                        customer.setCustomer_rank(Customer.rank.Emerald);
+                    }
                     order.setCustomer(customer);
                 }
 
@@ -62,7 +80,7 @@ public class OrderData {
         //foreign keys are in here
         //specifically id_Staff and id_Customer
         //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (
             Connection conn = DBConnection.getConnection();
@@ -82,6 +100,12 @@ public class OrderData {
             stmt.setString(4, order.getStatus().name());
             stmt.setString(5, order.getType().name());
             stmt.setString(6, order.getPayment().name());
+
+            stmt.setInt(7, order.getSubTotal());
+            stmt.setInt(8, order.getDiscountAmount());
+            stmt.setString(9, order.getAppliedCode());
+            stmt.setInt(10, order.getFinalAmount());
+
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -103,7 +127,7 @@ public class OrderData {
 
     //mutiple search methods (ID/Staff/Customer)
     public static Order searchOrder_ByID(int id_Order){
-        String sql = "SELECT o.*, s.full_name AS staff_name, c.full_name AS customer_name, c.phone AS customer_phone " +
+        String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, c.full_name AS customer_name, c.phone AS customer_phone " +
                 "FROM Orders o " +
                 "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
                 "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang " +
@@ -123,10 +147,15 @@ public class OrderData {
                 order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
                 order.setType(Order.orderType.valueOf(rs.getString("type")));
                 order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
+                order.setSubTotal(rs.getInt("subtotal"));
+                order.setDiscountAmount(rs.getInt("discount_amount"));
+                order.setAppliedCode(rs.getString("applied_promo_code"));
+                order.setFinalAmount(rs.getInt("final_total"));
 
                 Staff staff = new Staff();
                 staff.setId(rs.getInt("id_Staff"));
                 staff.setName(rs.getString("staff_name"));
+                staff.setUser(rs.getString("staff_username"));
                 order.setStaff(staff);
 
                 int customerId = rs.getInt("id_Customer");
@@ -149,30 +178,55 @@ public class OrderData {
 
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
-        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ? WHERE id_Order = ?";
+        // 1. Updated SQL string with the 3 new columns added before the WHERE clause
+        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ? WHERE id_Order = ?";
 
         try (
-            Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)
+                Connection conn = DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
-            //foreign keys
+            // Parameters 1, 2, 3: Timestamp and Foreign Keys
             stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
             stmt.setInt(2, order.getStaff().getId());
 
             if (order.getCustomer() != null) {
                 stmt.setInt(3, order.getCustomer().getId());
             } else {
-
                 stmt.setNull(3, java.sql.Types.INTEGER);
             }
 
-            //the id of the Order that need to be updated and its status
+            // Parameters 4, 5, 6: Enums
             stmt.setString(4, order.getStatus().name());
             stmt.setString(5, order.getType().name());
             stmt.setString(6, order.getPayment().name());
 
-            stmt.setInt(7, order.getId());
+            // Parameters 7, 8, 9, 10: The new math values
+            stmt.setInt(7, order.getSubTotal());
+            stmt.setInt(8, order.getDiscountAmount());
+            stmt.setString(9, order.getAppliedCode());
+            stmt.setInt(10, order.getFinalAmount());
 
+            // Parameter 11: The Order ID used in the WHERE clause
+            stmt.setInt(11, order.getId());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean deleteOrder(int OrderID){
+        String sql = "DELETE FROM Orders WHERE id_Order = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, OrderID);
+
+            // Returns true if 1 or more rows were deleted
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
