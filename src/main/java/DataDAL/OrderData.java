@@ -13,7 +13,8 @@ import java.util.List;
 public class OrderData {
     public static List<Order> getAllOrders(){
         List<Order> list = new ArrayList<>();
-        String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, c.full_name AS customer_name, c.phone AS customer_phone " +
+        String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, " +
+                "c.full_name AS customer_name, c.phone AS customer_phone, c.point AS customer_point " +
                 "FROM Orders o " +
                 "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
                 "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang";
@@ -47,6 +48,18 @@ public class OrderData {
                     customer.setId(id_Customer);
                     customer.setName(rs.getString("customer_name"));
                     customer.setPhone(rs.getString("customer_phone"));
+                    int customerPoint = rs.getInt("customer_point");
+                    if (customerPoint < 100) {
+                        customer.setCustomer_rank(Customer.rank.Bronze);
+                    } else if (customerPoint < 500) {
+                        customer.setCustomer_rank(Customer.rank.Silver);
+                    } else if (customerPoint < 1000) {
+                        customer.setCustomer_rank(Customer.rank.Gold);
+                    } else if (customerPoint < 2000) {
+                        customer.setCustomer_rank(Customer.rank.Diamond);
+                    } else {
+                        customer.setCustomer_rank(Customer.rank.Emerald);
+                    }
                     order.setCustomer(customer);
                 }
 
