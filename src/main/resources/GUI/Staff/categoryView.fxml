@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="650" prefWidth="1050" style="-fx-background-color: #1E0F05;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.CategoryController">
+
+    <center>
+        <VBox spacing="0" style="-fx-background-color: transparent;">
+
+            <!-- ══ HEADER ══ -->
+            <StackPane prefHeight="80">
+                <Region style="-fx-background-color: linear-gradient(to right, #2C1A0E, #3D2210, #2C1A0E);                                -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0, 0, 4);" />
+                <VBox alignment="TOP_CENTER">
+                    <Region prefHeight="4" prefWidth="1050" style="-fx-background-color: linear-gradient(to right,                                    transparent, #8B5A0A, #D4891A, #F2B950, #D4891A, #8B5A0A, transparent);" />
+                </VBox>
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <padding><Insets left="30" right="30" /></padding>
+                    <Label style="-fx-font-size: 30px;" text="📂" />
+                    <VBox spacing="2">
+                        <Label prefHeight="42.0" prefWidth="218.0" style="-fx-font-size: 26px; -fx-font-weight: bold;                                       -fx-text-fill: #F5DEB3; -fx-font-family: 'Serif';                                       -fx-effect: dropshadow(gaussian, rgba(210,140,20,0.5), 8, 0, 0, 2);" text="Quản Lí Danh Mục" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #8A6040;                                       -fx-font-family: 'Serif'; -fx-font-style: italic;" text="DUT-Bakery  ·  Danh mục &amp; Sản phẩm" />
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button fx:id="btnBack" mnemonicParsing="false" onAction="#handleBack" onMouseClicked="#handleBack" prefHeight="29.0" prefWidth="114.0" style="-fx-background-color: linear-gradient(to bottom, #D4891A, #A06010);" text="Quay lại">
+                        <font><Font name="Cascadia Mono Regular" size="15.0" /></font>
+                    </Button>
+                    <Label style="-fx-font-size: 20px; -fx-opacity: 0.5;" text="🧁  🍰  🥐" />
+                </HBox>
+            </StackPane>
+
+            <!-- ══ MAIN CONTENT ══ -->
+            <HBox spacing="0" VBox.vgrow="ALWAYS">
+
+                <!-- ══ LEFT PANEL — DANH MỤC ══ -->
+                <VBox prefWidth="280" spacing="0" style="-fx-background-color: #1A0C04;                              -fx-border-color: transparent #3D2210 transparent transparent;                              -fx-border-width: 0 1 0 0;">
+
+                    <!-- Search + Toolbar -->
+                    <VBox spacing="10" style="-fx-background-color: linear-gradient(to bottom, #2A1608, #221005);                                  -fx-border-color: transparent transparent #3D2210 transparent;                                  -fx-border-width: 0 0 1 0;">
+                        <padding><Insets bottom="12" left="15" right="15" top="12" /></padding>
+
+                        <!-- Search -->
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label style="-fx-font-size: 13px; -fx-opacity: 0.6;" text="🔍" />
+                            <TextField fx:id="txtSearchCategory" prefHeight="34" promptText="Tìm danh mục..." style="-fx-background-color: #1A0C04;                                               -fx-border-color: #5C3A1E; -fx-border-width: 1;                                               -fx-border-radius: 16; -fx-background-radius: 16;                                               -fx-text-fill: #F5DEB3; -fx-prompt-text-fill: #4A2810;                                               -fx-font-size: 12px; -fx-padding: 0 12 0 12;                                               -fx-font-family: 'Serif';" HBox.hgrow="ALWAYS" />
+                        </HBox>
+
+                        <!-- Toolbar buttons -->
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Button fx:id="btnStopCategory" onAction="#handleStopCategory" onMouseClicked="#handleStopCategory" prefHeight="30" style="-fx-background-color: linear-gradient(to bottom, #7A4A10, #4E2D06);                                            -fx-text-fill: #F5D8A0; -fx-font-size: 11px; -fx-font-weight: bold;                                            -fx-font-family: 'Serif'; -fx-background-radius: 14;                                            -fx-border-color: #C8880A; -fx-border-width: 1;                                            -fx-border-radius: 14; -fx-cursor: hand;" text="⛔ Ngừng" HBox.hgrow="ALWAYS" />
+                            <Button fx:id="btnEditCategory" onAction="#handleEditCategory" onMouseClicked="#handleEditCategory" prefHeight="30" style="-fx-background-color: linear-gradient(to bottom, #4A7A8A, #2D5A6A);                                            -fx-text-fill: #E0F2F8; -fx-font-size: 11px; -fx-font-weight: bold;                                            -fx-font-family: 'Serif'; -fx-background-radius: 14;                                            -fx-border-color: #6AAFCC; -fx-border-width: 1;                                            -fx-border-radius: 14; -fx-cursor: hand;" text="✏ Sửa" HBox.hgrow="ALWAYS" />
+                            <Button fx:id="btnAddCategory" onAction="#handleAddCategory" onMouseClicked="#handleAddCategory" prefHeight="30" style="-fx-background-color: linear-gradient(to bottom, #D4891A, #A06010);                                            -fx-text-fill: #FFF5E0; -fx-font-size: 11px; -fx-font-weight: bold;                                            -fx-font-family: 'Serif'; -fx-background-radius: 14;                                            -fx-border-color: #F2B950; -fx-border-width: 1;                                            -fx-border-radius: 14; -fx-cursor: hand;" text="+ Thêm" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+
+                    <!-- Danh sách danh mục -->
+                    <ListView fx:id="lvCategory" style="-fx-background-color: transparent;                                      -fx-border-color: transparent;                                      -fx-control-inner-background: transparent;" VBox.vgrow="ALWAYS" />
+                </VBox>
+
+                <!-- ══ RIGHT PANEL — SẢN PHẨM ══ -->
+                <VBox spacing="0" HBox.hgrow="ALWAYS">
+
+                    <!-- Header sản phẩm -->
+                    <HBox alignment="CENTER_LEFT" prefHeight="50" spacing="10" style="-fx-background-color: linear-gradient(to bottom, #2A1608, #221005);                                  -fx-border-color: transparent transparent #3D2210 transparent;                                  -fx-border-width: 0 0 1 0;">
+                        <padding><Insets left="20" right="20" /></padding>
+                        <Label style="-fx-font-size: 14px; -fx-opacity: 0.5;" text="📦" />
+                        <Label fx:id="lblCategoryTitle" style="-fx-font-size: 15px; -fx-font-weight: bold;                                       -fx-text-fill: #F2B950; -fx-font-family: 'Serif';" text="Chọn danh mục để xem sản phẩm" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblProductCount" style="-fx-font-size: 12px; -fx-text-fill: #6B4020;                                       -fx-font-family: 'Serif';" text="" />
+                    </HBox>
+
+                    <!-- Bảng sản phẩm -->
+                    <StackPane VBox.vgrow="ALWAYS">
+                        <Region style="-fx-background-color: linear-gradient(to bottom, #1A0C04, #160A02);" />
+                        <TableView fx:id="tblProduct" style="-fx-background-color: transparent;                                           -fx-control-inner-background: #1E0F05;                                           -fx-control-inner-background-alt: #221205;                                           -fx-table-cell-border-color: #3D2210;                                           -fx-border-color: transparent; -fx-padding: 0;" VBox.vgrow="ALWAYS">
+                            <padding><Insets bottom="10" left="15" right="15" top="10" /></padding>
+                            <columns>
+                                <TableColumn fx:id="colSTT" prefWidth="55" style="-fx-alignment: CENTER;" text="STT" />
+                                <TableColumn fx:id="colProductID" prefWidth="75" style="-fx-alignment: CENTER;" text="Mã SP" />
+                                <TableColumn fx:id="colProductName" prefWidth="200" style="-fx-alignment: CENTER_LEFT;" text="Tên Sản Phẩm" />
+                                <TableColumn fx:id="colProductPrice" prefWidth="120" style="-fx-alignment: CENTER_RIGHT;" text="Giá (VNĐ)" />
+                                <TableColumn fx:id="colQuantity" prefWidth="100" style="-fx-alignment: CENTER;" text="Số Lượng" />
+                                <TableColumn fx:id="colIsAvailable" prefWidth="130" style="-fx-alignment: CENTER;" text="Trạng Thái" />
+                                <TableColumn fx:id="colImage" prefWidth="80" style="-fx-alignment: CENTER;" text="Hình Ảnh" />
+                            </columns>
+                            <placeholder>
+                                <VBox alignment="CENTER" spacing="10">
+                                    <Label style="-fx-font-size: 40px; -fx-opacity: 0.3;" text="📦" />
+                                    <Label style="-fx-font-size: 15px; -fx-text-fill: #5C3A1E;                                                   -fx-font-family: 'Serif'; -fx-font-style: italic;" text="Chọn danh mục để xem sản phẩm" />
+                                </VBox>
+                            </placeholder>
+                        </TableView>
+                    </StackPane>
+                </VBox>
+            </HBox>
+
+            <!-- ══ FOOTER ══ -->
+            <HBox alignment="CENTER_LEFT" prefHeight="36" spacing="8" style="-fx-background-color: linear-gradient(to right, #1A0C04, #2A1608, #1A0C04);                          -fx-border-color: #3D2210 transparent transparent transparent;                          -fx-border-width: 1 0 0 0;">
+                <padding><Insets left="30" right="30" /></padding>
+                <Label style="-fx-text-fill: #D4891A; -fx-font-size: 10px;" text="●" />
+                <Label fx:id="lblStatus" style="-fx-font-size: 12px; -fx-text-fill: #6B4020;                               -fx-font-family: 'Serif'; -fx-font-style: italic;" text="Sẵn sàng" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblCount" style="-fx-font-size: 12px; -fx-text-fill: #6B4020; -fx-font-family: 'Serif';" text="0 danh mục" />
+                <Label style="-fx-text-fill: #3D2210;" text="·" />
+                <Label style="-fx-font-size: 12px; -fx-text-fill: #3D2010;                               -fx-font-family: 'Serif'; -fx-font-style: italic;" text="DUT-Bakery © 2026" />
+            </HBox>
+
+        </VBox>
+    </center>
+</BorderPane>

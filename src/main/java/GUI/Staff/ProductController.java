@@ -12,6 +12,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -81,7 +82,7 @@ public class ProductController implements Initializable, IContentArea {
                 setText(empty ? null : (item ? "✅ Còn hàng" : "❌ Hết hàng"));
             }
         });
-
+        colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
         colImage.setCellFactory(c -> new TableCell<>() {
             private final ImageView iv = new ImageView();
             @Override protected void updateItem(String imgName, boolean empty) {
@@ -161,6 +162,23 @@ public class ProductController implements Initializable, IContentArea {
             }
         }
     }
+    private void switchForm(String fxmlFileName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
+            Node node = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof IContentArea ctrl) {
+                ctrl.setContentArea(this.contentArea);
+            }
 
-    @FXML private void handleBack() { /* Logic quay lại */ }
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(node);
+        } catch (Exception e) {
+            System.out.println("Lỗi khi tải trang: " + fxmlFileName);
+            e.printStackTrace();
+        }
+    }
+    @FXML private void handleBack() {
+        switchForm("ProductMenu.fxml");
+    }
 }

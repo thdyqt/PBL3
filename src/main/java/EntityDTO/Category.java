@@ -18,14 +18,19 @@ public class Category {
     }
 
     // Constructor không có ID (tạo mới, ID do DB tự sinh)
-    public Category(String categoryName,String status) {
-        this(0, categoryName,status);
+    public Category(String categoryName) {
+        this(0, categoryName,"Active");
     }
 
     // ===== GETTERS & SETTERS =====
 
     public int getCategoryID()          { return CategoryID; }
     public void setCategoryID(int id)   { this.CategoryID = id; }
+    public String getStatus(){return status;}
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getCategoryName()     { return categoryName; }
     public void setCategoryName(String categoryName) {

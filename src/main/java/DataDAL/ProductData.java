@@ -157,9 +157,12 @@ public class ProductData {
     }
 
     public static List<Product> getByCategory(int categoryID) {
+
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE CategoryID = ? AND status = 'Active'";
-
+        System.out.println("=== DEBUG getByCategory ===");
+        System.out.println("→ CategoryID đang tìm: " + categoryID);
+        System.out.println("→ SQL: " + sql);
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, categoryID);
