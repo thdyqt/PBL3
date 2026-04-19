@@ -17,6 +17,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -25,20 +26,15 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ProductDetailController implements Initializable {
-    @FXML
-    private ImageView imgProduct;
-    @FXML
-    private Label lblProductName, lblPrice, lblStock, lblDescription, lblIngredients, lblAverageRating, lblReviewStatus;
-    @FXML
-    private Spinner<Integer> spinQuantity;
-    @FXML
-    private Button btnAddToCart, btnSubmitReview;
-    @FXML
-    private TextArea txtReviewComment;
-    @FXML
-    private HBox starRatingContainer;
-    @FXML
-    private VBox paneWriteReview, vboxOtherReviews;
+    @FXML private ImageView imgProduct;
+    @FXML private Text lblProductName, lblPrice, lblStock, lblDescription, lblIngredients, lblAverageRating, lblReviewStatus;
+    @FXML private HBox boxStock;
+
+    @FXML private Spinner<Integer> spinQuantity;
+    @FXML private Button btnAddToCart, btnSubmitReview;
+    @FXML private TextArea txtReviewComment;
+    @FXML private HBox starRatingContainer;
+    @FXML private VBox paneWriteReview, vboxOtherReviews;
 
     private Product currentProduct;
     private int selectedRating = 0;
@@ -48,9 +44,7 @@ public class ProductDetailController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);
         spinQuantity.setValueFactory(valueFactory);
-
         setupStarRatingSystem();
-
         Others.playButtonAnimation(btnAddToCart);
         Others.playButtonAnimation(btnSubmitReview);
     }
@@ -62,14 +56,14 @@ public class ProductDetailController implements Initializable {
         lblPrice.setText(Others.formatPrice(product.getProductPrice()));
         lblDescription.setText(product.getDescription());
         lblIngredients.setText(product.getIngredients());
-
         lblAverageRating.setText(String.format("(%.1f ★)", product.getRating()));
 
         Others.loadImage(product.getImage(), imgProduct, 360, 360);
 
         if (product.getQuantity() <= 0) {
             lblStock.setText("Tạm hết hàng");
-            lblStock.setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: #991B1B; -fx-background-radius: 6; -fx-padding: 4 12;");
+            lblStock.setFill(Color.web("#991B1B"));
+            boxStock.setStyle("-fx-background-color: #FEE2E2; -fx-background-radius: 8; -fx-padding: 5 15;");
             btnAddToCart.setDisable(true);
         }
 
@@ -84,9 +78,7 @@ public class ProductDetailController implements Initializable {
             Label star = new Label("☆");
             star.setStyle("-fx-font-size: 30; -fx-cursor: hand;");
             star.setTextFill(Color.web("#D4891A"));
-
             star.setOnMouseClicked(e -> updateStarUI(ratingValue));
-
             starLabels[i] = star;
             starRatingContainer.getChildren().add(star);
         }
@@ -95,11 +87,8 @@ public class ProductDetailController implements Initializable {
     private void updateStarUI(int rating) {
         this.selectedRating = rating;
         for (int i = 0; i < 5; i++) {
-            if (i < rating) {
-                starLabels[i].setText("★");
-            } else {
-                starLabels[i].setText("☆");
-            }
+            if (i < rating) starLabels[i].setText("★");
+            else starLabels[i].setText("☆");
         }
     }
 
@@ -115,14 +104,14 @@ public class ProductDetailController implements Initializable {
             txtReviewComment.setDisable(true);
             starRatingContainer.setDisable(true);
             lblReviewStatus.setText("Bạn cần mua sản phẩm hoặc đã đánh giá rồi.");
-            lblReviewStatus.setTextFill(Color.RED);
+            lblReviewStatus.setFill(Color.RED);
         } else {
             paneWriteReview.setOpacity(1.0);
             btnSubmitReview.setDisable(false);
             txtReviewComment.setDisable(false);
             starRatingContainer.setDisable(false);
             lblReviewStatus.setText("Cảm ơn bạn đã mua hàng! Hãy để lại đánh giá nhé.");
-            lblReviewStatus.setTextFill(Color.web("#166534"));
+            lblReviewStatus.setFill(Color.web("#166534"));
         }
     }
 
@@ -140,7 +129,6 @@ public class ProductDetailController implements Initializable {
         }
 
         int currentUserId = UserSession.getInstance().getId();
-
         ProductReview newReview = new ProductReview();
         newReview.setProductID(currentProduct.getProductID());
         newReview.setCustomerID(currentUserId);
@@ -151,7 +139,6 @@ public class ProductDetailController implements Initializable {
 
         if ("success".equals(result)) {
             Others.showAlert(lblProductName, "Cảm ơn bạn đã gửi đánh giá!", false);
-
             checkUserReviewPermission();
             txtReviewComment.clear();
             loadExistingReviews();
@@ -162,7 +149,6 @@ public class ProductDetailController implements Initializable {
 
     private void loadExistingReviews() {
         vboxOtherReviews.getChildren().clear();
-
         List<ProductReview> list = ReviewBusiness.getReviewsOfProduct(currentProduct.getProductID());
 
         if (list == null || list.isEmpty()) {
@@ -173,21 +159,23 @@ public class ProductDetailController implements Initializable {
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
         for (ProductReview review : list) {
             VBox reviewBox = new VBox(8);
             reviewBox.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-border-color: #F1F5F9; -fx-border-radius: 10;");
+
             HBox headerBox = new HBox(10);
             headerBox.setAlignment(Pos.CENTER_LEFT);
 
             Label lblName = new Label(review.getCustomerName());
             lblName.setStyle("-fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-font-size: 14;");
 
-            Label lblStars = new Label(getStarsString(review.getRating()));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 5; i++) sb.append(i < review.getRating() ? "★" : "☆");
+            Label lblStars = new Label(sb.toString());
             lblStars.setStyle("-fx-text-fill: #D4891A; -fx-font-size: 14;");
 
             Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS); // Đẩy ngày tháng sang sát lề phải
+            HBox.setHgrow(spacer, Priority.ALWAYS);
 
             Label lblDate = new Label(sdf.format(review.getReviewDate()));
             lblDate.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 12;");
@@ -203,20 +191,9 @@ public class ProductDetailController implements Initializable {
         }
     }
 
-    private String getStarsString(int rating) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            if (i < rating) sb.append("★");
-            else sb.append("☆");
-        }
-        return sb.toString();
-    }
-
     @FXML
     void handleAddToCart(ActionEvent event) {
         int quantity = spinQuantity.getValue();
-        // CartManager.addToCart(currentProduct, quantity);
-
         Others.showAlert(lblProductName, "Đã thêm " + quantity + " " + currentProduct.getProductName() + " vào giỏ hàng!", false);
     }
 
