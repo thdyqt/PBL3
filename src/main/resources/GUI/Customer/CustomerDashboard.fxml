@@ -7,8 +7,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -53,39 +55,46 @@
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <HBox alignment="CENTER" spacing="15.0">
+                <AnchorPane>
+                    <HBox.margin><Insets top="20.0" bottom="20.0" /></HBox.margin>
                     <children>
-                        <Button fx:id="btnHome" mnemonicParsing="false" onAction="#btnHomeClick" prefHeight="45.0" style="-fx-background-color: #EFF6FF; -fx-text-fill: #2563EB; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🏠  Trang chủ">
-                            <cursor><Cursor fx:constant="HAND" /></cursor>
-                            <padding><Insets left="20.0" right="20.0" /></padding>
-                        </Button>
+                        <Pane fx:id="slideIndicator" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: #EFF6FF; -fx-background-radius: 25;" />
 
-                        <Button fx:id="btnProducts" mnemonicParsing="false" onAction="#btnProductsClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🍩  Thực đơn">
-                            <cursor><Cursor fx:constant="HAND" /></cursor>
-                            <padding><Insets left="20.0" right="20.0" /></padding>
-                        </Button>
-
-                        <StackPane alignment="TOP_RIGHT" maxHeight="-Infinity">
+                        <HBox fx:id="hboxMenu" alignment="CENTER" spacing="15.0">
                             <children>
-                                <Button fx:id="btnCart" mnemonicParsing="false" onAction="#btnCartClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🛒  Giỏ hàng">
+                                <Button fx:id="btnHome" mnemonicParsing="false" onAction="#btnHomeClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #2563EB; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🏠  Trang chủ">
                                     <cursor><Cursor fx:constant="HAND" /></cursor>
                                     <padding><Insets left="20.0" right="20.0" /></padding>
                                 </Button>
 
-                                <Label fx:id="lblCartBadge" alignment="CENTER" minHeight="20.0" minWidth="20.0" style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 12; -fx-font-weight: bold;" text="0" translateX="-10.0" translateY="2.0" visible="false">
-                                    <padding>
-                                        <Insets left="5.0" right="5.0" />
-                                    </padding>
-                                </Label>
-                            </children>
-                        </StackPane>
+                                <Button fx:id="btnProducts" mnemonicParsing="false" onAction="#btnProductsClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🍩  Thực đơn">
+                                    <cursor><Cursor fx:constant="HAND" /></cursor>
+                                    <padding><Insets left="20.0" right="20.0" /></padding>
+                                </Button>
 
-                        <Button fx:id="btnOrders" mnemonicParsing="false" onAction="#btnOrdersClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="📦  Đơn hàng của tôi">
-                            <cursor><Cursor fx:constant="HAND" /></cursor>
-                            <padding><Insets left="20.0" right="20.0" /></padding>
-                        </Button>
+                                <StackPane fx:id="cartContainer" alignment="TOP_RIGHT" maxHeight="-Infinity">
+                                    <children>
+                                        <Button fx:id="btnCart" mnemonicParsing="false" onAction="#btnCartClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="🛒  Giỏ hàng">
+                                            <cursor><Cursor fx:constant="HAND" /></cursor>
+                                            <padding><Insets left="20.0" right="20.0" /></padding>
+                                        </Button>
+
+                                        <Label fx:id="lblCartBadge" alignment="CENTER" minHeight="20.0" minWidth="20.0" style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 12; -fx-font-weight: bold;" text="0" translateX="-10.0" translateY="2.0" visible="false">
+                                            <padding>
+                                                <Insets left="5.0" right="5.0" />
+                                            </padding>
+                                        </Label>
+                                    </children>
+                                </StackPane>
+
+                                <Button fx:id="btnOrders" mnemonicParsing="false" onAction="#btnOrdersClick" prefHeight="45.0" style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;" text="📦  Đơn hàng của tôi">
+                                    <cursor><Cursor fx:constant="HAND" /></cursor>
+                                    <padding><Insets left="20.0" right="20.0" /></padding>
+                                </Button>
+                            </children>
+                        </HBox>
                     </children>
-                </HBox>
+                </AnchorPane>
 
                 <Region HBox.hgrow="ALWAYS" />
 

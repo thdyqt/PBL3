@@ -58,7 +58,7 @@ public class ProductData {
             stmt.setString(5, product.getStatus() != null ? product.getStatus() : "Active");
             stmt.setString(6, product.getDescription());
             stmt.setString(7, product.getIngredients());
-            stmt.setDouble(8, product.getRating() > 0 ? product.getRating() : 5.0);
+            stmt.setDouble(8, product.getRating() > 0 ? product.getRating() : 0.0);
             stmt.setString(9, product.getImage());
 
             int rows = stmt.executeUpdate();

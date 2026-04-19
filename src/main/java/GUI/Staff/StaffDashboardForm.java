@@ -17,6 +17,7 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -89,6 +90,12 @@ public class StaffDashboardForm implements Initializable {
     private CustomMenuItem menuInfo;
 
     @FXML
+    private Pane slideIndicator;
+
+    @FXML
+    private VBox vboxMenu;
+
+    @FXML
     private VBox sidebar;
 
     private Button[] menuButtons;
@@ -118,6 +125,7 @@ public class StaffDashboardForm implements Initializable {
         pt.play();
 
         menuButtons = new Button[]{btnHome, btnOrder, btnOnline, btnBill, btnProduct, btnCustomer, btnStaff, btnPromoCode, btnStatistic};
+        setActiveMenu(btnHome);
         loadUserProfile();
         Others.startClock(lblTime);
         btnHomeClick(null);
@@ -243,6 +251,12 @@ public class StaffDashboardForm implements Initializable {
 
         if (activeButton != null) {
             activeButton.getStyleClass().add("active-menu");
+            TranslateTransition transition = new TranslateTransition(Duration.millis(250), slideIndicator);
+            double targetY = activeButton.getBoundsInParent().getMinY();
+
+            transition.setToY(targetY);
+            transition.setInterpolator(Interpolator.EASE_BOTH);
+            transition.play();
         }
     }
 

@@ -3,12 +3,10 @@ package GUI.Customer;
 import EntityDTO.Customer;
 import GUI.CustomerDialogController;
 import Util.CartManager;
+import Util.IContentArea;
 import Util.Others;
 import Util.UserSession;
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.ParallelTransition;
-import javafx.animation.ScaleTransition;
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +19,7 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -77,6 +76,12 @@ public class CustomerDashboardForm implements Initializable {
     @FXML
     private CustomMenuItem menuInfo;
 
+    @FXML
+    private Pane slideIndicator;
+
+    @FXML
+    private StackPane cartContainer;
+
     private Button[] menuButtons;
 
     @Override
@@ -98,9 +103,15 @@ public class CustomerDashboardForm implements Initializable {
         pt.setInterpolator(Interpolator.EASE_OUT);
         pt.play();
 
-        menuButtons = new Button[]{btnHome, btnProducts, btnCart, btnOrders};
-        Others.startClock(lblTime);
-        btnHomeClick(null);
+        CartManager.getInstance().customerTotalCountProperty().addListener((observable, oldValue, newValue) -> {
+            int count = newValue.intValue();
+            if (count > 0) {
+                lblCartBadge.setText(String.valueOf(count));
+                lblCartBadge.setVisible(true);
+            } else {
+                lblCartBadge.setVisible(false);
+            }
+        });
 
         if (UserSession.getInstance().isGuest()) {
             menuAcc.setVisible(false);
@@ -125,15 +136,10 @@ public class CustomerDashboardForm implements Initializable {
             loadUserProfile();
         }
 
-        CartManager.getInstance().customerTotalCountProperty().addListener((observable, oldValue, newValue) -> {
-            int count = newValue.intValue();
-            if (count > 0) {
-                lblCartBadge.setText(String.valueOf(count));
-                lblCartBadge.setVisible(true);
-            } else {
-                lblCartBadge.setVisible(false);
-            }
-        });
+        menuButtons = new Button[]{btnHome, btnProducts, btnCart, btnOrders};
+        setActiveMenu(btnHome);
+        Others.startClock(lblTime);
+        btnHomeClick(null);
     }
 
     private void loadUserProfile() {
@@ -156,16 +162,40 @@ public class CustomerDashboardForm implements Initializable {
 
     private void setActiveMenu(Button activeButton) {
         if (menuButtons == null) return;
+
         for (Button btn : menuButtons) {
-            if (btn != null) btn.getStyleClass().remove("active-menu");
+            if (btn != null) btn.setStyle("-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;");
         }
-        if (activeButton != null) activeButton.getStyleClass().add("active-menu");
+
+        if (activeButton != null) {
+            activeButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #2563EB; -fx-font-size: 15px; -fx-font-weight: bold; -fx-background-radius: 25;");
+            double targetX = activeButton.getBoundsInParent().getMinX();
+            double targetWidth = activeButton.getBoundsInLocal().getWidth();
+
+            if (activeButton == btnCart) {
+                targetX = cartContainer.getBoundsInParent().getMinX();
+                targetWidth = cartContainer.getBoundsInLocal().getWidth();
+            }
+
+           Timeline timeline = new Timeline(
+                    new KeyFrame(Duration.millis(250),
+                            new KeyValue(slideIndicator.translateXProperty(), targetX, Interpolator.EASE_BOTH),
+                            new KeyValue(slideIndicator.prefWidthProperty(), targetWidth, Interpolator.EASE_BOTH)
+                    )
+            );
+            timeline.play();
+        }
     }
 
     private void switchForm(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Node node = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof IContentArea ctrl) {
+                ctrl.setContentArea(this.contentArea);
+            }
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(node);
         } catch (Exception e) {
@@ -210,7 +240,7 @@ public class CustomerDashboardForm implements Initializable {
 
     @FXML
     void btnHomeClick(ActionEvent event) {
-
+        setActiveMenu(btnHome);
     }
 
     @FXML
@@ -221,12 +251,12 @@ public class CustomerDashboardForm implements Initializable {
 
     @FXML
     void btnOrdersClick(ActionEvent event) {
-
+        setActiveMenu(btnOrders);
     }
 
     @FXML
     void btnCartClick(ActionEvent event) {
-
+        setActiveMenu(btnCart);
     }
 
     private void openProfileDialog(boolean isViewOnly) {
