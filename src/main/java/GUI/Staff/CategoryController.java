@@ -1,6 +1,7 @@
 package GUI.Staff;
 
 
+import BusinessBLL.CategoryBusiness;
 import DataDAL.CategoryData;
 import DataDAL.ProductData;
 import EntityDTO.Category;
@@ -256,8 +257,8 @@ public class CategoryController implements Initializable, IContentArea {
 
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                boolean result = CategoryData.stopBusiness(selected.getCategoryID());
-                if (result) {
+                String result = CategoryBusiness.stopBusiness(selected.getCategoryID());
+                if (result.equals("success")) {
                     showAlert("✅ Ngừng kinh doanh thành công!");
                     loadCategories();
                     tblProduct.getItems().clear();
