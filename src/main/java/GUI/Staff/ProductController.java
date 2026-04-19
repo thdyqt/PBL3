@@ -84,6 +84,7 @@ public class ProductController implements Initializable, IContentArea {
             }
         });
 
+        colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
         colImage.setCellFactory(c -> new TableCell<>() {
             private final ImageView iv = new ImageView();
             @Override protected void updateItem(String imgName, boolean empty) {
