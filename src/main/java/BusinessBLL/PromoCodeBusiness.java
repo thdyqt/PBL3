@@ -17,7 +17,7 @@ public class PromoCodeBusiness {
         PromoCodeData.refreshAllPromoStatuses();
         List<PromoCode> activeList = new ArrayList<>();
         for (PromoCode code : PromoCodeData.getAllPromoCodes()) {
-            if (code.getStatus().equals("Active")) {
+            if (code.getStatus() == PromoCode.CodeStatus.Active) {
                 activeList.add(code);
             }
         }
@@ -73,6 +73,14 @@ public class PromoCodeBusiness {
     public static boolean updatePromoStatus(String code, PromoCode.CodeStatus status) {
         if (PromoCodeData.updatePromoStatus(code, status.name())) {
             LogBusiness.saveLog("Thay đổi trạng thái của mã giảm giá " + code + " thành " + status.name());
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean updatePromoStatusAndStartDate(String code, PromoCode.CodeStatus status, LocalDateTime validFrom) {
+        if (PromoCodeData.updatePromoStatusAndStartDate(code, status.name(), validFrom)) {
+            LogBusiness.saveLog("Kích hoạt sớm mã giảm giá: " + code);
             return true;
         }
         return false;

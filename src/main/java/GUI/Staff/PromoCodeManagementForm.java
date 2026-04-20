@@ -117,7 +117,6 @@ public class PromoCodeManagementForm implements Initializable {
                     setText(null);
                 } else {
                     setText(item);
-                    // Lệnh này ép chữ nằm chính giữa theo chiều dọc
                     setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 10; -fx-font-weight: bold;");
                 }
             }
@@ -160,7 +159,6 @@ public class PromoCodeManagementForm implements Initializable {
         });
 
         colStart.setCellFactory(column -> new TableCell<PromoCode, LocalDateTime>() {
-            //format into d/m/y
             private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             @Override
@@ -349,11 +347,23 @@ public class PromoCodeManagementForm implements Initializable {
         String actionName = "Active".equals(newStatus) ? "Kích hoạt" : "Tạm ngưng";
 
         if (Others.showCustomConfirm("Xác nhận", "Bạn có chắc muốn " + actionName + " mã giảm giá: " + selected.getCode() + "?", "Đồng ý", "Hủy")) {
-            if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), PromoCode.CodeStatus.valueOf(newStatus))) {
-                Others.showAlert(mainPane, "Đã " + actionName + " thành công!", false);
-                loadTable();
-            } else {
-                Others.showAlert(mainPane, "Lỗi khi cập nhật trạng thái!", true);
+
+            if ("Upcoming".equalsIgnoreCase(currentStatus) && "Active".equals(newStatus)) {
+                LocalDateTime now = LocalDateTime.now();
+                if (PromoCodeBusiness.updatePromoStatusAndStartDate(selected.getCode(), PromoCode.CodeStatus.Active, now)) {
+                    Others.showAlert(mainPane, "Đã kích hoạt và dời ngày bắt đầu về hôm nay!", false);
+                    loadTable();
+                } else {
+                    Others.showAlert(mainPane, "Có lỗi xảy ra khi cập nhật!", true);
+                }
+            }
+            else {
+                if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), PromoCode.CodeStatus.valueOf(newStatus))) {
+                    Others.showAlert(mainPane, "Đã " + actionName + " thành công!", false);
+                    loadTable();
+                } else {
+                    Others.showAlert(mainPane, "Có lỗi xảy ra!", true);
+                }
             }
         }
     }

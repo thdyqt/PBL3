@@ -2,6 +2,7 @@ package BusinessBLL;
 
 import DataDAL.CustomerData;
 import EntityDTO.Customer;
+import Util.CartManager;
 import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -42,6 +43,11 @@ public class CustomerBusiness {
             e.printStackTrace();
             return "SERVER ERROR";
         }
+    }
+
+    public static void logout() {
+        CartManager.getInstance().clearCustomerCart();
+        UserSession.getInstance().clearSession();
     }
 
     public static int register(String phone, String name, String username, String password) {

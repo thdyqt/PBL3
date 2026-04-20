@@ -15,7 +15,7 @@ public class CategoryData {
 
     public static List<Category> getAll(){
         List<Category> list = new ArrayList<>();
-        String sql = "SELECT * FROM Category WHERE  status = 'Active'";
+        String sql = "SELECT * FROM Category WHERE status = 'Active'";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -40,6 +40,7 @@ public class CategoryData {
         }
         return -1; // Không tìm thấy
     }
+
     public static Category getByID(int categoryID) {
         String sql = "SELECT * FROM Category WHERE category_id = ?";
 

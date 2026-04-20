@@ -3,7 +3,6 @@ package EntityDTO;
 import java.time.LocalDateTime;
 
 public class PromoCode {
-
     public enum CodeType {
         Percent, Amount;
     }

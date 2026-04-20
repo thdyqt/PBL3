@@ -3,10 +3,8 @@ package DataDAL;
 import EntityDTO.PromoCode;
 import Util.DBConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,6 +132,24 @@ public class PromoCodeData {
 
             stmt.setString(1, status);
             stmt.setString(2, code);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean updatePromoStatusAndStartDate(String code, String status, LocalDateTime newValidFrom) {
+        String sql = "UPDATE PromoCode SET status = ?, ValidFrom = ? WHERE Code = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, status);
+            stmt.setTimestamp(2, Timestamp.valueOf(newValidFrom));
+            stmt.setString(3, code);
 
             return stmt.executeUpdate() > 0;
 
