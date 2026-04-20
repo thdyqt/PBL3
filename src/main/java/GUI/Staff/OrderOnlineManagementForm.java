@@ -115,9 +115,6 @@ public class OrderOnlineManagementForm implements Initializable {
                         // Chọn màu dựa trên trạng thái của đơn hàng
                         switch (item) {
                             case "Waiting_for_validation":
-                            case "Created":
-                                setStyle("-fx-text-fill: #F59E0B; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Vàng/Cam (Cảnh báo chờ)
-                                break;
                             case "Processing":
                             case "Delivering":
                                 setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Xanh dương (Đang tiến hành)

@@ -169,7 +169,7 @@ public class BillManagementForm{
 
         //same thing as all the methods below
         //albeit modified to format the date
-        colProcessTime.setCellValueFactory(new PropertyValueFactory<>("process_time"));
+        colProcessTime.setCellValueFactory(new PropertyValueFactory<>("orderTime"));
         colProcessTime.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, java.time.LocalDateTime>() {
             private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             @Override

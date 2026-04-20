@@ -81,7 +81,7 @@ public class StaffManagementForm implements Initializable {
         colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
         colUsername.setCellValueFactory(new PropertyValueFactory<>("user"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
-        colDate.setCellValueFactory(new PropertyValueFactory<>("hire_date"));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("hireDate"));
 
         colSTT.setCellFactory(column -> new TableCell<Staff, Void>() {
             @Override
