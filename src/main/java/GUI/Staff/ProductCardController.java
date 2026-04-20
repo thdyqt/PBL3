@@ -27,17 +27,34 @@ public class ProductCardController {
         if (product.getQuantity() <= 0) {
             lblStock.setText("Hết hàng");
             lblStock.setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold;");
-            cardContainer.setOpacity(0.6);
-            cardContainer.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 15; -fx-border-color: #CBD5E1; -fx-border-radius: 15; -fx-border-width: 1.5;");
-            cardContainer.setCursor(javafx.scene.Cursor.DEFAULT);
-            cardContainer.setOnMouseEntered(null);
-            cardContainer.setOnMouseExited(null);
+
+            // 1. Trả lại màu sắc tự nhiên cho bánh
+            imgProduct.setEffect(null);
+
+            // 2. Mở khóa thẻ để cho phép Click
+            cardContainer.setDisable(false);
+            cardContainer.setCursor(javafx.scene.Cursor.HAND);
+
+            // 3. Đổi style: Nền đỏ nhạt (#FEF2F2), viền đỏ mờ, giảm độ sáng thẻ 25%
+            cardContainer.setOpacity(0.75);
+            cardContainer.setStyle("-fx-background-color: #FEF2F2; -fx-background-radius: 15; -fx-border-color: #FECACA; -fx-border-radius: 15; -fx-border-width: 1.5;");
+
+            // 4. Hiệu ứng Hover riêng cho sản phẩm hết hàng (Viền đỏ đậm lên)
+            cardContainer.setOnMouseEntered(e -> cardContainer.setStyle("-fx-background-color: #FEE2E2; -fx-background-radius: 15; -fx-border-color: #EF4444; -fx-border-radius: 15; -fx-border-width: 1.5; -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.2), 10, 0, 0, 4);"));
+            cardContainer.setOnMouseExited(e -> cardContainer.setStyle("-fx-background-color: #FEF2F2; -fx-background-radius: 15; -fx-border-color: #FECACA; -fx-border-radius: 15; -fx-border-width: 1.5;"));
+
         } else {
             lblStock.setText(String.valueOf(product.getQuantity()));
             lblStock.setStyle("-fx-text-fill: #2563EB; -fx-font-weight: bold;");
+
+            imgProduct.setEffect(null);
+            cardContainer.setDisable(false);
+            cardContainer.setCursor(javafx.scene.Cursor.HAND);
+
             cardContainer.setOpacity(1.0);
             cardContainer.setStyle("-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-border-width: 1.5;");
-            cardContainer.setCursor(javafx.scene.Cursor.HAND);
+
+            // Dùng hiệu ứng Hover xanh dương bình thường
             setupHoverEffect();
         }
 

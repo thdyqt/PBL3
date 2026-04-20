@@ -145,7 +145,7 @@
                         </Label>
                         <ComboBox fx:id="cbbDiscount" prefHeight="32.0" prefWidth="160.0" promptText="Chọn mã..." style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                        <Label fx:id="lblDiscountTitle" text="Giảm giá (0%):" textFill="#10B981" GridPane.rowIndex="3">
+                        <Label fx:id="lblDiscountTitle" text="Giảm giá:" textFill="#10B981" GridPane.rowIndex="3">
                             <font><Font name="System Bold" size="14.0" /></font>
                         </Label>
                         <Label fx:id="lblDiscountAmount" text="-0 VNĐ" textFill="#10B981" GridPane.columnIndex="1" GridPane.rowIndex="3">

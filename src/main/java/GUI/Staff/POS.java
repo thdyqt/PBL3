@@ -1,9 +1,6 @@
 package GUI.Staff;
 
-import BusinessBLL.CategoryBusiness;
-import BusinessBLL.CustomerBusiness;
-import BusinessBLL.ProductBusiness;
-import BusinessBLL.PromoCodeBusiness;
+import BusinessBLL.*;
 import EntityDTO.*;
 import Util.CartManager;
 import Util.Others;
@@ -371,8 +368,6 @@ public class POS implements Initializable {
     private void calculateTotal() {
         int subtotal = 0;
         int totalQty = 0;
-        int discountPercent = 0;
-        int discountAmount = 0;
 
         for (OrderDetail item : cartList) {
             subtotal += item.getTotalPrice();
@@ -382,38 +377,22 @@ public class POS implements Initializable {
         lblSubtotal.setText(Others.formatPrice(subtotal));
         lblTotalQuantity.setText(totalQty + " món");
 
-        int customerDiscount = CustomerBusiness.getDiscountPercent(currentCustomer);
-        PromoCode selectedPromo = cbbDiscount.getValue();
+        PromoCode selectedPromo = null;
+        if (cbbDiscount.getSelectionModel().getSelectedIndex() > 0) {
+            selectedPromo = cbbDiscount.getSelectionModel().getSelectedItem();
+        }
 
         if (selectedPromo != null && !selectedPromo.getCode().equals("Không có")) {
             if (subtotal < selectedPromo.getMinOrderValue()) {
-                Others.showAlert(mainPane, "Đơn hàng chưa đạt giá trị tối thiểu của mã giảm giá.", true);
+                Others.showAlert(mainPane, "Đơn hàng chưa đạt giá trị tối thiểu của mã giảm giá (" + Others.formatPrice(selectedPromo.getMinOrderValue()) + ")!", true);
                 Platform.runLater(() -> cbbDiscount.getSelectionModel().selectFirst());
+
+                selectedPromo = null;
             }
-            else if (selectedPromo.getDiscountType() == PromoCode.CodeType.Percent) {
-                int promoCodeDiscount = selectedPromo.getDiscountValue();
-                discountPercent = customerDiscount + promoCodeDiscount;
-                lblDiscountTitle.setText(String.format("Giảm giá (%d%%):", discountPercent));
-                discountAmount = (int)(subtotal * (discountPercent / 100.0));
-            }
-            else {
-                int promoCodeDiscount = selectedPromo.getDiscountValue();
-                discountPercent = customerDiscount;
-                lblDiscountTitle.setText(String.format("Giảm giá (%d%% + %,dđ):", discountPercent, promoCodeDiscount));
-                discountAmount = (int)(subtotal * (discountPercent / 100.0) + promoCodeDiscount);
-            }
-        }
-        else {
-            discountPercent = customerDiscount;
-            lblDiscountTitle.setText(String.format("Giảm giá (%d%%):", discountPercent));
-            discountAmount = (int)(subtotal * (discountPercent / 100.0));
         }
 
-        if (discountAmount > subtotal) {
-            discountAmount = subtotal;
-        }
-
-        int finalTotal = subtotal - discountAmount;
+        int discountAmount = OrderBusiness.getDiscountAmount(subtotal, currentCustomer, selectedPromo);
+        int finalTotal = OrderBusiness.getFinalTotal(subtotal, discountAmount);
 
         lblDiscountAmount.setText(Others.formatPrice(discountAmount));
         lblTotalPay.setText(Others.formatPrice(finalTotal));

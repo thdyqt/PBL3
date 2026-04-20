@@ -3,6 +3,7 @@
 package BusinessBLL;
 
 import DataDAL.OrderData;
+import EntityDTO.Customer;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import EntityDTO.PromoCode;
@@ -163,6 +164,37 @@ public class OrderBusiness {
         } else {
             return "Lỗi: Không thể hủy đơn hàng do lỗi hệ thống CSDL.";
         }
+    }
+
+    public static int getDiscountAmount(int subtotal, Customer customer, PromoCode code) {
+        int customerDiscountPercent = 0;
+        if (customer != null) {
+            customerDiscountPercent = CustomerBusiness.getDiscountPercent(customer);
+        }
+
+        int discountFromCustomer = (int) (subtotal * (customerDiscountPercent / 100.0));
+        int remainingSubtotal = subtotal - discountFromCustomer;
+
+        int discountFromPromo = 0;
+
+        if (code != null) {
+            if (code.getDiscountType() == PromoCode.CodeType.Percent) {
+                discountFromPromo = (int) (remainingSubtotal * (code.getDiscountValue() / 100.0));
+            }
+            else if (code.getDiscountType() == PromoCode.CodeType.Amount) {
+                discountFromPromo = code.getDiscountValue();
+            }
+
+            if (discountFromPromo > remainingSubtotal) {
+                discountFromPromo = remainingSubtotal;
+            }
+        }
+
+        return discountFromCustomer + discountFromPromo;
+    }
+
+    public static int getFinalTotal(int subtotal, int discountAmount) {
+        return subtotal - discountAmount;
     }
 
     //all things money related of order
