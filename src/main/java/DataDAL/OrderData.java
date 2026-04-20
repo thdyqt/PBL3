@@ -35,6 +35,8 @@ public class OrderData {
                 order.setDiscountAmount(rs.getInt("discount_amount"));
                 order.setAppliedCode(rs.getString("applied_promo_code"));
                 order.setFinalAmount(rs.getInt("final_total"));
+                order.setAddress(rs.getString("address"));
+                order.setCancel_reason(rs.getString("cancel_reason"));
 
                 Staff staff = new Staff();
                 staff.setId(rs.getInt("id_Staff"));
@@ -80,8 +82,7 @@ public class OrderData {
         //foreign keys are in here
         //specifically id_Staff and id_Customer
         //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total, address, cancel_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (
             Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
@@ -105,7 +106,8 @@ public class OrderData {
             stmt.setInt(8, order.getDiscountAmount());
             stmt.setString(9, order.getAppliedCode());
             stmt.setInt(10, order.getFinalAmount());
-
+            stmt.setString(11, order.getAddress());
+            stmt.setString(12, order.getCancel_reason());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -179,8 +181,7 @@ public class OrderData {
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
         // 1. Updated SQL string with the 3 new columns added before the WHERE clause
-        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ? WHERE id_Order = ?";
-
+        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ?, address = ?, cancel_reason = ? WHERE id_Order = ?";
         try (
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)
@@ -206,8 +207,12 @@ public class OrderData {
             stmt.setString(9, order.getAppliedCode());
             stmt.setInt(10, order.getFinalAmount());
 
-            // Parameter 11: The Order ID used in the WHERE clause
-            stmt.setInt(11, order.getId());
+            //the 2 motherfucking new values
+            stmt.setString(11, order.getAddress());
+            stmt.setString(12, order.getCancel_reason());
+
+            // Parameter 13: The Order ID used in the WHERE clause
+            stmt.setInt(13, order.getId());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

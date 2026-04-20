@@ -34,6 +34,8 @@ public class Order {
     private String appliedCode;
     private int discountAmount;
     private int finalAmount;
+    private String address;
+    private String cancel_reason;
 
 
     //constructors
@@ -94,4 +96,10 @@ public class Order {
 
     public int getFinalAmount(){return finalAmount;}
     public void setFinalAmount(int finalAmount){this.finalAmount = finalAmount;}
+
+    public String getAddress(){return address;}
+    public void setAddress(String address){this.address = address;}
+
+    public String getCancel_reason(){return cancel_reason;}
+    public void setCancel_reason(String cancel_reason){this.cancel_reason = cancel_reason;}
 }
