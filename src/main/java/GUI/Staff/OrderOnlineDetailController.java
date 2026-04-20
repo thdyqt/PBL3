@@ -13,7 +13,7 @@ import javafx.scene.control.TableView;
 
 import java.util.List;
 
-public class OrderDetailController {
+public class OrderOnlineDetailController {
 
     @FXML private Label lblCustomerInfo;
     @FXML private Label lblAddress;
