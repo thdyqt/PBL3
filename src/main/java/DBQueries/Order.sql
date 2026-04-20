@@ -12,4 +12,6 @@ CREATE TABLE Orders(
 
 );
 USE PBL3;
+INSERT  INTO Orders (id_Order,process_time,id_Staff,id_Customer,status,type,payment,subtotal,discount_amount,final_total)
+    VALUE(4,NOW(),4,4,'Processing','Online','Cash',90000,10000,80000);
 DROP TABLE Orders;
