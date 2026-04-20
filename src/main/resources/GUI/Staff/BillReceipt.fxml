@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillReceiptController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillReceiptController">
    <children>
       <BorderPane prefHeight="200.0" prefWidth="200.0">
          <bottom>
@@ -32,15 +32,15 @@
                            <children>
                               <Label fx:id="labelCashierID" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Cashier name">
                                  <padding>
-                                    <Insets bottom="10.0" />
+                                    <Insets bottom="10.0" left="10.0" />
                                  </padding></Label>
                               <Label fx:id="labelCustomerID" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Customer name">
                                  <padding>
-                                    <Insets bottom="10.0" />
+                                    <Insets bottom="10.0" left="10.0" />
                                  </padding></Label>
                               <Label fx:id="labelCustomerRank" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Customer rank">
                                  <padding>
-                                    <Insets bottom="10.0" />
+                                    <Insets bottom="10.0" left="10.0" />
                                  </padding>
                               </Label>
                            </children>
@@ -50,15 +50,15 @@
                            <children>
                               <Label fx:id="labelDate" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Date">
                                  <padding>
-                                    <Insets bottom="10.0" />
+                                    <Insets bottom="10.0" right="20.0" />
                                  </padding></Label>
                               <Label fx:id="labelCustomerPhone" text="Customer phone">
                                  <padding>
-                                    <Insets bottom="10.0" />
+                                    <Insets bottom="10.0" right="20.0" />
                                  </padding></Label>
                               <Label fx:id="labelCustomerPoint" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Customer point">
                                  <padding>
-                                    <Insets bottom="10.0" />
+                                    <Insets bottom="10.0" right="20.0" />
                                  </padding></Label>
                            </children>
                         </VBox>
@@ -95,7 +95,7 @@
             </VBox>
          </top>
       </BorderPane>
-      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;">
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
          <content>
             <VBox fx:id="vboxContent" prefHeight="200.0" prefWidth="100.0" />
          </content>
@@ -122,7 +122,7 @@
                         </Label>
                         <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="Giảm giá:">
                            <padding>
-                              <Insets bottom="50.0" left="10.0" />
+                              <Insets bottom="30.0" left="10.0" />
                            </padding>
                         </Label>
                         <Label prefHeight="36.0" prefWidth="223.0" text="THÀNH TIỀN">
@@ -143,7 +143,7 @@
                         </Label>
                      </children>
                   </VBox>
-                  <Region prefHeight="174.0" prefWidth="212.0" HBox.hgrow="ALWAYS" />
+                  <Region prefHeight="171.0" prefWidth="123.0" HBox.hgrow="ALWAYS" />
                   <VBox HBox.hgrow="NEVER">
                      <children>
                         <Label fx:id="labelSubTotal" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="subTotal">
@@ -158,7 +158,7 @@
                         </Label>
                         <Label fx:id="labelDiscount" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" text="discount">
                            <padding>
-                              <Insets bottom="50.0" />
+                              <Insets bottom="30.0" />
                            </padding>
                         </Label>
                         <Label fx:id="labelTotal" text="Total money">

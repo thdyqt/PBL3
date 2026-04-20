@@ -19,6 +19,8 @@ public class OrderOnlineDetailController {
     @FXML private Label lblAddress;
     @FXML private Label lblStatus;
     @FXML private Label lblFinalTotal;
+    @FXML private Label lblPromoCode;
+    @FXML private Label lblDiscount;
 
     @FXML private TableView<OrderDetail> tableDetail;
     @FXML private TableColumn<OrderDetail, String> colProductName;
@@ -36,7 +38,14 @@ public class OrderOnlineDetailController {
             lblCustomerInfo.setText("Khách hàng: Khách vãng lai - SĐT: N/A");
         }
 
-        lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
+        if(order.getStatus().name() == "Cancelled"){
+            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Lí do hủy: " + order.getCancel_reason());
+        }else
+            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
+
+        lblAddress.setText("Địa chỉ: " + order.getAddress());
+        lblPromoCode.setText("Mã giảm giá: " + order.getAppliedCode());
+        lblDiscount.setText("Số tiền được giảm: " + order.getDiscountAmount() + "đ");
 
         // 2. Cài đặt các cột cho TableView
         // Lưu ý: Dựa theo OrderDetailData của bạn, Product dùng thuộc tính ProductName
@@ -61,9 +70,8 @@ public class OrderOnlineDetailController {
             ObservableList<OrderDetail> list = FXCollections.observableArrayList(details);
             tableDetail.setItems(list);
 
-            // Tính tổng tiền dựa trên các record lấy được từ Database
-            int sum = details.stream().mapToInt(OrderDetail::getTotalPrice).sum();
-            lblFinalTotal.setText(String.format("Tổng tiền thanh toán: %,d VNĐ", sum));
+
+            lblFinalTotal.setText(String.format("Tổng tiền thanh toán: %,d VNĐ", order.getFinalAmount()));
         } else {
             // Nếu đơn hàng chưa có món nào (lỗi logic khi tạo) hoặc không tìm thấy
             lblFinalTotal.setText("Tổng tiền thanh toán: 0 VNĐ");

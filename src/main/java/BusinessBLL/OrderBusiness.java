@@ -72,23 +72,6 @@ public class OrderBusiness {
             List<Order> onlineOrders = allOrders.stream()
                     .filter(o -> o.getType() == Order.OrderType.Online)
                     .collect(Collectors.toList());
-
-            // 3. TÍNH TỔNG TIỀN CHO TỪNG ĐƠN HÀNG
-            for (Order order : onlineOrders) {
-                // Gọi BLL của Detail để lấy danh sách món ăn của hóa đơn này
-                List<OrderDetail> details = OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
-
-                int total = 0;
-                if (details != null) {
-                    for (OrderDetail detail : details) {
-                        total += detail.getTotalPrice(); // Cộng dồn tiền từng món
-                    }
-                }
-
-                // Lưu tổng tiền vào hóa đơn để mang lên GUI hiển thị
-                order.setFinalAmount(total);
-            }
-
             return onlineOrders;
         }
         return null;
