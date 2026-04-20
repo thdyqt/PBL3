@@ -39,7 +39,7 @@ public class Order {
 
 
     //constructors
-    public Order(){this.orderDetail = new ArrayList<>();};
+    public Order(){this.orderDetail = new ArrayList<>();}
 
     public Order(int id, LocalDateTime process_time, Staff staff, Customer customer, OrderDetail detail){
         this.id = id;

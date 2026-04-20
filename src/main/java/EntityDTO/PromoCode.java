@@ -9,7 +9,7 @@ public class PromoCode {
     }
 
     public enum codeStatus{
-        Active, Paused,Upcoming, Expired;
+        Active, Paused, Upcoming, Expired;
     }
 
     private String code;

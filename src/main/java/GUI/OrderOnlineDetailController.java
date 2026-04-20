@@ -1,4 +1,4 @@
-package GUI.Staff;
+package GUI;
 
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
