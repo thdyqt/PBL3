@@ -158,6 +158,8 @@ public class OrderBusiness {
         // 1. Thay đổi trạng thái thành Hủy
         order.setStatus(Order.orderStatus.Cancelled);
 
+        order.setCancel_reason(reason);
+
         // 2. Gọi hàm DAL để lưu trạng thái mới xuống DB
         boolean isUpdated = OrderData.updateOrder(order);
 
