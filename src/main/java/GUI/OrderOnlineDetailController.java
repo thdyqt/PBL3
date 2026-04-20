@@ -36,8 +36,12 @@ public class OrderOnlineDetailController {
             lblCustomerInfo.setText("Khách hàng: Khách vãng lai - SĐT: N/A");
         }
 
-        lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
+        if(order.getStatus().name() == "Cancelled"){
+            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Lí do hủy: " + order.getCancel_reason());
+        }else
+            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
 
+        lblAddress.setText("Địa chỉ: " + order.getAddress());
         // 2. Cài đặt các cột cho TableView
         // Lưu ý: Dựa theo OrderDetailData của bạn, Product dùng thuộc tính ProductName
         colProductName.setCellValueFactory(cellData -> {
