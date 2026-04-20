@@ -88,6 +88,25 @@ public class BillReceiptController {
         itemGrid.setHgap(20);
         itemGrid.setVgap(5);
 
+        //padding
+        itemGrid.setPadding(new javafx.geometry.Insets(0, 0, 0, 10));
+
+        //make the content grow according to the size
+        javafx.scene.layout.ColumnConstraints colName = new javafx.scene.layout.ColumnConstraints();
+        colName.setHgrow(javafx.scene.layout.Priority.ALWAYS);
+
+        //all columns below are pushed all the way to the right
+        javafx.scene.layout.ColumnConstraints colQty = new javafx.scene.layout.ColumnConstraints();
+        colQty.setHalignment(javafx.geometry.HPos.RIGHT);
+
+        javafx.scene.layout.ColumnConstraints colPrice = new javafx.scene.layout.ColumnConstraints();
+        colPrice.setHalignment(javafx.geometry.HPos.RIGHT);
+
+        javafx.scene.layout.ColumnConstraints colTotal = new javafx.scene.layout.ColumnConstraints();
+        colTotal.setHalignment(javafx.geometry.HPos.RIGHT);
+
+        itemGrid.getColumnConstraints().addAll(colName, colQty, colPrice, colTotal);
+
         int rowIndex = 0;
 
         for (OrderDetail item : details){
