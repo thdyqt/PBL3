@@ -27,6 +27,7 @@ public class CustomerBusiness {
                         dbCustomer.getName(),
                         dbCustomer.getUser(),
                         password,
+                        dbCustomer.getAddress(),
                         dbCustomer.getPoint()
                 );
                 return "SUCCESS";
@@ -46,7 +47,7 @@ public class CustomerBusiness {
     public static int register(String phone, String name, String username, String password) {
         if (CustomerData.isAccountExist(username, phone, -1)) return -1;
 
-        if (CustomerData.addCustomer(new Customer(phone, name, username, password, 0))){
+        if (CustomerData.addCustomer(new Customer(phone, name, username, password, null, 0))){
             LogBusiness.saveLog("Thêm khách hàng " + name + " (" + phone + ") vào hệ thống");
             return 1;
         }

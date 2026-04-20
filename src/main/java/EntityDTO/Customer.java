@@ -1,26 +1,31 @@
 package EntityDTO;
 
 public class Customer extends Person {
+    private String address;
     private int point;
     public enum rank {
         Bronze, Silver, Gold, Diamond, Emerald
     }
     private rank Customer_rank;
 
+
     public Customer() {}
 
-    public Customer(String phone, String name, String user, String password, int point) {
+    public Customer(String phone, String name, String user, String password, String address, int point) {
         super(phone, name, user, password);
+        setAddress(address);
         setPoint(point);
     }
 
-    public Customer(int id, String phone, String name, String user, int point) {
+    public Customer(int id, String phone, String name, String user, String address, int point) {
         super(id, phone, name, user);
+        setAddress(address);
         setPoint(point);
     }
 
-    public Customer(int id, String phone, String name, String user, String password, int point) {
+    public Customer(int id, String phone, String name, String user, String password, String address, int point) {
         super(id, phone, name, user, password);
+        setAddress(address);
         setPoint(point);
 
     }
@@ -31,6 +36,14 @@ public class Customer extends Person {
 
     public void setCustomer_rank(rank customer_rank) {
         this.Customer_rank = customer_rank;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getPoint() {
