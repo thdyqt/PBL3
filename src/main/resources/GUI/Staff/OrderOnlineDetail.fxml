@@ -4,6 +4,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -16,14 +18,36 @@
                         <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
-                <Label fx:id="lblCustomerInfo" text="Khách hàng: N/A - SĐT: N/A" textFill="#475569">
-                    <font><Font size="14.0" /></font>
-                </Label>
-            <Label fx:id="lblStatus" text="Trạng thái: N/A" textFill="#475569">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
+            <HBox prefHeight="18.0" prefWidth="610.0">
+               <children>
+                      <Label fx:id="lblCustomerInfo" prefHeight="20.0" prefWidth="347.0" text="Khách hàng: N/A - SĐT: N/A" textFill="#475569">
+                          <font>
+                        <Font size="14.0" />
+                     </font>
+                      </Label>
+                  <Region prefHeight="20.0" prefWidth="46.0" />
+                  <Label fx:id="lblPromoCode" prefHeight="20.0" prefWidth="194.0" text="Mã giảm giá: N/A" textFill="#475569">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox prefHeight="8.0" prefWidth="610.0">
+               <children>
+                  <Label fx:id="lblStatus" prefHeight="20.0" prefWidth="178.0" text="Trạng thái: N/A" textFill="#475569">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Region prefHeight="20.0" prefWidth="215.0" />
+                  <Label fx:id="lblDiscount" prefHeight="20.0" prefWidth="197.0" text="Số tiền được giảm: N/A" textFill="#475569">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
                 <Label fx:id="lblAddress" text="Địa chỉ giao: N/A" textFill="#475569">
                     <font><Font size="14.0" /></font>
                 </Label>
