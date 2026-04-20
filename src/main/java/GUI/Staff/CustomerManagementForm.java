@@ -65,7 +65,7 @@ public class CustomerManagementForm implements Initializable {
     private TableColumn<Customer, Integer> colPoint;
 
     @FXML
-    private TableColumn<Customer, Customer.rank> colRank;
+    private TableColumn<Customer, Customer.Rank> colRank;
 
     private ObservableList<Customer> masterData = FXCollections.observableArrayList();
     private FilteredList<Customer> filteredData;
@@ -121,12 +121,12 @@ public class CustomerManagementForm implements Initializable {
 
     private void setupRankColumn() {
         colRank.setCellValueFactory(cellData ->
-                new SimpleObjectProperty<>(cellData.getValue().getCustomer_rank())
+                new SimpleObjectProperty<>(cellData.getValue().getCustomerRank())
         );
 
-        colRank.setCellFactory(column -> new TableCell<Customer, Customer.rank>() {
+        colRank.setCellFactory(column -> new TableCell<Customer, Customer.Rank>() {
             @Override
-            protected void updateItem(Customer.rank item, boolean empty) {
+            protected void updateItem(Customer.Rank item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item == null || empty) {
                     setGraphic(null);
@@ -182,8 +182,8 @@ public class CustomerManagementForm implements Initializable {
                 String lowerCaseFilter = newValue.toLowerCase();
 
                 String rankName = "";
-                if (customer.getCustomer_rank() != null) {
-                    switch (customer.getCustomer_rank()) {
+                if (customer.getCustomerRank() != null) {
+                    switch (customer.getCustomerRank()) {
                         case Bronze: rankName = "đồng"; break;
                         case Silver: rankName = "bạc"; break;
                         case Gold: rankName = "vàng"; break;

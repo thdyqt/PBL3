@@ -29,7 +29,7 @@ public class StaffBusiness {
                         dbStaff.getUser(),
                         password,
                         dbStaff.getRole(),
-                        dbStaff.getHire_date()
+                        dbStaff.getHireDate()
                 );
 
                 LogBusiness.saveLog("Đăng nhập vào hệ thống");

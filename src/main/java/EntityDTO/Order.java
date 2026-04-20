@@ -6,48 +6,47 @@ import java.util.ArrayList;
 
 public class Order {
 
-    public enum orderStatus{
-        Created, Waiting_for_validation, Processing, Delivering, Finished, Cancelled;
+    public enum OrderStatus {
+        Waiting_for_validation, Processing, Delivering, Finished, Cancelled;
     }
 
-    public enum orderType{
+    public enum OrderType {
         Online, Offline;
     }
 
-    public enum orderPayment{
+    public enum OrderPayment {
         Cash, Card;
     }
 
-    //offline -> status = {Processing, Finished}
-    //online -> status = {Created, Waiting_for_validation, Processing, Delivering, Finished, Cancelled}
+    //offline -> status = {Finished}
+    //online -> status = {Waiting_for_validation, Processing, Delivering, Finished, Cancelled}
 
     //attributes
     private int id;
-    private LocalDateTime process_time;
+    private LocalDateTime orderTime;
     private Staff staff;
     private Customer customer;
     private List<OrderDetail> orderDetail;
-    private orderStatus status;
-    private orderType type;
-    private orderPayment payment;
+    private OrderStatus status;
+    private OrderType type;
+    private OrderPayment payment;
     private int subTotal;
     private String appliedCode;
     private int discountAmount;
     private int finalAmount;
     private String address;
-    private String cancel_reason;
-
+    private String cancelReason;
 
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();}
 
-    public Order(int id, LocalDateTime process_time, Staff staff, Customer customer, OrderDetail detail){
+    public Order(int id, LocalDateTime orderTime, Staff staff, Customer customer, List<OrderDetail> orderDetailList){
         this.id = id;
-        this.process_time = process_time;
+        this.orderTime = orderTime;
         this.staff = staff;
         this.customer = customer;
-        this.orderDetail = orderDetail;
-        this.status = orderStatus.Waiting_for_validation;
+        this.orderDetail = orderDetailList;
+        this.status = OrderStatus.Waiting_for_validation;
     }
 
     //get-set
@@ -56,9 +55,9 @@ public class Order {
         this.id = id;
     }
 
-    public LocalDateTime getProcess_time(){return process_time;}
-    public void setProcess_time(LocalDateTime process_time) {
-        this.process_time = process_time;
+    public LocalDateTime getOrderTime(){return orderTime;}
+    public void setOrderTime(LocalDateTime orderTime) {
+        this.orderTime = orderTime;
     }
 
     public Staff getStaff(){return staff;}
@@ -76,14 +75,14 @@ public class Order {
         this.orderDetail = orderDetail;
     }
 
-    public orderStatus getStatus(){return status;}
-    public void setStatus(orderStatus status){this.status = status;}
+    public OrderStatus getStatus(){return status;}
+    public void setStatus(OrderStatus status){this.status = status;}
 
-    public orderType getType(){return type;}
-    public void setType(orderType type){this.type = type;}
+    public OrderType getType(){return type;}
+    public void setType(OrderType type){this.type = type;}
 
-    public orderPayment getPayment(){return payment;}
-    public void setPayment(orderPayment payment){this.payment = payment;}
+    public OrderPayment getPayment(){return payment;}
+    public void setPayment(OrderPayment payment){this.payment = payment;}
 
     public int getSubTotal(){return subTotal;}
     public void setSubTotal(int subTotal){this.subTotal = subTotal;}
@@ -100,6 +99,6 @@ public class Order {
     public String getAddress(){return address;}
     public void setAddress(String address){this.address = address;}
 
-    public String getCancel_reason(){return cancel_reason;}
-    public void setCancel_reason(String cancel_reason){this.cancel_reason = cancel_reason;}
+    public String getCancelReason(){return cancelReason;}
+    public void setCancelReason(String cancelReason){this.cancelReason = cancelReason;}
 }

@@ -71,7 +71,7 @@ public class CustomerBusiness {
     public static int getDiscountPercent (Customer c) {
         if (c == null) return 0;
 
-        Customer.rank rank = c.getCustomer_rank();
+        Customer.Rank rank = c.getCustomerRank();
         return switch (rank) {
             case Silver -> 1;
             case Gold -> 2;

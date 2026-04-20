@@ -1,6 +1,5 @@
 package GUI.Staff;
 
-import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,7 +8,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -17,13 +15,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import org.w3c.dom.Entity;
 
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class BillDetailController{
 
@@ -217,7 +212,7 @@ public class BillDetailController{
     //set up the 4 information buttons at the top
     public void setOrderDetails(EntityDTO.Order order) {
         label_OrderID.setText("ID hóa đơn: " + String.valueOf(order.getId()));
-        label_ProcessTime.setText(order.getProcess_time().toString());
+        label_ProcessTime.setText(order.getOrderTime().toString());
 
         if (order.getStaff() != null) {
             label_StaffID.setText("ID nhân viên: " + order.getStaff().getId());

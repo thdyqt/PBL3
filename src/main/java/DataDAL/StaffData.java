@@ -68,7 +68,7 @@ public class StaffData {
             stmt.setString(3, s.getUser());
             stmt.setString(4, hashedPassword);
             stmt.setString(5, s.getRole());
-            stmt.setDate(6, s.getHire_date());
+            stmt.setDate(6, s.getHireDate());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -118,7 +118,7 @@ public class StaffData {
             }
 
             stmt.setString(index++, s.getRole());
-            stmt.setDate(index++, s.getHire_date());
+            stmt.setDate(index++, s.getHireDate());
             stmt.setInt(index, s.getId());
 
             return stmt.executeUpdate() > 0;

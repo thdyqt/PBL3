@@ -294,7 +294,7 @@ public class POS implements Initializable {
 
     private void loadPromoCodes() {
         List<PromoCode> listCode = PromoCodeBusiness.getAllActivePromoCodes();
-        PromoCode allCode = new PromoCode("Không có", "Không có", 0, PromoCode.codeType.Amount, 0, null, null, PromoCode.codeStatus.Active);
+        PromoCode allCode = new PromoCode("Không có", "Không có", 0, PromoCode.CodeType.Amount, 0, null, null, PromoCode.CodeStatus.Active);
         listCode.add(0, allCode);
 
         cbbDiscount.setItems(FXCollections.observableArrayList(listCode));
@@ -390,7 +390,7 @@ public class POS implements Initializable {
                 Others.showAlert(mainPane, "Đơn hàng chưa đạt giá trị tối thiểu của mã giảm giá.", true);
                 Platform.runLater(() -> cbbDiscount.getSelectionModel().selectFirst());
             }
-            else if (selectedPromo.getDiscountType() == PromoCode.codeType.Percent) {
+            else if (selectedPromo.getDiscountType() == PromoCode.CodeType.Percent) {
                 int promoCodeDiscount = selectedPromo.getDiscountValue();
                 discountPercent = customerDiscount + promoCodeDiscount;
                 lblDiscountTitle.setText(String.format("Giảm giá (%d%%):", discountPercent));

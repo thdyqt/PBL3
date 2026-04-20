@@ -187,8 +187,8 @@ public class StaffManagementForm implements Initializable {
             }
 
             String hireDateStr = "";
-            if (staff.getHire_date() != null) {
-                hireDateStr = sdf.format(staff.getHire_date());
+            if (staff.getHireDate() != null) {
+                hireDateStr = sdf.format(staff.getHireDate());
             }
 
             if (staff.getName().toLowerCase().contains(searchKeyword) ||

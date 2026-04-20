@@ -4,26 +4,26 @@ import java.time.LocalDateTime;
 
 public class PromoCode {
 
-    public enum codeType{
+    public enum CodeType {
         Percent, Amount;
     }
 
-    public enum codeStatus{
+    public enum CodeStatus {
         Active, Paused, Upcoming, Expired;
     }
 
     private String code;
     private String description;
     private int discountValue;
-    private codeType discountType; // "PERCENT" hoặc "AMOUNT"
+    private CodeType discountType; // "PERCENT" hoặc "AMOUNT"
     private int minOrderValue;
     private LocalDateTime validFrom;
     private LocalDateTime validTo;
-    private codeStatus status;
+    private CodeStatus status;
 
     public PromoCode() {}
 
-    public PromoCode(String code, String description, int discountValue, codeType discountType, int minOrderValue, LocalDateTime validFrom, LocalDateTime validTo, codeStatus status) {
+    public PromoCode(String code, String description, int discountValue, CodeType discountType, int minOrderValue, LocalDateTime validFrom, LocalDateTime validTo, CodeStatus status) {
         this.code = code;
         this.description = description;
         this.discountValue = discountValue;
@@ -39,7 +39,7 @@ public class PromoCode {
         return description;
     }
     public int getDiscountValue() { return discountValue; }
-    public codeType getDiscountType() { return discountType; }
+    public CodeType getDiscountType() { return discountType; }
     public int getMinOrderValue() { return minOrderValue; }
     public LocalDateTime getValidFrom() {
         return validFrom;
@@ -47,7 +47,7 @@ public class PromoCode {
     public LocalDateTime getValidTo() {
         return validTo;
     }
-    public codeStatus getStatus() {
+    public CodeStatus getStatus() {
         return status;
     }
 
@@ -63,7 +63,7 @@ public class PromoCode {
         this.discountValue = discountValue;
     }
 
-    public void setDiscountType(codeType discountType) {
+    public void setDiscountType(CodeType discountType) {
         this.discountType = discountType;
     }
 
@@ -79,13 +79,13 @@ public class PromoCode {
         this.validTo = validTo;
     }
 
-    public void setStatus(codeStatus status) {
+    public void setStatus(CodeStatus status) {
         this.status = status;
     }
 
     @Override
     public String toString() {
-        if (discountType.equals("PERCENT")) {
+        if (discountType == CodeType.Percent) {
             return code + " (Giảm " + (int)discountValue + "%)";
         } else {
             return code + " (Giảm " + String.format("%,d", discountValue) + "đ)";

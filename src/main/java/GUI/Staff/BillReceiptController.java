@@ -66,7 +66,7 @@ public class BillReceiptController {
         if (order.getCustomer() != null) {
             labelCustomerID.setText("Tên khách hàng: " + String.valueOf(order.getCustomer().getName()));
             labelCustomerPoint.setText("Tổng điểm thành viên: " + String.valueOf(order.getCustomer().getPoint()));
-            labelCustomerRank.setText("Bậc khách hàng: " + String.valueOf(order.getCustomer().getCustomer_rank()));
+            labelCustomerRank.setText("Bậc khách hàng: " + String.valueOf(order.getCustomer().getCustomerRank()));
             labelCustomerPhone.setText("Số điện thoại của khách hàng: " + String.valueOf(order.getCustomer().getPhone()));
         } else {
             labelCustomerID.setText("Khách vãng lai");
@@ -77,7 +77,7 @@ public class BillReceiptController {
 
         labelOrderID.setText("ID hóa đơn: #" + String.valueOf(order.getId()));
         java.time.format.DateTimeFormatter timeFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        labelDate.setText("Thời gian thực hiện hóa đơn: " + String.valueOf(order.getProcess_time()));
+        labelDate.setText("Thời gian thực hiện hóa đơn: " + String.valueOf(order.getOrderTime()));
 
         List<OrderDetail> details = BusinessBLL.OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
 

@@ -4,29 +4,29 @@ import java.sql.*;
 
 public class Staff extends Person {
     private String role;
-    private Date hire_date;
+    private Date hireDate;
     private String status;
 
     public Staff() {}
 
-    public Staff(int id, String phone, String name, String user, String password, String role, Date hire_date, String status) {
+    public Staff(int id, String phone, String name, String user, String password, String role, Date hireDate, String status) {
         super(id, phone, name, user, password);
         this.role = role;
-        this.hire_date = hire_date;
+        this.hireDate = hireDate;
         this.status = status;
     }
 
-    public Staff(int id, String phone, String name, String user, String role, Date hire_date, String status) {
+    public Staff(int id, String phone, String name, String user, String role, Date hireDate, String status) {
         super(id, phone, name, user);
         this.role = role;
-        this.hire_date = hire_date;
+        this.hireDate = hireDate;
         this.status = status;
     }
 
-    public Staff(String phone, String name, String user, String password, String role, Date hire_date, String status) {
+    public Staff(String phone, String name, String user, String password, String role, Date hireDate, String status) {
         super(phone, name, user, password);
         this.role = role;
-        this.hire_date = hire_date;
+        this.hireDate = hireDate;
         this.status = status;
     }
 
@@ -38,12 +38,12 @@ public class Staff extends Person {
         this.role = role;
     }
 
-    public Date getHire_date() {
-        return hire_date;
+    public Date getHireDate() {
+        return hireDate;
     }
 
-    public void setHire_date(Date hire_date) {
-        this.hire_date = hire_date;
+    public void setHireDate(Date hireDate) {
+        this.hireDate = hireDate;
     }
 
     public String getStatus() {

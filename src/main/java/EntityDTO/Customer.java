@@ -3,10 +3,10 @@ package EntityDTO;
 public class Customer extends Person {
     private String address;
     private int point;
-    public enum rank {
+    public enum Rank {
         Bronze, Silver, Gold, Diamond, Emerald
     }
-    private rank Customer_rank;
+    private Rank CustomerRank;
 
 
     public Customer() {}
@@ -30,12 +30,12 @@ public class Customer extends Person {
 
     }
 
-    public rank getCustomer_rank() {
-        return Customer_rank;
+    public Rank getCustomerRank() {
+        return CustomerRank;
     }
 
-    public void setCustomer_rank(rank customer_rank) {
-        this.Customer_rank = customer_rank;
+    public void setCustomerRank(Rank customer_rank) {
+        this.CustomerRank = customer_rank;
     }
 
     public String getAddress() {
@@ -57,15 +57,15 @@ public class Customer extends Person {
 
     private void UpdatedRank(Customer c) {
         if (c.getPoint() < 100) {
-            c.setCustomer_rank(rank.Bronze);
+            c.setCustomerRank(Rank.Bronze);
         } else if (c.getPoint() < 500) {
-            c.setCustomer_rank(rank.Silver);
+            c.setCustomerRank(Rank.Silver);
         } else if (c.getPoint() < 1000) {
-            c.setCustomer_rank(rank.Gold);
+            c.setCustomerRank(Rank.Gold);
         } else if (c.getPoint() < 2000) {
-            c.setCustomer_rank(rank.Diamond);
+            c.setCustomerRank(Rank.Diamond);
         } else {
-            c.setCustomer_rank(rank.Emerald);
+            c.setCustomerRank(Rank.Emerald);
         }
     }
 }

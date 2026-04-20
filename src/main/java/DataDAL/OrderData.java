@@ -30,13 +30,13 @@ public class OrderData {
             while (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
-                order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+                order.setOrderTime(rs.getTimestamp("order_time").toLocalDateTime());
                 order.setSubTotal(rs.getInt("subtotal"));
                 order.setDiscountAmount(rs.getInt("discount_amount"));
                 order.setAppliedCode(rs.getString("applied_promo_code"));
                 order.setFinalAmount(rs.getInt("final_total"));
                 order.setAddress(rs.getString("address"));
-                order.setCancel_reason(rs.getString("cancel_reason"));
+                order.setCancelReason(rs.getString("cancel_reason"));
 
                 Staff staff = new Staff();
                 staff.setId(rs.getInt("id_Staff"));
@@ -52,22 +52,22 @@ public class OrderData {
                     customer.setPhone(rs.getString("customer_phone"));
                     int customerPoint = rs.getInt("customer_point");
                     if (customerPoint < 100) {
-                        customer.setCustomer_rank(Customer.rank.Bronze);
+                        customer.setCustomerRank(Customer.Rank.Bronze);
                     } else if (customerPoint < 500) {
-                        customer.setCustomer_rank(Customer.rank.Silver);
+                        customer.setCustomerRank(Customer.Rank.Silver);
                     } else if (customerPoint < 1000) {
-                        customer.setCustomer_rank(Customer.rank.Gold);
+                        customer.setCustomerRank(Customer.Rank.Gold);
                     } else if (customerPoint < 2000) {
-                        customer.setCustomer_rank(Customer.rank.Diamond);
+                        customer.setCustomerRank(Customer.Rank.Diamond);
                     } else {
-                        customer.setCustomer_rank(Customer.rank.Emerald);
+                        customer.setCustomerRank(Customer.Rank.Emerald);
                     }
                     order.setCustomer(customer);
                 }
 
-                order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
-                order.setType(Order.orderType.valueOf(rs.getString("type")));
-                order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
+                order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
+                order.setType(Order.OrderType.valueOf(rs.getString("type")));
+                order.setPayment(Order.OrderPayment.valueOf(rs.getString("payment")));
 
                 list.add(order);
             }
@@ -81,15 +81,15 @@ public class OrderData {
     public static int addOrder(Order order){
         //foreign keys are in here
         //specifically id_Staff and id_Customer
-        //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total, address, cancel_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        //order_time is an exclusive attribute to Order so there's that
+        String sql = "INSERT INTO Orders (order_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total, address, cancel_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (
             Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             //data loading
             //1,2,3,4 corresponding to the order in sql
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getOrderTime()));
             stmt.setInt(2, order.getStaff().getId());
 
             if (order.getCustomer() != null && order.getCustomer().getId() > 0) {
@@ -107,7 +107,7 @@ public class OrderData {
             stmt.setString(9, order.getAppliedCode());
             stmt.setInt(10, order.getFinalAmount());
             stmt.setString(11, order.getAddress());
-            stmt.setString(12, order.getCancel_reason());
+            stmt.setString(12, order.getCancelReason());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -145,10 +145,10 @@ public class OrderData {
             if (rs.next()){
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
-                order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
-                order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
-                order.setType(Order.orderType.valueOf(rs.getString("type")));
-                order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
+                order.setOrderTime(rs.getTimestamp("order_time").toLocalDateTime());
+                order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
+                order.setType(Order.OrderType.valueOf(rs.getString("type")));
+                order.setPayment(Order.OrderPayment.valueOf(rs.getString("payment")));
                 order.setSubTotal(rs.getInt("subtotal"));
                 order.setDiscountAmount(rs.getInt("discount_amount"));
                 order.setAppliedCode(rs.getString("applied_promo_code"));
@@ -181,13 +181,13 @@ public class OrderData {
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
         // 1. Updated SQL string with the 3 new columns added before the WHERE clause
-        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ?, address = ?, cancel_reason = ? WHERE id_Order = ?";
+        String sql = "UPDATE Orders SET order_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ?, address = ?, cancel_reason = ? WHERE id_Order = ?";
         try (
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             // Parameters 1, 2, 3: Timestamp and Foreign Keys
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getOrderTime()));
             stmt.setInt(2, order.getStaff().getId());
 
             if (order.getCustomer() != null) {
@@ -209,7 +209,7 @@ public class OrderData {
 
             //the 2 motherfucking new values
             stmt.setString(11, order.getAddress());
-            stmt.setString(12, order.getCancel_reason());
+            stmt.setString(12, order.getCancelReason());
 
             // Parameter 13: The Order ID used in the WHERE clause
             stmt.setInt(13, order.getId());

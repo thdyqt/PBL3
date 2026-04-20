@@ -2,15 +2,12 @@
 //hence why the return type are all String so the one who actually use this can know what is the exact problem
 package BusinessBLL;
 
-import DataDAL.OrderDetailData;
+import DataDAL.OrderData;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
-import DataDAL.OrderData;
 import EntityDTO.PromoCode;
-import org.w3c.dom.Entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,8 +23,8 @@ public class OrderBusiness {
             return "ERROR: Staff doesn't exist/ staff with invalid Id";
         }
 
-        order.setProcess_time(LocalDateTime.now());
-        order.setStatus(EntityDTO.Order.orderStatus.Created);
+        order.setOrderTime(LocalDateTime.now());
+        order.setStatus(Order.OrderStatus.Waiting_for_validation);
 
         order.setOrderDetail(orderDetailList);
         String mathStatus = calculateMoney(order);
@@ -73,7 +70,7 @@ public class OrderBusiness {
         if (allOrders != null) {
             // 2. Lọc ra các đơn Online
             List<Order> onlineOrders = allOrders.stream()
-                    .filter(o -> o.getType() == Order.orderType.Online)
+                    .filter(o -> o.getType() == Order.OrderType.Online)
                     .collect(Collectors.toList());
 
             // 3. TÍNH TỔNG TIỀN CHO TỪNG ĐƠN HÀNG
@@ -113,7 +110,7 @@ public class OrderBusiness {
             return "The order doesnt exist";
         }
 
-        order.setStatus(Order.orderStatus.valueOf(status));
+        order.setStatus(Order.OrderStatus.valueOf(status));
 
         boolean isUpdated = OrderData.updateOrder(order);
 
@@ -151,14 +148,14 @@ public class OrderBusiness {
         }
 
         // Luật kinh doanh BR-22: Chỉ cho phép hủy khi đơn ở trạng thái Chờ xác nhận hoặc Mới tạo
-        if (order.getStatus() != Order.orderStatus.Waiting_for_validation && order.getStatus() != Order.orderStatus.Created) {
+        if (order.getStatus() != Order.OrderStatus.Waiting_for_validation) {
             return "Lỗi: Đơn hàng đã được xử lý hoặc đang giao, không thể hủy!";
         }
 
         // 1. Thay đổi trạng thái thành Hủy
-        order.setStatus(Order.orderStatus.Cancelled);
+        order.setStatus(Order.OrderStatus.Cancelled);
 
-        order.setCancel_reason(reason);
+        order.setCancelReason(reason);
 
         // 2. Gọi hàm DAL để lưu trạng thái mới xuống DB
         boolean isUpdated = OrderData.updateOrder(order);
@@ -205,7 +202,7 @@ public class OrderBusiness {
             int rankPercent = CustomerBusiness.getDiscountPercent(order.getCustomer());
             if (rankPercent > 0){
                 rankDiscount = (int) (calSubTotal * (rankPercent / 100.0));
-                rankMessage = "Hạng " + order.getCustomer().getCustomer_rank().name() + " (-" + rankPercent + "%). ";
+                rankMessage = "Hạng " + order.getCustomer().getCustomerRank().name() + " (-" + rankPercent + "%). ";
             }
         }
 
@@ -231,7 +228,7 @@ public class OrderBusiness {
                 java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
                 //code exist but is inactive
-                if (promoCode.getStatus() != EntityDTO.PromoCode.codeStatus.Active){
+                if (promoCode.getStatus() != PromoCode.CodeStatus.Active){
                     order.setAppliedCode(null);
                     promoMessage = "ERROR: code is inactive.";
                 //before the code can even be used/ after the code has been expired
@@ -244,9 +241,9 @@ public class OrderBusiness {
                     promoMessage = "ERROR: order has lower value than min threshold of code.";
                 //valid code, calculate its discount value
                 } else{
-                    if (promoCode.getDiscountType() == EntityDTO.PromoCode.codeType.Percent){
+                    if (promoCode.getDiscountType() == PromoCode.CodeType.Percent){
                         promoDiscount = (int) (discoutedTotal_Post * (promoCode.getDiscountValue() / 100.0));
-                    } else if (promoCode.getDiscountType() == EntityDTO.PromoCode.codeType.Amount){
+                    } else if (promoCode.getDiscountType() == PromoCode.CodeType.Amount){
                         promoDiscount = promoCode.getDiscountValue();
                     }
                 }

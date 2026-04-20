@@ -19,11 +19,11 @@ public class PromoCodeData {
                 rs.getString("Code"),
                 rs.getString("Description"),
                 rs.getInt("DiscountValue"),
-                PromoCode.codeType.valueOf(type),
+                PromoCode.CodeType.valueOf(type),
                 rs.getInt("MinOrderValue"),
                 rs.getTimestamp("ValidFrom").toLocalDateTime(),
                 rs.getTimestamp("ValidTo").toLocalDateTime(),
-                PromoCode.codeStatus.valueOf(status)
+                PromoCode.CodeStatus.valueOf(status)
         );
     }
 
