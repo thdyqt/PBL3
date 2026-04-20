@@ -38,8 +38,8 @@ public class OrderOnlineDetailController {
             lblCustomerInfo.setText("Khách hàng: Khách vãng lai - SĐT: N/A");
         }
 
-        if(order.getStatus().name() == "Cancelled"){
-            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Lí do hủy: " + order.getCancel_reason());
+        if(order.getStatus().name().equals("Cancelled")){
+            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Lí do hủy: " + order.getCancelReason());
         }else
             lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
 
