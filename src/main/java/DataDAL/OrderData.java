@@ -81,8 +81,8 @@ public class OrderData {
     public static int addOrder(Order order){
         //foreign keys are in here
         //specifically id_Staff and id_Customer
-        //process_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (process_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total, address, cancel_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        //order_time is an exclusive attribute to Order so there's that
+        String sql = "INSERT INTO Orders (order_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total, address, cancel_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (
             Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
@@ -145,7 +145,7 @@ public class OrderData {
             if (rs.next()){
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
-                order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+                order.setProcess_time(rs.getTimestamp("order_time").toLocalDateTime());
                 order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
                 order.setType(Order.orderType.valueOf(rs.getString("type")));
                 order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
@@ -181,7 +181,7 @@ public class OrderData {
     //same thing as addOrder, albeit changed slightly
     public static boolean updateOrder(Order order){
         // 1. Updated SQL string with the 3 new columns added before the WHERE clause
-        String sql = "UPDATE Orders SET process_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ?, address = ?, cancel_reason = ? WHERE id_Order = ?";
+        String sql = "UPDATE Orders SET order_time = ?, id_Staff = ?, id_Customer = ?, status = ?, type = ?, payment = ?, subtotal = ?, discount_amount = ?, applied_promo_code = ?, final_total = ?, address = ?, cancel_reason = ? WHERE id_Order = ?";
         try (
                 Connection conn = DBConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)
