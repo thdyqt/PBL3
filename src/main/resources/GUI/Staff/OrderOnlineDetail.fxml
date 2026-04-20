@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -19,6 +19,11 @@
                 <Label fx:id="lblCustomerInfo" text="Khách hàng: N/A - SĐT: N/A" textFill="#475569">
                     <font><Font size="14.0" /></font>
                 </Label>
+            <Label fx:id="lblStatus" text="Trạng thái: N/A" textFill="#475569">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
                 <Label fx:id="lblAddress" text="Địa chỉ giao: N/A" textFill="#475569">
                     <font><Font size="14.0" /></font>
                 </Label>

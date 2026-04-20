@@ -272,6 +272,7 @@ public class CustomerDashboardForm implements Initializable {
                     session.getPhone(),
                     session.getName(),
                     session.getUsername(),
+                    session.getAddress(),
                     session.getPoint()
             );
 

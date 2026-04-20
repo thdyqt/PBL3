@@ -17,6 +17,7 @@ public class OrderOnlineDetailController {
 
     @FXML private Label lblCustomerInfo;
     @FXML private Label lblAddress;
+    @FXML private Label lblStatus;
     @FXML private Label lblFinalTotal;
 
     @FXML private TableView<OrderDetail> tableDetail;
@@ -35,7 +36,7 @@ public class OrderOnlineDetailController {
             lblCustomerInfo.setText("Khách hàng: Khách vãng lai - SĐT: N/A");
         }
 
-        lblAddress.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
+        lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
 
         // 2. Cài đặt các cột cho TableView
         // Lưu ý: Dựa theo OrderDetailData của bạn, Product dùng thuộc tính ProductName

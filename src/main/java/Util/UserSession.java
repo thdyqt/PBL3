@@ -13,6 +13,7 @@ public class UserSession {
     private String password;
     private String position;
     private Date hire_date;
+    private String address;
     private int point;
     private boolean isGuest;
 
@@ -35,12 +36,13 @@ public class UserSession {
         this.hire_date = hire_date;
     }
 
-    public void setCustomer(int id, String phone, String name, String username, String password, int point) {
+    public void setCustomer(int id, String phone, String name, String username, String password, String address, int point) {
         this.id = id;
         this.phone = phone;
         this.name = name;
         this.username = username;
         this.password = password;
+        this.address = address;
         this.point = point;
     }
 
@@ -59,6 +61,8 @@ public class UserSession {
         this.password = null;
         this.position = null;
         this.hire_date = null;
+        this.address = null;
+        this.point = 0;
         this.isGuest = false;
     }
 
@@ -88,6 +92,10 @@ public class UserSession {
 
     public Date getHire_date() {
         return hire_date;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public int getPoint() {
