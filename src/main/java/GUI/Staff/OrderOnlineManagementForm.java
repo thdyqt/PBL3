@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class OrderManagementForm implements Initializable {
+public class OrderOnlineManagementForm implements Initializable {
 
     @FXML private Button btnCancel;
     @FXML private Button btnDetail;
@@ -234,11 +234,11 @@ public class OrderManagementForm implements Initializable {
 
         try {
             // Mở form OrderDetail
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/OrderDetail.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/OrderOnlineDetail.fxml"));
             Parent root = loader.load();
 
             // Truyền dữ liệu đơn hàng sang Controller của form Chi tiết
-            OrderDetailController controller = loader.getController();
+            OrderOnlineDetailController controller = loader.getController();
             controller.setOrderData(selectedOrder);
 
             Stage stage = new Stage();
