@@ -193,7 +193,7 @@ public class CustomerDialogController implements Initializable {
 
                     if (isEditingSelf) {
                         String sessionPass = rawPassword.isEmpty() ? UserSession.getInstance().getPassword() : rawPassword;
-                        UserSession.getInstance().setCustomer(UserSession.getInstance().getId(), phone, name, username, sessionPass, point);
+                        UserSession.getInstance().setCustomer(UserSession.getInstance().getId(), phone, name, username, sessionPass, currentCustomer.getAddress(), point);
                     }
 
                     var delay = new PauseTransition(Duration.seconds(2.0));
