@@ -172,7 +172,7 @@ public class OrderOnlineManagementForm implements Initializable {
 
         // Chỉ kiểm tra UI (đã chọn dòng nào chưa)
         if (selectedOrder == null) {
-            showAlert(Alert.AlertType.WARNING, "Chưa chọn đơn hàng", "Vui lòng chọn một đơn hàng để hủy!");
+            Others.showAlert(rootPane, "Chưa chọn đơn hàng, vui lòng chọn đơn hàng để Hủy!", true);
             return;
         }
 
@@ -191,10 +191,10 @@ public class OrderOnlineManagementForm implements Initializable {
 
             // Hiển thị kết quả từ BLL
             if (msg.contains("thành công")) {
-                showAlert(Alert.AlertType.INFORMATION, "Thành công", msg);
+                Others.showAlert(rootPane, "Thành công", false);
                 loadData(); // Tải lại bảng để cập nhật trạng thái mới
             } else {
-                showAlert(Alert.AlertType.ERROR, "Thất bại", msg);
+                Others.showAlert(rootPane, "Thất bại", true);
             }
         }
     }
@@ -206,7 +206,7 @@ public class OrderOnlineManagementForm implements Initializable {
 
         // Kiểm tra UI
         if (selectedOrder == null || newState == null) {
-            showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Vui lòng chọn 1 đơn hàng và trạng thái cần chuyển ở ComboBox!");
+            Others.showAlert(rootPane, "Vui lonng chọn đơn hàng và trạng thái cần chuyển !", true);
             return;
         }
 
@@ -215,10 +215,10 @@ public class OrderOnlineManagementForm implements Initializable {
 
         // Hiển thị thông báo
         if (msg.contains("successfully") || msg.contains("thành công")) {
-            showAlert(Alert.AlertType.INFORMATION, "Thành công", "Cập nhật trạng thái thành công!");
+            Others.showAlert(rootPane, "Cập nhật trạng thái thành công !", false);
             loadData(); // Refresh lại bảng
         } else {
-            showAlert(Alert.AlertType.ERROR, "Thất bại", msg); // Sẽ in ra lỗi nếu hàm isValidStatus báo false
+            Others.showAlert(rootPane, "Thất bại", true);
         }
     }
 
@@ -226,7 +226,7 @@ public class OrderOnlineManagementForm implements Initializable {
     void btnDetailClick(ActionEvent event) {
         Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
         if (selectedOrder == null) {
-            showAlert(Alert.AlertType.WARNING, "Chưa chọn đơn hàng", "Vui lòng chọn đơn hàng để xem chi tiết!");
+            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng để xem chi tiết !", true);
             return;
         }
 
@@ -246,16 +246,9 @@ public class OrderOnlineManagementForm implements Initializable {
             stage.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Lỗi hệ thống", "Không thể mở form chi tiết!");
+            Others.showAlert(rootPane, "Lỗi hệ thống ! Không thể mở Form chi tiết", true);
         }
     }
 
-    // Hàm tiện ích để hiển thị thông báo
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
+
 }

@@ -35,12 +35,12 @@
             </HBox>
             <HBox prefHeight="8.0" prefWidth="610.0">
                <children>
-                  <Label fx:id="lblStatus" prefHeight="20.0" prefWidth="178.0" text="Trạng thái: N/A" textFill="#475569">
+                  <Label fx:id="lblStatus" prefHeight="20.0" prefWidth="360.0" text="Trạng thái: N/A" textFill="#475569">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Region prefHeight="20.0" prefWidth="215.0" />
+                  <Region prefHeight="20.0" prefWidth="34.0" />
                   <Label fx:id="lblDiscount" prefHeight="20.0" prefWidth="197.0" text="Số tiền được giảm: N/A" textFill="#475569">
                      <font>
                         <Font size="14.0" />
