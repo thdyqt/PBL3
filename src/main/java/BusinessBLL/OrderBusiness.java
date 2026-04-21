@@ -94,6 +94,32 @@ public class OrderBusiness {
             return "The order doesnt exist";
         }
 
+        return ValidTransition(order,status);
+    }
+
+    public static String ValidTransition(Order order, String status) {
+        switch (order.getStatus().name()) {
+            case "Processing":
+                // Processing thì không được về Waiting
+                if (status == "Waiting_for_validation") return "Processing thì không được về Waiting";
+                break;
+
+            case "Delivering":
+                // Delivering thì không được về Waiting hoặc Processing
+                if (status == "Waiting_for_validation" || status == "Processing") {
+                    return "Delivering thì không được về Waiting hoặc Processing";
+                }
+                break;
+
+            case "Finished":
+                // Finished thì không được về Waiting, Processing hoặc Delivering
+                if (status == "Waiting_for_validation" || status == "Processing" || status == "Delivering") {
+                    return "Finished thì không được về Waiting, Processing hoặc Delivering";
+                }
+            case "Cancelled":
+                // Đã kết thúc hoặc hủy thì thường không được chuyển đi đâu nữa
+                return "Không thể chuyển trạng thái đơn hàng đã hủy";
+        }
         order.setStatus(Order.OrderStatus.valueOf(status));
 
         boolean isUpdated = OrderData.updateOrder(order);
