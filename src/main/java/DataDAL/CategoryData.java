@@ -30,17 +30,6 @@ public class CategoryData {
         return list;
     }
 
-    // ===== GET BY ID =====
-    public static int getCategoryIDByName(String categoryName) {
-        List<Category> categories = CategoryData.getAll();
-        for (Category c : categories) {
-            if (c.getCategoryName().equals(categoryName)) {
-                return c.getCategoryID();
-            }
-        }
-        return -1; // Không tìm thấy
-    }
-
     public static Category getByID(int categoryID) {
         String sql = "SELECT * FROM Category WHERE category_id = ?";
 
@@ -129,23 +118,18 @@ public class CategoryData {
     }
     // ===== NGỪNG KINH DOANH =====
     public static boolean stopBusiness(int categoryID) {
+        String sqlCat = "UPDATE Category SET status = 'Inactive' WHERE category_id = ?";
+        String sqlPro = "UPDATE Product SET status = 'Inactive' WHERE CategoryID = ?";
 
-        String abc = "SELECT * FROM Product WHERE CategoryID = ?";
-        try(Connection con = DBConnection.getConnection(); PreparedStatement pstmt = con.prepareStatement(abc)){
-            pstmt.setInt(1,categoryID);
-            try(ResultSet resultSet = pstmt.executeQuery()){
-                while(resultSet.next()){
-                   ProductData.stopBusiness(resultSet.getInt("CategoryID"));
-                }
-            }
-        } catch (SQLException e){
-            System.err.println("Lỗi khi ngừng kinh doanh Sản Phẩm thuộc Danh mục này: "+e.getMessage());
-        }
-        String sql = "UPDATE Category SET status = 'Inactive' WHERE category_id = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement stmtCat = con.prepareStatement(sqlCat);
+             PreparedStatement stmtPro = con.prepareStatement(sqlPro)) {
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setInt(1, categoryID);
-            return stmt.executeUpdate() > 0;
+            stmtPro.setInt(1, categoryID);
+            stmtPro.executeUpdate();
+
+            stmtCat.setInt(1, categoryID);
+            return stmtCat.executeUpdate() > 0;
 
         } catch (SQLException e) {
             System.err.println("Lỗi stopBusiness Category: " + e.getMessage());
@@ -153,30 +137,26 @@ public class CategoryData {
         return false;
     }
 
-    // ===== MỞ LẠI KINH DOANH =====
     public static boolean restartBusiness(int categoryID) {
-        String abc = "SELECT * FROM Product WHERE CategoryID = ?";
-        try(Connection con = DBConnection.getConnection(); PreparedStatement pstmt = con.prepareStatement(abc)){
-            pstmt.setInt(1,categoryID);
-            try(ResultSet resultSet = pstmt.executeQuery()){
-                while(resultSet.next()){
-                    ProductData.restartBusiness(resultSet.getInt("CategoryID"));
-                }
-            }
-        } catch (SQLException e){
-            System.err.println("Lỗi khi ngừng kinh doanh Sản Phẩm thuộc Danh mục này: "+e.getMessage());
-        }
-        String sql = "UPDATE Category SET status = 'Active' WHERE category_id = ?";
+        String sqlCat = "UPDATE Category SET status = 'Active' WHERE category_id = ?";
+        String sqlPro = "UPDATE Product SET status = 'Active' WHERE CategoryID = ?";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setInt(1, categoryID);
-            return stmt.executeUpdate() > 0;
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement stmtCat = con.prepareStatement(sqlCat);
+             PreparedStatement stmtPro = con.prepareStatement(sqlPro)) {
+
+            stmtPro.setInt(1, categoryID);
+            stmtPro.executeUpdate();
+
+            stmtCat.setInt(1, categoryID);
+            return stmtCat.executeUpdate() > 0;
 
         } catch (SQLException e) {
             System.err.println("Lỗi restartBusiness Category: " + e.getMessage());
         }
         return false;
     }
+
     public static List<Category> getInactiveCategories() {
         List<Category> list = new ArrayList<>();
         String sql = "SELECT * FROM Category WHERE status = 'Inactive'";

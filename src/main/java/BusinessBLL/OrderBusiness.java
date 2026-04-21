@@ -8,46 +8,32 @@ import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import EntityDTO.PromoCode;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderBusiness {
-    public static String addOrder_BLL(Order order, List<OrderDetail> orderDetailList){
-        //error checking
-        if (orderDetailList == null || orderDetailList.isEmpty()) {
-            return "ERROR: List doesn't exist/ list is empty";
+    public static int createOrder(Order order) {
+        if (order == null || order.getOrderDetail() == null || order.getOrderDetail().isEmpty()) {
+            return -1;
         }
 
-        if (order.getStaff() == null || order.getStaff().getId() <= 0){
-            return "ERROR: Staff doesn't exist/ staff with invalid Id";
+        int newOrderId = OrderData.addOrder(order);
+
+        if (newOrderId > 0) {
+            String typeStr = (order.getType() == Order.OrderType.Offline) ? "Offline (Tại quầy)" : "Online";
+            String creatorName = (order.getStaff() != null) ? order.getStaff().getName() : "Khách hàng tự đặt";
+
+            LogBusiness.saveLog("Tài khoản [" + creatorName + "] đã tạo một đơn hàng " + typeStr + " mới (Mã: #" + newOrderId + ")");
         }
 
-        order.setOrderTime(LocalDateTime.now());
-        order.setStatus(Order.OrderStatus.Waiting_for_validation);
-
-        order.setOrderDetail(orderDetailList);
-        String mathStatus = calculateMoney(order);
-
-        int createdOrderID = OrderData.addOrder(order);
-        if (createdOrderID <= 0){
-            return "ERROR: Order created with invalid ID";
-        }
-
-        boolean itemSaved = OrderDetailBusiness.saveOrderDetail_BLL(orderDetailList, createdOrderID);
-        if (!itemSaved){
-            return "ERROR: Save failed";
-        }
-
-        return "OrderBusiness success " + mathStatus;
+        return newOrderId;
     }
 
     public static List<Order> getAllOrder_BLL(){
         return OrderData.getAllOrders();
     }
 
-    //status contraints as said in Order DTO
     public static boolean isValidStatus(Order order, String status){
         String type = String.valueOf(order.getType());
 
@@ -56,7 +42,7 @@ public class OrderBusiness {
         }
         else if ("Online".equalsIgnoreCase(type)) {
             List<String> validOnlineStates = Arrays.asList(
-                    "Created", "Waiting_for_validation", "Processing", "Delivering", "Finished", "Cancelled"
+                    "Waiting_for_validation", "Processing", "Delivering", "Finished", "Cancelled"
             );
             return validOnlineStates.contains(status);
         }
@@ -65,11 +51,9 @@ public class OrderBusiness {
     }
 
     public static List<Order> getOnlineOrders_BLL() {
-        // 1. Lấy danh sách nguyên bản từ DB (không bị lỗi mất thông tin)
         List<Order> allOrders = OrderData.getAllOrders();
 
         if (allOrders != null) {
-            // 2. Lọc ra các đơn Online
             List<Order> onlineOrders = allOrders.stream()
                     .filter(o -> o.getType() == Order.OrderType.Online)
                     .collect(Collectors.toList());
@@ -102,27 +86,6 @@ public class OrderBusiness {
             return "Order updated successfully";
         }else {
             return "Order failed to update";
-        }
-    }
-
-    public static String deleteOrder_BLL(int OrderID){
-        Order foundOrder = OrderData.searchOrder_ByID(OrderID);
-
-        if (foundOrder == null){
-            return "ERROR: Order doesnt exist";
-        }
-
-        boolean orderDetailDeleted = OrderDetailBusiness.deleteALLItemsFromOrder_BLL(OrderID);
-        if (!orderDetailDeleted){
-            return "ERROR: OrderDetail deletion failed";
-        }
-
-        boolean orderDeleted = OrderData.deleteOrder(OrderID);
-        if (!orderDeleted){
-            return "ERROR: Order deletion failed";
-        }
-        else{
-            return "Sucessfully deleted order with id: " + OrderID;
         }
     }
 

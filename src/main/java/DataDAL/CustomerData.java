@@ -112,6 +112,15 @@ public class CustomerData {
         }
     }
 
+    public static void addRewardPoints(Connection conn, int customerId, int pointsEarned) throws SQLException {
+        String sql = "UPDATE Customer SET point = point + ? WHERE id_khach_hang = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, pointsEarned);
+            stmt.setInt(2, customerId);
+            stmt.executeUpdate();
+        }
+    }
+
     public static Customer getCustomerByUsernameOrPhone(String user) {
         String sql = "SELECT id_khach_hang, phone, full_name, username, pass_word, address, point FROM Customer WHERE username = ? OR phone = ?";
 

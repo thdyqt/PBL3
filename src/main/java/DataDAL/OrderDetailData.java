@@ -9,28 +9,20 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//CRUD operations on the Product into Order
-//basically adding/deleting items from a grocery bag
 public class OrderDetailData {
-    //CRUD operations
-    public static boolean addProduct_OrderDetail(OrderDetail orderDetail){
-        String sql = "INSERT INTO OrderDetail (id_Order, id_Product, quantity, price) VALUES (?, ?, ?, ?)";
+    public static void addOrderDetailsBatch(Connection conn, int orderId, List<OrderDetail> details) throws SQLException {
+        String sql = "INSERT INTO OrderDetail (id_Order, id_Product, quantity, price, totalPrice) VALUES (?, ?, ?, ?, ?)";
 
-        try (
-            Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)
-        ) {
-            stmt.setInt(1, orderDetail.getOrder().getId());
-            stmt.setInt(2, orderDetail.getProduct().getProductID());
-            stmt.setInt(3, orderDetail.getQuantity());
-            stmt.setInt(4, orderDetail.getTotalPrice());
-
-            int rowsAffected = stmt.executeUpdate();
-            //it added something -> return true
-            return rowsAffected > 0;
-        } catch (SQLException e){
-            e.printStackTrace();
-            return false;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (OrderDetail item : details) {
+                stmt.setInt(1, orderId);
+                stmt.setInt(2, item.getProduct().getProductID());
+                stmt.setInt(3, item.getQuantity());
+                stmt.setInt(4, item.getPrice());
+                stmt.setInt(5, item.getTotalPrice());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
         }
     }
 
@@ -107,39 +99,4 @@ public class OrderDetailData {
             return false;
         }
     }
-
-    public static boolean deleteOrderDetail_1_Product(int id_Order, int id_Product){
-        String sql = "DELETE FROM OrderDetail WHERE id_Order = ? AND id_Product = ?";
-        try(
-                Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-        ){
-            stmt.setInt(1, id_Order);
-            stmt.setInt(2, id_Product);
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-        }catch (SQLException e){
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static boolean deleteALLItemsFromOrder(int OrderID){
-        String sql = "DELETE FROM OrderDetail WHERE id_Order = ?";
-
-        try(
-                Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-        ){
-            stmt.setInt(1, OrderID);
-            stmt.executeUpdate();
-
-            return true;
-        }catch (SQLException e){
-            e.printStackTrace();
-            return false;
-        }
-    }
-
 }

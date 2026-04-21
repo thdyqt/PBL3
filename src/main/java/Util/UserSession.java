@@ -1,6 +1,8 @@
 package Util;
 
-import java.util.Date;
+import EntityDTO.Staff;
+
+import java.sql.Date;
 
 // LẤY THÔNG TIN NGƯỜI DÙNG ĐĂNG NHẬP HIỆN TẠI
 public class UserSession {
@@ -104,5 +106,9 @@ public class UserSession {
 
     public boolean isGuest() {
         return isGuest;
+    }
+
+    public Staff getStaff() {
+        return new Staff(id, phone, name, username, password, position, hire_date, "Active");
     }
 }

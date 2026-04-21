@@ -1,5 +1,6 @@
 package Util;
 
+import EntityDTO.Customer;
 import EntityDTO.OrderDetail;
 import EntityDTO.Product;
 import javafx.beans.property.IntegerProperty;
@@ -12,7 +13,7 @@ public class CartManager {
 
     private ObservableList<OrderDetail> customerCart;
     private IntegerProperty customerTotalCount = new SimpleIntegerProperty(0);
-
+    private Customer currentCustomer = null;
     private ObservableList<OrderDetail> posCart;
 
     private CartManager() {
@@ -73,11 +74,16 @@ public class CartManager {
     }
 
     // PHẦN XỬ LÝ CHO NHÂN VIÊN (POS STAFF)
+    public Customer getCurrentCustomer() { return currentCustomer; }
+
+    public void setCurrentCustomer(Customer currentCustomer) { this.currentCustomer = currentCustomer; }
+
     public ObservableList<OrderDetail> getPosCart() {
         return posCart;
     }
 
     public void clearPosCart() {
         posCart.clear();
+        CartManager.getInstance().setCurrentCustomer(null);
     }
 }

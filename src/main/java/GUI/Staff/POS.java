@@ -4,6 +4,7 @@ import BusinessBLL.*;
 import EntityDTO.*;
 import Util.CartManager;
 import Util.Others;
+import Util.UserSession;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
@@ -32,8 +33,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -271,6 +274,13 @@ public class POS implements Initializable {
             calculateTotal();
         });
 
+        currentCustomer = CartManager.getInstance().getCurrentCustomer();
+        if (currentCustomer != null) {
+            txtCustomerPhone.setText(currentCustomer.getPhone());
+            lblCustomerName.setText(currentCustomer.getName());
+            lblCustomerName.setStyle("-fx-text-fill: #16A34A; -fx-font-weight: bold;");
+        }
+
         allProducts = ProductBusiness.getAllProducts();
         cartList = CartManager.getInstance().getPosCart();
         tableCart.setItems(cartList);
@@ -459,6 +469,7 @@ public class POS implements Initializable {
 
         lblCustomerName.setText(currentCustomer.getName());
         lblCustomerName.setStyle("-fx-text-fill: #16A34A; -fx-font-weight: bold;");
+        CartManager.getInstance().setCurrentCustomer(currentCustomer);
         calculateTotal();
     }
     @FXML
@@ -482,6 +493,23 @@ public class POS implements Initializable {
         }
     }
 
+    private void resetPOS() {
+        txtCustomerPhone.clear();
+        currentCustomer = null;
+        lblCustomerName.setText("Khách vãng lai");
+        lblCustomerName.setStyle("-fx-text-fill: #64748B;");
+
+        cartList.clear();
+        tableCart.refresh();
+        cbbCategory.getSelectionModel().selectFirst();
+        cbbDiscount.getSelectionModel().selectFirst();
+        calculateTotal();
+        txtSearchProduct.clear();
+        allProducts = ProductBusiness.getAllProducts();
+        displayProducts(allProducts);
+    }
+
+
     @FXML
     void handleCancelOrder(ActionEvent event) {
         if (cartList.isEmpty() && currentCustomer == null) {
@@ -489,17 +517,7 @@ public class POS implements Initializable {
         }
 
         if (Others.showCustomConfirm("Xác nhận hủy đơn", "Bạn có chắc chắn muốn hủy toàn bộ đơn hàng hiện tại không?", "Đồng ý", "Hủy")){
-            txtCustomerPhone.clear();
-            currentCustomer = null;
-            lblCustomerName.setText("Khách vãng lai");
-            lblCustomerName.setStyle("-fx-text-fill: #64748B;");
-
-            cartList.clear();
-            tableCart.refresh();
-            cbbCategory.getSelectionModel().clearSelection();
-            cbbDiscount.getSelectionModel().clearSelection();
-            calculateTotal();
-            txtSearchProduct.clear();
+            resetPOS();
         }
     }
 
@@ -558,7 +576,10 @@ public class POS implements Initializable {
 
         btnCash.setOnAction(e -> {
             dialogStage.close();
-            // processCheckout("Tiền mặt", finalTotal);
+
+            Platform.runLater(() -> {
+                processCheckout("Tiền mặt", finalTotal);
+            });
         });
 
         btnTransfer.setOnAction(e -> {
@@ -567,6 +588,80 @@ public class POS implements Initializable {
         });
 
         dialogStage.showAndWait();
+    }
+
+    private void processCheckout(String paymentMethodStr, int finalTotal) {
+        Staff currentStaff = UserSession.getInstance().getStaff();
+        Order.OrderPayment payment = null;
+        String code = "";
+
+        if (paymentMethodStr.equals("Tiền mặt")) {
+            payment = Order.OrderPayment.Cash;
+        } else {
+            payment = Order.OrderPayment.Card;
+        }
+
+        int subtotal = 0;
+        for (OrderDetail item : cartList) {
+            subtotal += item.getTotalPrice();
+        }
+
+        PromoCode selectedPromo = null;
+        if (cbbDiscount.getSelectionModel().getSelectedIndex() > 0) {
+            selectedPromo = cbbDiscount.getSelectionModel().getSelectedItem();
+        }
+
+        if (selectedPromo != null) {
+            code = selectedPromo.getCode();
+        }
+
+        int discountAmount = OrderBusiness.getDiscountAmount(subtotal, currentCustomer, selectedPromo);
+
+        Order newOrder = new Order(
+                LocalDateTime.now(),
+                currentStaff, currentCustomer,
+                new ArrayList<>(cartList),
+                Order.OrderStatus.Finished,
+                Order.OrderType.Offline,
+                payment,
+                subtotal,
+                code,
+                discountAmount,
+                finalTotal,
+                "",
+                ""
+                );
+
+        int newOrderId = OrderBusiness.createOrder(newOrder);
+
+        if (newOrderId > 0) {
+            newOrder.setId(newOrderId);
+
+            Others.showAlert(mainPane, "Thanh toán " + paymentMethodStr + " thành công!", false);
+
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/BillReceipt.fxml"));
+                Parent root = loader.load();
+                BillReceiptController controller = loader.getController();
+                controller.setData(newOrder);
+                Stage stage = new Stage();
+                stage.setTitle("Hóa đơn thanh toán #" + newOrder.getId());
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initStyle(StageStyle.UTILITY);
+
+                Scene scene = new Scene(root, 650, 750);
+                stage.setScene(scene);
+                stage.showAndWait();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Others.showAlert(mainPane, "Lỗi: Không thể mở form hóa đơn! " + e.getMessage(), true);
+            }
+
+            resetPOS();
+        } else {
+            Others.showAlert(mainPane, "Lỗi hệ thống! Không thể lưu đơn hàng xuống Database.", true);
+        }
     }
 
     private void showVietQRAndCheckout(int amount) {
@@ -624,7 +719,9 @@ public class POS implements Initializable {
 
             btnConfirm.setOnAction(e -> {
                 qrStage.close();
-                //processCheckout("Chuyển khoản", amount);
+                Platform.runLater(() -> {
+                    processCheckout("Chuyển khoản", amount);
+                });
             });
 
             qrStage.showAndWait();

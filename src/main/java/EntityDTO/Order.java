@@ -40,13 +40,20 @@ public class Order {
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();}
 
-    public Order(int id, LocalDateTime orderTime, Staff staff, Customer customer, List<OrderDetail> orderDetailList){
-        this.id = id;
+    public Order(LocalDateTime orderTime, Staff staff, Customer customer, List<OrderDetail> orderDetail, OrderStatus status, OrderType type, OrderPayment payment, int subTotal, String appliedCode, int discountAmount, int finalAmount, String address, String cancelReason) {
         this.orderTime = orderTime;
         this.staff = staff;
         this.customer = customer;
-        this.orderDetail = orderDetailList;
-        this.status = OrderStatus.Waiting_for_validation;
+        this.orderDetail = orderDetail;
+        this.status = status;
+        this.type = type;
+        this.payment = payment;
+        this.subTotal = subTotal;
+        this.appliedCode = appliedCode;
+        this.discountAmount = discountAmount;
+        this.finalAmount = finalAmount;
+        this.address = address;
+        this.cancelReason = cancelReason;
     }
 
     //get-set
