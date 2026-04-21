@@ -206,7 +206,7 @@ public class OrderOnlineManagementForm implements Initializable {
 
         // Kiểm tra UI
         if (selectedOrder == null || newState == null) {
-            Others.showAlert(rootPane, "Vui lonng chọn đơn hàng và trạng thái cần chuyển !", true);
+            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng và trạng thái cần chuyển !", true);
             return;
         }
 
@@ -214,11 +214,11 @@ public class OrderOnlineManagementForm implements Initializable {
         String msg = OrderBusiness.updateOrder_BLL(selectedOrder, newState);
 
         // Hiển thị thông báo
-        if (msg.contains("successfully") || msg.contains("thành công")) {
-            Others.showAlert(rootPane, "Cập nhật trạng thái thành công !", false);
+        if (msg.contains("Order updated successfully")) {
+            Others.showAlert(rootPane, msg, false);
             loadData(); // Refresh lại bảng
         } else {
-            Others.showAlert(rootPane, "Thất bại", true);
+            Others.showAlert(rootPane, msg, true);
         }
     }
 
