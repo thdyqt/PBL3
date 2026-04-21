@@ -2,54 +2,38 @@
 //hence why the return type are all String so the one who actually use this can know what is the exact problem
 package BusinessBLL;
 
-import DataDAL.OrderDetailData;
+import DataDAL.OrderData;
+import EntityDTO.Customer;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
-import DataDAL.OrderData;
 import EntityDTO.PromoCode;
-import org.w3c.dom.Entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderBusiness {
-    public static String addOrder_BLL(Order order, List<OrderDetail> orderDetailList){
-        //error checking
-        if (orderDetailList == null || orderDetailList.isEmpty()) {
-            return "ERROR: List doesn't exist/ list is empty";
+    public static int createOrder(Order order) {
+        if (order == null || order.getOrderDetail() == null || order.getOrderDetail().isEmpty()) {
+            return -1;
         }
 
-        if (order.getStaff() == null || order.getStaff().getId() <= 0){
-            return "ERROR: Staff doesn't exist/ staff with invalid Id";
+        int newOrderId = OrderData.addOrder(order);
+
+        if (newOrderId > 0) {
+            String typeStr = (order.getType() == Order.OrderType.Offline) ? "Offline (Tại quầy)" : "Online";
+            String creatorName = (order.getStaff() != null) ? order.getStaff().getName() : "Khách hàng tự đặt";
+
+            LogBusiness.saveLog("Tài khoản [" + creatorName + "] đã tạo một đơn hàng " + typeStr + " mới (Mã: #" + newOrderId + ")");
         }
 
-        order.setProcess_time(LocalDateTime.now());
-        order.setStatus(EntityDTO.Order.orderStatus.Created);
-
-        order.setOrderDetail(orderDetailList);
-        String mathStatus = calculateMoney(order);
-
-        int createdOrderID = OrderData.addOrder(order);
-        if (createdOrderID <= 0){
-            return "ERROR: Order created with invalid ID";
-        }
-
-        boolean itemSaved = OrderDetailBusiness.saveOrderDetail_BLL(orderDetailList, createdOrderID);
-        if (!itemSaved){
-            return "ERROR: Save failed";
-        }
-
-        return "OrderBusiness success " + mathStatus;
+        return newOrderId;
     }
 
     public static List<Order> getAllOrder_BLL(){
         return OrderData.getAllOrders();
     }
 
-    //status contraints as said in Order DTO
     public static boolean isValidStatus(Order order, String status){
         String type = String.valueOf(order.getType());
 
@@ -58,7 +42,7 @@ public class OrderBusiness {
         }
         else if ("Online".equalsIgnoreCase(type)) {
             List<String> validOnlineStates = Arrays.asList(
-                    "Created", "Waiting_for_validation", "Processing", "Delivering", "Finished", "Cancelled"
+                    "Waiting_for_validation", "Processing", "Delivering", "Finished", "Cancelled"
             );
             return validOnlineStates.contains(status);
         }
@@ -67,31 +51,12 @@ public class OrderBusiness {
     }
 
     public static List<Order> getOnlineOrders_BLL() {
-        // 1. Lấy danh sách nguyên bản từ DB (không bị lỗi mất thông tin)
         List<Order> allOrders = OrderData.getAllOrders();
 
         if (allOrders != null) {
-            // 2. Lọc ra các đơn Online
             List<Order> onlineOrders = allOrders.stream()
-                    .filter(o -> o.getType() == Order.orderType.Online)
+                    .filter(o -> o.getType() == Order.OrderType.Online)
                     .collect(Collectors.toList());
-
-            // 3. TÍNH TỔNG TIỀN CHO TỪNG ĐƠN HÀNG
-            for (Order order : onlineOrders) {
-                // Gọi BLL của Detail để lấy danh sách món ăn của hóa đơn này
-                List<OrderDetail> details = OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
-
-                int total = 0;
-                if (details != null) {
-                    for (OrderDetail detail : details) {
-                        total += detail.getTotalPrice(); // Cộng dồn tiền từng món
-                    }
-                }
-
-                // Lưu tổng tiền vào hóa đơn để mang lên GUI hiển thị
-                order.setFinalAmount(total);
-            }
-
             return onlineOrders;
         }
         return null;
@@ -113,7 +78,33 @@ public class OrderBusiness {
             return "The order doesnt exist";
         }
 
-        order.setStatus(Order.orderStatus.valueOf(status));
+        return ValidTransition(order,status);
+    }
+
+    public static String ValidTransition(Order order, String status) {
+        switch (order.getStatus().name()) {
+            case "Processing":
+                // Processing thì không được về Waiting
+                if (status == "Waiting_for_validation") return "Processing thì không được về Waiting";
+                break;
+
+            case "Delivering":
+                // Delivering thì không được về Waiting hoặc Processing
+                if (status == "Waiting_for_validation" || status == "Processing") {
+                    return "Delivering thì không được về Waiting hoặc Processing";
+                }
+                break;
+
+            case "Finished":
+                // Finished thì không được về Waiting, Processing hoặc Delivering
+                if (status == "Waiting_for_validation" || status == "Processing" || status == "Delivering") {
+                    return "Finished thì không được về Waiting, Processing hoặc Delivering";
+                }
+            case "Cancelled":
+                // Đã kết thúc hoặc hủy thì thường không được chuyển đi đâu nữa
+                return "Không thể chuyển trạng thái đơn hàng đã hủy";
+        }
+        order.setStatus(Order.OrderStatus.valueOf(status));
 
         boolean isUpdated = OrderData.updateOrder(order);
 
@@ -124,41 +115,20 @@ public class OrderBusiness {
         }
     }
 
-    public static String deleteOrder_BLL(int OrderID){
-        Order foundOrder = OrderData.searchOrder_ByID(OrderID);
-
-        if (foundOrder == null){
-            return "ERROR: Order doesnt exist";
-        }
-
-        boolean orderDetailDeleted = OrderDetailBusiness.deleteALLItemsFromOrder_BLL(OrderID);
-        if (!orderDetailDeleted){
-            return "ERROR: OrderDetail deletion failed";
-        }
-
-        boolean orderDeleted = OrderData.deleteOrder(OrderID);
-        if (!orderDeleted){
-            return "ERROR: Order deletion failed";
-        }
-        else{
-            return "Sucessfully deleted order with id: " + OrderID;
-        }
-    }
-
     public static String cancelOnlineOrder_BLL(Order order, String reason) {
         if (order == null || order.getId() <= 0) {
             return "Lỗi: Không tìm thấy đơn hàng.";
         }
 
         // Luật kinh doanh BR-22: Chỉ cho phép hủy khi đơn ở trạng thái Chờ xác nhận hoặc Mới tạo
-        if (order.getStatus() != Order.orderStatus.Waiting_for_validation && order.getStatus() != Order.orderStatus.Created) {
+        if (order.getStatus() != Order.OrderStatus.Waiting_for_validation) {
             return "Lỗi: Đơn hàng đã được xử lý hoặc đang giao, không thể hủy!";
         }
 
         // 1. Thay đổi trạng thái thành Hủy
-        order.setStatus(Order.orderStatus.Cancelled);
+        order.setStatus(Order.OrderStatus.Cancelled);
 
-        order.setCancel_reason(reason);
+        order.setCancelReason(reason);
 
         // 2. Gọi hàm DAL để lưu trạng thái mới xuống DB
         boolean isUpdated = OrderData.updateOrder(order);
@@ -185,6 +155,37 @@ public class OrderBusiness {
         }
     }
 
+    public static int getDiscountAmount(int subtotal, Customer customer, PromoCode code) {
+        int customerDiscountPercent = 0;
+        if (customer != null) {
+            customerDiscountPercent = CustomerBusiness.getDiscountPercent(customer);
+        }
+
+        int discountFromCustomer = (int) (subtotal * (customerDiscountPercent / 100.0));
+        int remainingSubtotal = subtotal - discountFromCustomer;
+
+        int discountFromPromo = 0;
+
+        if (code != null) {
+            if (code.getDiscountType() == PromoCode.CodeType.Percent) {
+                discountFromPromo = (int) (remainingSubtotal * (code.getDiscountValue() / 100.0));
+            }
+            else if (code.getDiscountType() == PromoCode.CodeType.Amount) {
+                discountFromPromo = code.getDiscountValue();
+            }
+
+            if (discountFromPromo > remainingSubtotal) {
+                discountFromPromo = remainingSubtotal;
+            }
+        }
+
+        return discountFromCustomer + discountFromPromo;
+    }
+
+    public static int getFinalTotal(int subtotal, int discountAmount) {
+        return subtotal - discountAmount;
+    }
+
     //all things money related of order
     public static String calculateMoney(Order order){
         //calculate subtotal
@@ -205,7 +206,7 @@ public class OrderBusiness {
             int rankPercent = CustomerBusiness.getDiscountPercent(order.getCustomer());
             if (rankPercent > 0){
                 rankDiscount = (int) (calSubTotal * (rankPercent / 100.0));
-                rankMessage = "Hạng " + order.getCustomer().getCustomer_rank().name() + " (-" + rankPercent + "%). ";
+                rankMessage = "Hạng " + order.getCustomer().getCustomerRank().name() + " (-" + rankPercent + "%). ";
             }
         }
 
@@ -231,7 +232,7 @@ public class OrderBusiness {
                 java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
                 //code exist but is inactive
-                if (promoCode.getStatus() != EntityDTO.PromoCode.codeStatus.Active){
+                if (promoCode.getStatus() != PromoCode.CodeStatus.Active){
                     order.setAppliedCode(null);
                     promoMessage = "ERROR: code is inactive.";
                 //before the code can even be used/ after the code has been expired
@@ -244,9 +245,9 @@ public class OrderBusiness {
                     promoMessage = "ERROR: order has lower value than min threshold of code.";
                 //valid code, calculate its discount value
                 } else{
-                    if (promoCode.getDiscountType() == EntityDTO.PromoCode.codeType.Percent){
+                    if (promoCode.getDiscountType() == PromoCode.CodeType.Percent){
                         promoDiscount = (int) (discoutedTotal_Post * (promoCode.getDiscountValue() / 100.0));
-                    } else if (promoCode.getDiscountType() == EntityDTO.PromoCode.codeType.Amount){
+                    } else if (promoCode.getDiscountType() == PromoCode.CodeType.Amount){
                         promoDiscount = promoCode.getDiscountValue();
                     }
                 }

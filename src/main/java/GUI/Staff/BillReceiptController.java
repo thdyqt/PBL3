@@ -2,100 +2,90 @@ package GUI.Staff;
 
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
+import Util.Others;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class BillReceiptController {
+    @FXML
+    private Label lblCashierName;
 
     @FXML
-    private Label labelCashierID;
+    private Label lblCustomerName;
 
     @FXML
-    private Label labelCustomerID;
+    private Label lblCustomerPhone;
 
     @FXML
-    private Label labelCustomerPhone;
+    private Label lblCustomerPoint;
 
     @FXML
-    private Label labelCustomerPoint;
+    private Label lblCustomerRank;
 
     @FXML
-    private Label labelCustomerRank;
+    private Label lblTime;
 
     @FXML
-    private Label labelDate;
+    private Label lblDiscount;
 
     @FXML
-    private Label labelDiscount;
+    private Label lblItemTotal;
 
     @FXML
-    private Label labelItemTotal;
+    private Label lblOrderID;
 
     @FXML
-    private Label labelOrderID;
+    private Label lblPlusPoint;
 
     @FXML
-    private Label labelPlusPoint;
+    private Label lblSubTotal;
 
     @FXML
-    private Label labelSubTotal;
-
-    @FXML
-    private Label labelTotal;
+    private Label lblTotal;
 
     @FXML
     private VBox vboxContent;
 
-    private final DecimalFormat formatter;
-
-    public BillReceiptController() {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setGroupingSeparator('.');
-        formatter = new DecimalFormat("#,###", symbols);
-    }
-
-    public void setData(Order order){
-        labelCashierID.setText("Tên nhân viên: " + String.valueOf(order.getStaff().getName()));
+    public void setData(Order order) {
+        lblCashierName.setText("Nhân viên: " + order.getStaff().getName());
 
         if (order.getCustomer() != null) {
-            labelCustomerID.setText("Tên khách hàng: " + String.valueOf(order.getCustomer().getName()));
-            labelCustomerPoint.setText("Tổng điểm thành viên: " + String.valueOf(order.getCustomer().getPoint()));
-            labelCustomerRank.setText("Bậc khách hàng: " + String.valueOf(order.getCustomer().getCustomer_rank()));
-            labelCustomerPhone.setText("Số điện thoại của khách hàng: " + String.valueOf(order.getCustomer().getPhone()));
+            lblCustomerName.setText("Khách hàng: " + order.getCustomer().getName());
+            lblCustomerPoint.setText("Điểm: " + order.getCustomer().getPoint() + " điểm");
+            lblCustomerRank.setText("Hạng thành viên: " + order.getCustomer().getCustomerRank());
+            lblCustomerPhone.setText("SĐT khách hàng: " + order.getCustomer().getPhone());
         } else {
-            labelCustomerID.setText("Khách vãng lai");
-            if (labelCustomerPoint != null) labelCustomerPoint.setText("");
-            if (labelCustomerRank != null) labelCustomerRank.setText("");
-            if (labelCustomerPhone != null) labelCustomerPhone.setText("");
+            lblCustomerName.setText("Tên Khách hàng: Khách vãng lai");
+            if (lblCustomerPoint != null) lblCustomerPoint.setText("Điểm: 0");
+            if (lblCustomerRank != null) lblCustomerRank.setText("Hạng thành viên: Không có");
+            if (lblCustomerPhone != null) lblCustomerPhone.setText("Số điện thoại khách hàng: Không có");
         }
 
-        labelOrderID.setText("ID hóa đơn: #" + String.valueOf(order.getId()));
-        java.time.format.DateTimeFormatter timeFormatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        labelDate.setText("Thời gian thực hiện hóa đơn: " + String.valueOf(order.getProcess_time()));
+        lblOrderID.setText("Mã Hóa đơn: #" + order.getId());
 
-        List<OrderDetail> details = BusinessBLL.OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
+        if (order.getOrderTime() != null) {
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            lblTime.setText("Thời gian in đơn: " + order.getOrderTime().format(timeFormatter));
+        }
+
+        List<OrderDetail> details = order.getOrderDetail();
 
         vboxContent.getChildren().clear();
         int totalItemsCount = 0;
 
         GridPane itemGrid = new GridPane();
-        itemGrid.setHgap(20);
-        itemGrid.setVgap(5);
+        itemGrid.setHgap(15);
+        itemGrid.setVgap(8);
+        itemGrid.setPadding(new javafx.geometry.Insets(0, 0, 0, 5));
 
-        //padding
-        itemGrid.setPadding(new javafx.geometry.Insets(0, 0, 0, 10));
-
-        //make the content grow according to the size
         javafx.scene.layout.ColumnConstraints colName = new javafx.scene.layout.ColumnConstraints();
         colName.setHgrow(javafx.scene.layout.Priority.ALWAYS);
 
-        //all columns below are pushed all the way to the right
         javafx.scene.layout.ColumnConstraints colQty = new javafx.scene.layout.ColumnConstraints();
         colQty.setHalignment(javafx.geometry.HPos.RIGHT);
 
@@ -111,9 +101,16 @@ public class BillReceiptController {
 
         for (OrderDetail item : details){
             Label labelName = new Label(item.getProduct().getProductName());
-            Label labelPrice_Singular = new Label(formatter.format(item.getPrice()) + "đ");
+            labelName.setStyle("-fx-text-fill: #334155;");
+
+            Label labelPrice_Singular = new Label(Others.formatPrice(item.getPrice()));
+            labelPrice_Singular.setStyle("-fx-text-fill: #94A3B8;");
+
             Label labelQuanity = new Label("x" + item.getQuantity());
-            Label labelItemTotal = new Label(formatter.format(item.getTotalPrice()) + "đ");
+            labelQuanity.setStyle("-fx-font-weight: bold; -fx-text-fill: #475569;");
+
+            Label labelItemTotal = new Label(Others.formatPrice(item.getTotalPrice()));
+            labelItemTotal.setStyle("-fx-font-weight: bold; -fx-text-fill: #0F172A;");
 
             GridPane.setHalignment(labelItemTotal, javafx.geometry.HPos.RIGHT);
 
@@ -128,20 +125,18 @@ public class BillReceiptController {
 
         vboxContent.getChildren().add(itemGrid);
 
-        if (labelItemTotal != null) {
-            labelItemTotal.setText(String.valueOf(totalItemsCount));
-        }
+        if (lblItemTotal != null) lblItemTotal.setText(String.valueOf(totalItemsCount));
+        if (lblSubTotal != null) lblSubTotal.setText(Others.formatPrice(order.getSubTotal()));
+        if (lblDiscount != null) lblDiscount.setText("- " + Others.formatPrice(order.getDiscountAmount()));
+        if (lblTotal != null) lblTotal.setText(Others.formatPrice(order.getFinalAmount()));
 
-        if (labelSubTotal != null) {
-            labelSubTotal.setText(formatter.format(order.getSubTotal()) + "đ");
-        }
-
-        if (labelDiscount != null) {
-            labelDiscount.setText(formatter.format(order.getDiscountAmount()) + "đ");
-        }
-
-        if (labelTotal != null) {
-            labelTotal.setText(formatter.format(order.getFinalAmount()) + "đ");
+        if (lblPlusPoint != null) {
+            if (order.getCustomer() != null) {
+                int earnedPoints = order.getFinalAmount() / 1000;
+                lblPlusPoint.setText("+" + earnedPoints + " điểm");
+            } else {
+                lblPlusPoint.setText("+0 điểm");
+            }
         }
     }
 }

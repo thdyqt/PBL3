@@ -23,9 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -60,7 +58,7 @@ public class PromoCodeManagementForm implements Initializable {
     private TableColumn<PromoCode, LocalDateTime> colStart;
 
     @FXML
-    private TableColumn<PromoCode, PromoCode.codeStatus> colStatus;
+    private TableColumn<PromoCode, PromoCode.CodeStatus> colStatus;
 
     @FXML
     private BorderPane mainPane;
@@ -119,7 +117,6 @@ public class PromoCodeManagementForm implements Initializable {
                     setText(null);
                 } else {
                     setText(item);
-                    // Lệnh này ép chữ nằm chính giữa theo chiều dọc
                     setStyle("-fx-alignment: CENTER_LEFT; -fx-padding: 0 0 0 10; -fx-font-weight: bold;");
                 }
             }
@@ -162,7 +159,6 @@ public class PromoCodeManagementForm implements Initializable {
         });
 
         colStart.setCellFactory(column -> new TableCell<PromoCode, LocalDateTime>() {
-            //format into d/m/y
             private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             @Override
@@ -192,9 +188,9 @@ public class PromoCodeManagementForm implements Initializable {
             }
         });
 
-        colStatus.setCellFactory(column -> new TableCell<PromoCode, PromoCode.codeStatus>() {
+        colStatus.setCellFactory(column -> new TableCell<PromoCode, PromoCode.CodeStatus>() {
             @Override
-            protected void updateItem(PromoCode.codeStatus status, boolean empty) {
+            protected void updateItem(PromoCode.CodeStatus status, boolean empty) {
                 super.updateItem(status, empty);
                 if (empty || status == null) {
                     setGraphic(null);
@@ -203,16 +199,16 @@ public class PromoCodeManagementForm implements Initializable {
                     Label lblStatus = new Label();
                     lblStatus.setStyle("-fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 4 12; -fx-background-radius: 12;");
 
-                    if (status == PromoCode.codeStatus.Active) {
+                    if (status == PromoCode.CodeStatus.Active) {
                         lblStatus.setText("Đang chạy");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #10B981;"); // Xanh lá
-                    } else if (status == PromoCode.codeStatus.Paused) {
+                    } else if (status == PromoCode.CodeStatus.Paused) {
                         lblStatus.setText("Tạm ngưng");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #F59E0B;"); // Vàng cam
-                    } else if (status == PromoCode.codeStatus.Upcoming) {
+                    } else if (status == PromoCode.CodeStatus.Upcoming) {
                         lblStatus.setText("Sắp diễn ra");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #3B82F6;"); // Xanh dương
-                    } else if (status == PromoCode.codeStatus.Expired) {
+                    } else if (status == PromoCode.CodeStatus.Expired) {
                         lblStatus.setText("Đã hết hạn");
                         lblStatus.setStyle(lblStatus.getStyle() + "-fx-background-color: #EF4444;"); // Đỏ
                     }
@@ -351,11 +347,23 @@ public class PromoCodeManagementForm implements Initializable {
         String actionName = "Active".equals(newStatus) ? "Kích hoạt" : "Tạm ngưng";
 
         if (Others.showCustomConfirm("Xác nhận", "Bạn có chắc muốn " + actionName + " mã giảm giá: " + selected.getCode() + "?", "Đồng ý", "Hủy")) {
-            if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), PromoCode.codeStatus.valueOf(newStatus))) {
-                Others.showAlert(mainPane, "Đã " + actionName + " thành công!", false);
-                loadTable();
-            } else {
-                Others.showAlert(mainPane, "Lỗi khi cập nhật trạng thái!", true);
+
+            if ("Upcoming".equalsIgnoreCase(currentStatus) && "Active".equals(newStatus)) {
+                LocalDateTime now = LocalDateTime.now();
+                if (PromoCodeBusiness.updatePromoStatusAndStartDate(selected.getCode(), PromoCode.CodeStatus.Active, now)) {
+                    Others.showAlert(mainPane, "Đã kích hoạt và dời ngày bắt đầu về hôm nay!", false);
+                    loadTable();
+                } else {
+                    Others.showAlert(mainPane, "Có lỗi xảy ra khi cập nhật!", true);
+                }
+            }
+            else {
+                if (PromoCodeBusiness.updatePromoStatus(selected.getCode(), PromoCode.CodeStatus.valueOf(newStatus))) {
+                    Others.showAlert(mainPane, "Đã " + actionName + " thành công!", false);
+                    loadTable();
+                } else {
+                    Others.showAlert(mainPane, "Có lỗi xảy ra!", true);
+                }
             }
         }
     }

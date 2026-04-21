@@ -2,7 +2,7 @@ package EntityDTO;
 
 public class Category {
     // ===== ATTRIBUTES =====
-    private int CategoryID;
+    private int categoryID;
     private String categoryName;
     private String status;
 
@@ -11,7 +11,7 @@ public class Category {
 
     // Constructor đầy đủ (load từ database)
     public Category(int CategoryID, String categoryName, String status) {
-        this.CategoryID   = CategoryID;
+        this.categoryID = CategoryID;
         this.categoryName = categoryName;
         this.status = status;
 
@@ -24,8 +24,8 @@ public class Category {
 
     // ===== GETTERS & SETTERS =====
 
-    public int getCategoryID()          { return CategoryID; }
-    public void setCategoryID(int id)   { this.CategoryID = id; }
+    public int getCategoryID()          { return categoryID; }
+    public void setCategoryID(int id)   { this.categoryID = id; }
     public String getStatus(){return status;}
 
     public void setStatus(String status) {

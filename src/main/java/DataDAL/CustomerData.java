@@ -27,6 +27,7 @@ public class CustomerData {
                         rs.getString("full_name"),
                         rs.getString("username"),
                         rs.getString("pass_word"),
+                        rs.getString("address"),
                         rs.getInt("point")
                 ));
             }
@@ -82,9 +83,9 @@ public class CustomerData {
         boolean isChangePass = c.getPassword() != null && !c.getPassword().trim().isEmpty();
 
         if (isChangePass) {
-            sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, point = ? WHERE id_khach_hang = ?";
+            sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, pass_word = ?, address = ?, point = ? WHERE id_khach_hang = ?";
         } else {
-            sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, point = ? WHERE id_khach_hang = ?";
+            sql = "UPDATE Customer SET phone = ?, full_name = ?, username = ?, address = ?, point = ? WHERE id_khach_hang = ?";
         }
 
         try (Connection conn = DBConnection.getConnection();
@@ -99,7 +100,7 @@ public class CustomerData {
                 String hashedPassword = BCrypt.hashpw(c.getPassword(), BCrypt.gensalt(12));
                 stmt.setString(index++, hashedPassword);
             }
-
+            stmt.setString(index++, c.getAddress());
             stmt.setInt(index++, c.getPoint());
             stmt.setInt(index, c.getId());
 
@@ -111,8 +112,17 @@ public class CustomerData {
         }
     }
 
+    public static void addRewardPoints(Connection conn, int customerId, int pointsEarned) throws SQLException {
+        String sql = "UPDATE Customer SET point = point + ? WHERE id_khach_hang = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, pointsEarned);
+            stmt.setInt(2, customerId);
+            stmt.executeUpdate();
+        }
+    }
+
     public static Customer getCustomerByUsernameOrPhone(String user) {
-        String sql = "SELECT id_khach_hang, phone, full_name, username, pass_word, point FROM Customer WHERE username = ? OR phone = ?";
+        String sql = "SELECT id_khach_hang, phone, full_name, username, pass_word, address, point FROM Customer WHERE username = ? OR phone = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -127,7 +137,8 @@ public class CustomerData {
                             rs.getString("phone"),
                             rs.getString("full_name"),
                             rs.getString("username"),
-                            rs.getString("pass_word"), // Truyền Hash vào DTO
+                            rs.getString("pass_word"),
+                            rs.getString("address"),
                             rs.getInt("point")
                     );
                 }

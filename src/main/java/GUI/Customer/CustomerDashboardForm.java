@@ -1,5 +1,6 @@
 package GUI.Customer;
 
+import BusinessBLL.CustomerBusiness;
 import EntityDTO.Customer;
 import GUI.CustomerDialogController;
 import Util.CartManager;
@@ -214,7 +215,7 @@ public class CustomerDashboardForm implements Initializable {
 
         if (isConfirm) {
             try {
-                UserSession.getInstance().clearSession();
+                CustomerBusiness.logout();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Login.fxml"));
                 mainBorderPane.getScene().setRoot(loader.load());
             } catch (Exception e) {
@@ -272,6 +273,7 @@ public class CustomerDashboardForm implements Initializable {
                     session.getPhone(),
                     session.getName(),
                     session.getUsername(),
+                    session.getAddress(),
                     session.getPoint()
             );
 

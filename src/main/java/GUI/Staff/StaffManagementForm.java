@@ -81,7 +81,7 @@ public class StaffManagementForm implements Initializable {
         colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
         colUsername.setCellValueFactory(new PropertyValueFactory<>("user"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
-        colDate.setCellValueFactory(new PropertyValueFactory<>("hire_date"));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("hireDate"));
 
         colSTT.setCellFactory(column -> new TableCell<Staff, Void>() {
             @Override
@@ -187,8 +187,8 @@ public class StaffManagementForm implements Initializable {
             }
 
             String hireDateStr = "";
-            if (staff.getHire_date() != null) {
-                hireDateStr = sdf.format(staff.getHire_date());
+            if (staff.getHireDate() != null) {
+                hireDateStr = sdf.format(staff.getHireDate());
             }
 
             if (staff.getName().toLowerCase().contains(searchKeyword) ||

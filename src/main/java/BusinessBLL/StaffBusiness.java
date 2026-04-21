@@ -2,6 +2,7 @@ package BusinessBLL;
 
 import DataDAL.StaffData;
 import EntityDTO.Staff;
+import Util.CartManager;
 import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -29,7 +30,7 @@ public class StaffBusiness {
                         dbStaff.getUser(),
                         password,
                         dbStaff.getRole(),
-                        dbStaff.getHire_date()
+                        dbStaff.getHireDate()
                 );
 
                 LogBusiness.saveLog("Đăng nhập vào hệ thống");
@@ -50,6 +51,7 @@ public class StaffBusiness {
 
     public static void logout() {
         if (UserSession.getInstance().getId() != -1) LogBusiness.saveLog("Đăng xuất khỏi hệ thống");
+        CartManager.getInstance().clearPosCart();
         UserSession.getInstance().clearSession();
     }
 

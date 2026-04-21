@@ -1,4 +1,4 @@
-package GUI.Staff;
+package GUI;
 
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
@@ -13,11 +13,14 @@ import javafx.scene.control.TableView;
 
 import java.util.List;
 
-public class OrderDetailController {
+public class OrderOnlineDetailController {
 
     @FXML private Label lblCustomerInfo;
     @FXML private Label lblAddress;
+    @FXML private Label lblStatus;
     @FXML private Label lblFinalTotal;
+    @FXML private Label lblPromoCode;
+    @FXML private Label lblDiscount;
 
     @FXML private TableView<OrderDetail> tableDetail;
     @FXML private TableColumn<OrderDetail, String> colProductName;
@@ -35,7 +38,14 @@ public class OrderDetailController {
             lblCustomerInfo.setText("Khách hàng: Khách vãng lai - SĐT: N/A");
         }
 
-        lblAddress.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
+        if(order.getStatus().name().equals("Cancelled")){
+            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Lí do hủy: " + order.getCancelReason());
+        }else
+            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
+
+        lblAddress.setText("Địa chỉ: " + order.getAddress());
+        lblPromoCode.setText("Mã giảm giá: " + order.getAppliedCode());
+        lblDiscount.setText("Số tiền được giảm: " + order.getDiscountAmount() + "đ");
 
         // 2. Cài đặt các cột cho TableView
         // Lưu ý: Dựa theo OrderDetailData của bạn, Product dùng thuộc tính ProductName
@@ -60,9 +70,8 @@ public class OrderDetailController {
             ObservableList<OrderDetail> list = FXCollections.observableArrayList(details);
             tableDetail.setItems(list);
 
-            // Tính tổng tiền dựa trên các record lấy được từ Database
-            int sum = details.stream().mapToInt(OrderDetail::getTotalPrice).sum();
-            lblFinalTotal.setText(String.format("Tổng tiền thanh toán: %,d VNĐ", sum));
+
+            lblFinalTotal.setText(String.format("Tổng tiền thanh toán: %,d VNĐ", order.getFinalAmount()));
         } else {
             // Nếu đơn hàng chưa có món nào (lỗi logic khi tạo) hoặc không tìm thấy
             lblFinalTotal.setText("Tổng tiền thanh toán: 0 VNĐ");

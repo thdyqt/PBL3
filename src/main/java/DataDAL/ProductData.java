@@ -1,5 +1,6 @@
 package DataDAL;
 
+import EntityDTO.OrderDetail;
 import EntityDTO.Product;
 import Util.DBConnection;
 
@@ -133,27 +134,17 @@ public class ProductData {
         return false;
     }
 
-    public static List<Product> searchProduct(String keyword, int minPrice, int maxPrice) {
-        List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM Product " +
-                "WHERE ProductName LIKE ? " +
-                "AND ProductPrice BETWEEN ? AND ? " +
-                "AND status = 'Active'";
+    public static void reduceStockBatch(Connection conn, List<OrderDetail> details) throws SQLException {
+        String sql = "UPDATE Product SET quantity = quantity - ? WHERE ProductID = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, "%" + keyword + "%");
-            stmt.setInt(2, minPrice);
-            stmt.setInt(3, maxPrice);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) list.add(mapResultSet(rs));
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (OrderDetail item : details) {
+                stmt.setInt(1, item.getQuantity());
+                stmt.setInt(2, item.getProduct().getProductID());
+                stmt.addBatch();
             }
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi search Product: " + e.getMessage());
+            stmt.executeBatch();
         }
-        return list;
     }
 
     public static List<Product> getByCategory(int categoryID) {

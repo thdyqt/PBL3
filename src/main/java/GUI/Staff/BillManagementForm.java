@@ -3,7 +3,6 @@ package GUI.Staff;
 
 import EntityDTO.Order;
 import Util.Others;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -21,15 +20,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import org.w3c.dom.Entity;
 
-import java.io.IOError;
 import java.io.IOException;
-import java.net.URL;
 import java.time.format.DateTimeFormatter;
-import java.util.ResourceBundle;
-
 
 
 public class BillManagementForm{
@@ -56,7 +49,7 @@ public class BillManagementForm{
     private TableColumn<EntityDTO.Order, Integer> col_OrderID;
 
     @FXML
-    private TableColumn<EntityDTO.Order, EntityDTO.Order.orderStatus> col_OrderStatus;
+    private TableColumn<EntityDTO.Order, Order.OrderStatus> col_OrderStatus;
 
     @FXML
     private TableColumn<EntityDTO.Order, String> col_OrderType;
@@ -153,15 +146,14 @@ public class BillManagementForm{
         //only use for those 2 because the naming of the getters in Order concidently
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
         col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        col_OrderStatus.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, EntityDTO.Order.orderStatus>() {
+        col_OrderStatus.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, Order.OrderStatus>() {
             @Override
-            protected void updateItem(EntityDTO.Order.orderStatus item, boolean empty) {
+            protected void updateItem(Order.OrderStatus item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
                     switch (item) {
-                        case Created: setText("Mới tạo"); break;
                         case Waiting_for_validation: setText("Chờ xác nhận"); break;
                         case Processing: setText("Đang xử lý"); break;
                         case Delivering: setText("Đang giao hàng"); break;
@@ -177,7 +169,7 @@ public class BillManagementForm{
 
         //same thing as all the methods below
         //albeit modified to format the date
-        colProcessTime.setCellValueFactory(new PropertyValueFactory<>("process_time"));
+        colProcessTime.setCellValueFactory(new PropertyValueFactory<>("orderTime"));
         colProcessTime.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, java.time.LocalDateTime>() {
             private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             @Override

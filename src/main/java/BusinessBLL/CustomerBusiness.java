@@ -2,6 +2,7 @@ package BusinessBLL;
 
 import DataDAL.CustomerData;
 import EntityDTO.Customer;
+import Util.CartManager;
 import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -27,6 +28,7 @@ public class CustomerBusiness {
                         dbCustomer.getName(),
                         dbCustomer.getUser(),
                         password,
+                        dbCustomer.getAddress(),
                         dbCustomer.getPoint()
                 );
                 return "SUCCESS";
@@ -43,10 +45,15 @@ public class CustomerBusiness {
         }
     }
 
+    public static void logout() {
+        CartManager.getInstance().clearCustomerCart();
+        UserSession.getInstance().clearSession();
+    }
+
     public static int register(String phone, String name, String username, String password) {
         if (CustomerData.isAccountExist(username, phone, -1)) return -1;
 
-        if (CustomerData.addCustomer(new Customer(phone, name, username, password, 0))){
+        if (CustomerData.addCustomer(new Customer(phone, name, username, password, null, 0))){
             LogBusiness.saveLog("Thêm khách hàng " + name + " (" + phone + ") vào hệ thống");
             return 1;
         }
@@ -70,7 +77,7 @@ public class CustomerBusiness {
     public static int getDiscountPercent (Customer c) {
         if (c == null) return 0;
 
-        Customer.rank rank = c.getCustomer_rank();
+        Customer.Rank rank = c.getCustomerRank();
         return switch (rank) {
             case Silver -> 1;
             case Gold -> 2;

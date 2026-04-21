@@ -3,8 +3,8 @@ package DataDAL;
 import EntityDTO.Customer;
 import EntityDTO.Order;
 import EntityDTO.Staff;
-
 import Util.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +30,13 @@ public class OrderData {
             while (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
-                order.setProcess_time(rs.getTimestamp("order_time").toLocalDateTime());
+                order.setOrderTime(rs.getTimestamp("order_time").toLocalDateTime());
                 order.setSubTotal(rs.getInt("subtotal"));
                 order.setDiscountAmount(rs.getInt("discount_amount"));
                 order.setAppliedCode(rs.getString("applied_promo_code"));
                 order.setFinalAmount(rs.getInt("final_total"));
                 order.setAddress(rs.getString("address"));
-                order.setCancel_reason(rs.getString("cancel_reason"));
+                order.setCancelReason(rs.getString("cancel_reason"));
 
                 Staff staff = new Staff();
                 staff.setId(rs.getInt("id_Staff"));
@@ -52,22 +52,22 @@ public class OrderData {
                     customer.setPhone(rs.getString("customer_phone"));
                     int customerPoint = rs.getInt("customer_point");
                     if (customerPoint < 100) {
-                        customer.setCustomer_rank(Customer.rank.Bronze);
+                        customer.setCustomerRank(Customer.Rank.Bronze);
                     } else if (customerPoint < 500) {
-                        customer.setCustomer_rank(Customer.rank.Silver);
+                        customer.setCustomerRank(Customer.Rank.Silver);
                     } else if (customerPoint < 1000) {
-                        customer.setCustomer_rank(Customer.rank.Gold);
+                        customer.setCustomerRank(Customer.Rank.Gold);
                     } else if (customerPoint < 2000) {
-                        customer.setCustomer_rank(Customer.rank.Diamond);
+                        customer.setCustomerRank(Customer.Rank.Diamond);
                     } else {
-                        customer.setCustomer_rank(Customer.rank.Emerald);
+                        customer.setCustomerRank(Customer.Rank.Emerald);
                     }
                     order.setCustomer(customer);
                 }
 
-                order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
-                order.setType(Order.orderType.valueOf(rs.getString("type")));
-                order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
+                order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
+                order.setType(Order.OrderType.valueOf(rs.getString("type")));
+                order.setPayment(Order.OrderPayment.valueOf(rs.getString("payment")));
 
                 list.add(order);
             }
@@ -78,53 +78,91 @@ public class OrderData {
         return list;
     }
 
-    public static int addOrder(Order order){
-        //foreign keys are in here
-        //specifically id_Staff and id_Customer
-        //order_time is an exclusive attribute to Order so there's that
-        String sql = "INSERT INTO Orders (order_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, applied_promo_code, final_total, address, cancel_reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (
-            Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            //data loading
-            //1,2,3,4 corresponding to the order in sql
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
-            stmt.setInt(2, order.getStaff().getId());
+    public static int addOrder(Order order) {
+        Connection conn = null;
+        int generatedOrderId = -1;
 
-            if (order.getCustomer() != null && order.getCustomer().getId() > 0) {
-                stmt.setInt(3, order.getCustomer().getId());
-            } else {
-                stmt.setNull(3, java.sql.Types.INTEGER);
-            }
+        try {
+            conn = Util.DBConnection.getConnection();
+            conn.setAutoCommit(false);
 
-            stmt.setString(4, order.getStatus().name());
-            stmt.setString(5, order.getType().name());
-            stmt.setString(6, order.getPayment().name());
+            generatedOrderId = insertOrderRecord(conn, order);
+            order.setId(generatedOrderId);
 
-            stmt.setInt(7, order.getSubTotal());
-            stmt.setInt(8, order.getDiscountAmount());
-            stmt.setString(9, order.getAppliedCode());
-            stmt.setInt(10, order.getFinalAmount());
-            stmt.setString(11, order.getAddress());
-            stmt.setString(12, order.getCancel_reason());
+            OrderDetailData.addOrderDetailsBatch(conn, generatedOrderId, order.getOrderDetail());
 
-            int rowsAffected = stmt.executeUpdate();
+            ProductData.reduceStockBatch(conn, order.getOrderDetail());
 
-            if (rowsAffected > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        return generatedKeys.getInt(1);
-                        //this method now return the id of the created order
-                    }
+            if (order.getCustomer() != null && order.getStatus() == Order.OrderStatus.Finished) {
+                int pointsEarned = order.getFinalAmount() / 1000;
+                if (pointsEarned > 0) {
+                    CustomerData.addRewardPoints(conn, order.getCustomer().getId(), pointsEarned);
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            conn.commit();
+            return generatedOrderId;
 
-        return -1;
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    System.err.println("Đã Rollback Transaction do lỗi hệ thống!");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+            return -1;
+
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private static int insertOrderRecord(Connection conn, Order order) throws SQLException {
+        String sqlOrder = "INSERT INTO Orders (order_time, id_Staff, id_Customer, status, type, payment, subtotal, discount_amount, final_total, applied_promo_code, address) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmtOrder = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS)) {
+            stmtOrder.setTimestamp(1, Timestamp.valueOf(order.getOrderTime()));
+
+            if (order.getStaff() != null) stmtOrder.setInt(2, order.getStaff().getId());
+            else stmtOrder.setNull(2, Types.INTEGER);
+
+            if (order.getCustomer() != null) stmtOrder.setInt(3, order.getCustomer().getId());
+            else stmtOrder.setNull(3, Types.INTEGER);
+
+            stmtOrder.setString(4, order.getStatus().name());
+            stmtOrder.setString(5, order.getType().name());
+            stmtOrder.setString(6, order.getPayment().name());
+            stmtOrder.setInt(7, order.getSubTotal());
+            stmtOrder.setInt(8, order.getDiscountAmount());
+            stmtOrder.setInt(9, order.getFinalAmount());
+
+            if (order.getAppliedCode() != null) stmtOrder.setString(10, order.getAppliedCode());
+            else stmtOrder.setNull(10, Types.VARCHAR);
+
+            if (order.getAddress() != null) stmtOrder.setString(11, order.getAddress());
+            else stmtOrder.setNull(11, Types.VARCHAR);
+
+            stmtOrder.executeUpdate();
+
+            try (ResultSet rs = stmtOrder.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                } else {
+                    throw new SQLException("Không thể lấy ID của đơn hàng mới!");
+                }
+            }
+        }
     }
 
     //mutiple search methods (ID/Staff/Customer)
@@ -145,10 +183,10 @@ public class OrderData {
             if (rs.next()){
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
-                order.setProcess_time(rs.getTimestamp("order_time").toLocalDateTime());
-                order.setStatus(Order.orderStatus.valueOf(rs.getString("status")));
-                order.setType(Order.orderType.valueOf(rs.getString("type")));
-                order.setPayment(Order.orderPayment.valueOf(rs.getString("payment")));
+                order.setOrderTime(rs.getTimestamp("order_time").toLocalDateTime());
+                order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));
+                order.setType(Order.OrderType.valueOf(rs.getString("type")));
+                order.setPayment(Order.OrderPayment.valueOf(rs.getString("payment")));
                 order.setSubTotal(rs.getInt("subtotal"));
                 order.setDiscountAmount(rs.getInt("discount_amount"));
                 order.setAppliedCode(rs.getString("applied_promo_code"));
@@ -187,7 +225,7 @@ public class OrderData {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             // Parameters 1, 2, 3: Timestamp and Foreign Keys
-            stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getProcess_time()));
+            stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getOrderTime()));
             stmt.setInt(2, order.getStaff().getId());
 
             if (order.getCustomer() != null) {
@@ -209,29 +247,11 @@ public class OrderData {
 
             //the 2 motherfucking new values
             stmt.setString(11, order.getAddress());
-            stmt.setString(12, order.getCancel_reason());
+            stmt.setString(12, order.getCancelReason());
 
             // Parameter 13: The Order ID used in the WHERE clause
             stmt.setInt(13, order.getId());
 
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static boolean deleteOrder(int OrderID){
-        String sql = "DELETE FROM Orders WHERE id_Order = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, OrderID);
-
-            // Returns true if 1 or more rows were deleted
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 

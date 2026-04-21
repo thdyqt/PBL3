@@ -10,10 +10,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.w3c.dom.Entity;
 
 import java.net.URL;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
@@ -79,7 +77,7 @@ public class PromoCodeDialogController implements Initializable {
     @FXML
     void btnSaveClick(ActionEvent event) {
         String code = txtCode.getText().trim();
-        PromoCode.codeType type = PromoCode.codeType.valueOf(cbbDiscountType.getValue());
+        PromoCode.CodeType type = PromoCode.CodeType.valueOf(cbbDiscountType.getValue());
         String valueStr = txtDiscountValue.getText().trim();
         String minStr = txtMinOrderValue.getText().trim();
         String desc = txtDescription.getText().trim();
@@ -113,7 +111,7 @@ public class PromoCodeDialogController implements Initializable {
         int value = Integer.parseInt(valueStr);
         int minOrder = Integer.parseInt(minStr);
 
-        if (type == PromoCode.codeType.Percent && value > 100) {
+        if (type == PromoCode.CodeType.Percent && value > 100) {
             Others.showAlert(mainPanel, "Giảm theo phần trăm không được vượt quá 100%!", true);
             txtDiscountValue.requestFocus();
             return;

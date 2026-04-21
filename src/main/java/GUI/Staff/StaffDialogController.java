@@ -97,8 +97,8 @@ public class StaffDialogController implements Initializable {
                 cbRole.setDisable(true);
             }
 
-            if (staff.getHire_date() != null) {
-                dpHireDate.setValue(staff.getHire_date().toLocalDate());
+            if (staff.getHireDate() != null) {
+                dpHireDate.setValue(staff.getHireDate().toLocalDate());
             }
             txtPassword.setPromptText("Để trống nếu không đổi mật khẩu");
         }
@@ -124,7 +124,7 @@ public class StaffDialogController implements Initializable {
                 isPassUnchanged = isPassUnchanged || pass.equals(UserSession.getInstance().getPassword());
             }
 
-            boolean isDateUnchanged = currentStaff.getHire_date() != null && hire_date.toString().equals(currentStaff.getHire_date().toString());
+            boolean isDateUnchanged = currentStaff.getHireDate() != null && hire_date.toString().equals(currentStaff.getHireDate().toString());
 
             if (isNameUnchanged && isPhoneUnchanged && isUserUnchanged && isRoleUnchanged && isPassUnchanged && isDateUnchanged) {
                 Others.showAlert(mainPanel, "Không có thông tin nào được thay đổi!", true);
