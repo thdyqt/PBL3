@@ -30,7 +30,7 @@ public class OrderData {
             while (rs.next()) {
                 Order order = new Order();
                 order.setId(rs.getInt("id_Order"));
-                order.setProcess_time(rs.getTimestamp("process_time").toLocalDateTime());
+                order.setProcess_time(rs.getTimestamp("order_time").toLocalDateTime());
                 order.setSubTotal(rs.getInt("subtotal"));
                 order.setDiscountAmount(rs.getInt("discount_amount"));
                 order.setAppliedCode(rs.getString("applied_promo_code"));
