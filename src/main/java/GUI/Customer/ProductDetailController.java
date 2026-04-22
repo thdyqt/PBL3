@@ -67,6 +67,8 @@ public class ProductDetailController implements Initializable {
             btnAddToCart.setDisable(true);
         }
 
+        else lblStock.setText("Còn " + currentProduct.getQuantity() + " sản phẩm");
+
         checkUserReviewPermission();
         loadExistingReviews();
     }

@@ -46,7 +46,7 @@ import javafx.scene.layout.VBox;
                 cardBox.setOnMouseExited(e -> cardBox.setStyle("-fx-background-color: #FEF2F2; -fx-background-radius: 15; -fx-border-color: #FECACA; -fx-border-radius: 15; -fx-border-width: 1.5;"));
 
             } else {
-                lblStatus.setText("Còn hàng");
+                lblStatus.setText("Số lượng: " + product.getQuantity());
                 lblStatus.setStyle("-fx-text-fill: #166534; -fx-font-weight: bold; -fx-background-color: #DCFCE7; -fx-background-radius: 5; -fx-padding: 2 6;");
 
                 btnAddToCart.setDisable(false);
