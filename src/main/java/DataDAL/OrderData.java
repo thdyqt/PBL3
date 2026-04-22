@@ -63,6 +63,7 @@ public class OrderData {
                         customer.setCustomerRank(Customer.Rank.Emerald);
                     }
                     order.setCustomer(customer);
+                    customer.setPoint(rs.getInt("customer_point"));
                 }
 
                 order.setStatus(Order.OrderStatus.valueOf(rs.getString("status")));

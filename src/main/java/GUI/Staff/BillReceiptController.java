@@ -73,7 +73,7 @@ public class BillReceiptController {
             lblTime.setText("Thời gian in đơn: " + order.getOrderTime().format(timeFormatter));
         }
 
-        List<OrderDetail> details = order.getOrderDetail();
+        List<OrderDetail> details = BusinessBLL.OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
 
         vboxContent.getChildren().clear();
         int totalItemsCount = 0;
