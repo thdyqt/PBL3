@@ -7,6 +7,10 @@ public class PromoCode {
         Percent, Amount;
     }
 
+    public enum Type {
+        Online, Offline, All;
+    }
+
     public enum CodeStatus {
         Active, Paused, Upcoming, Expired;
     }
@@ -14,7 +18,8 @@ public class PromoCode {
     private String code;
     private String description;
     private int discountValue;
-    private CodeType discountType; // "PERCENT" hoặc "AMOUNT"
+    private CodeType discountType;
+    private Type type;
     private int minOrderValue;
     private LocalDateTime validFrom;
     private LocalDateTime validTo;
@@ -22,11 +27,12 @@ public class PromoCode {
 
     public PromoCode() {}
 
-    public PromoCode(String code, String description, int discountValue, CodeType discountType, int minOrderValue, LocalDateTime validFrom, LocalDateTime validTo, CodeStatus status) {
+    public PromoCode(String code, String description, int discountValue, CodeType discountType, Type type, int minOrderValue, LocalDateTime validFrom, LocalDateTime validTo, CodeStatus status) {
         this.code = code;
         this.description = description;
         this.discountValue = discountValue;
         this.discountType = discountType;
+        this.type = type;
         this.minOrderValue = minOrderValue;
         this.validFrom = validFrom;
         this.validTo = validTo;
@@ -39,6 +45,9 @@ public class PromoCode {
     }
     public int getDiscountValue() { return discountValue; }
     public CodeType getDiscountType() { return discountType; }
+    public Type getType() {
+        return type;
+    }
     public int getMinOrderValue() { return minOrderValue; }
     public LocalDateTime getValidFrom() {
         return validFrom;
@@ -64,6 +73,10 @@ public class PromoCode {
 
     public void setDiscountType(CodeType discountType) {
         this.discountType = discountType;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public void setMinOrderValue(int minOrderValue) {

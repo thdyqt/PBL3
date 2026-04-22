@@ -23,7 +23,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -44,6 +43,9 @@ public class PromoCodeManagementForm implements Initializable {
 
     @FXML
     private TableColumn<PromoCode, String> colDesc;
+
+    @FXML
+    private TableColumn<PromoCode, PromoCode.Type> colType;
 
     @FXML
     private TableColumn<PromoCode, LocalDateTime> colEnd;
@@ -91,6 +93,7 @@ public class PromoCodeManagementForm implements Initializable {
     private void setupTableStyles() {
         colCode.setCellValueFactory(new PropertyValueFactory<>("code"));
         colDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
         colMinValue.setCellValueFactory(new PropertyValueFactory<>("minOrderValue"));
         colStart.setCellValueFactory(new PropertyValueFactory<>("validFrom"));
         colEnd.setCellValueFactory(new PropertyValueFactory<>("validTo"));
@@ -141,6 +144,28 @@ public class PromoCodeManagementForm implements Initializable {
 
                     setGraphic(vbox);
                     setText(null);
+                }
+            }
+        });
+
+        colType.setCellFactory(column -> new TableCell<PromoCode, PromoCode.Type>() {
+            @Override
+            protected void updateItem(PromoCode.Type type, boolean empty) {
+                super.updateItem(type, empty);
+                if (empty || type == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    if (type == PromoCode.Type.All) {
+                        setText("Online & Offline");
+                        setStyle("-fx-alignment: CENTER; -fx-text-fill: #8B5CF6; -fx-font-weight: bold;"); // Màu tím cho nổi bật
+                    } else if (type == PromoCode.Type.Online) {
+                        setText("Online");
+                        setStyle("-fx-alignment: CENTER; -fx-text-fill: #0284C7; -fx-font-weight: bold;"); // Màu xanh biển
+                    } else if (type == PromoCode.Type.Offline) {
+                        setText("Offline");
+                        setStyle("-fx-alignment: CENTER; -fx-text-fill: #D97706; -fx-font-weight: bold;"); // Màu cam
+                    }
                 }
             }
         });
@@ -244,7 +269,7 @@ public class PromoCodeManagementForm implements Initializable {
     }
 
     private void setupSearch() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(promoCode -> {
@@ -256,33 +281,37 @@ public class PromoCodeManagementForm implements Initializable {
 
                 String startDateStr = "";
                 if (promoCode.getValidFrom() != null) {
-                    startDateStr = sdf.format(promoCode.getValidFrom());
+                    startDateStr = promoCode.getValidFrom().format(dtf);
                 }
 
                 String endDateStr = "";
                 if (promoCode.getValidTo() != null) {
-                    endDateStr = sdf.format(promoCode.getValidTo());
+                    endDateStr = promoCode.getValidTo().format(dtf);
                 }
 
                 String statusVN = "";
-                String rawStatus = String.valueOf(promoCode.getStatus());
-                if (rawStatus != null) {
+                if (promoCode.getStatus() != null) {
+                    String rawStatus = promoCode.getStatus().name();
                     if ("Active".equalsIgnoreCase(rawStatus)) statusVN = "đang chạy";
                     else if ("Paused".equalsIgnoreCase(rawStatus)) statusVN = "tạm ngưng";
                     else if ("Upcoming".equalsIgnoreCase(rawStatus)) statusVN = "sắp diễn ra";
                     else if ("Expired".equalsIgnoreCase(rawStatus)) statusVN = "đã hết hạn";
                 }
 
-                if (promoCode.getCode().toLowerCase().contains(searchKeyword) ||
-                        (promoCode.getDescription() != null && promoCode.getDescription().toLowerCase().contains(searchKeyword)) ||
-                        statusVN.contains(searchKeyword) ||
-                        String.valueOf(promoCode.getMinOrderValue()).contains(searchKeyword) ||
-                        startDateStr.contains(searchKeyword) ||
-                        endDateStr.contains(searchKeyword)) {
-                    return true;
+                String typeVN = "";
+                if (promoCode.getType() != null) {
+                    if (promoCode.getType() == PromoCode.Type.All) typeVN = "online & offline"; // Hoặc có thể gán là "cả 2"
+                    else if (promoCode.getType() == PromoCode.Type.Online) typeVN = "online";
+                    else if (promoCode.getType() == PromoCode.Type.Offline) typeVN = "offline";
                 }
 
-                return false;
+                return (promoCode.getCode() != null && promoCode.getCode().toLowerCase().contains(searchKeyword)) ||
+                        (promoCode.getDescription() != null && promoCode.getDescription().toLowerCase().contains(searchKeyword)) ||
+                        statusVN.contains(searchKeyword) ||
+                        typeVN.contains(searchKeyword) ||
+                        String.valueOf(promoCode.getMinOrderValue()).contains(searchKeyword) ||
+                        startDateStr.contains(searchKeyword) ||
+                        endDateStr.contains(searchKeyword);
             });
         });
     }

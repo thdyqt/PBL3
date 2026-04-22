@@ -13,18 +13,18 @@ public class PromoCodeBusiness {
         return PromoCodeData.getAllPromoCodes();
     }
 
-    public static List<PromoCode> getAllActivePromoCodes() {
+    public static List<PromoCode> getAllActivePromoCodes(PromoCode.Type type) {
         PromoCodeData.refreshAllPromoStatuses();
         List<PromoCode> activeList = new ArrayList<>();
         for (PromoCode code : PromoCodeData.getAllPromoCodes()) {
-            if (code.getStatus() == PromoCode.CodeStatus.Active) {
+            if (code.getStatus() == PromoCode.CodeStatus.Active && (code.getType() == type || code.getType() == PromoCode.Type.All)) {
                 activeList.add(code);
             }
         }
         return activeList;
     }
 
-    public static int addPromoCode(String code, String description, int value, PromoCode.CodeType type, int minOrder, LocalDateTime fromDate, LocalDateTime toDate) {
+    public static int addPromoCode(String code, String description, int value, PromoCode.CodeType discountType, PromoCode.Type type, int minOrder, LocalDateTime fromDate, LocalDateTime toDate) {
         if (PromoCodeData.isPromoCodeExist(code)) return -1;
 
         PromoCode.CodeStatus status = PromoCode.CodeStatus.Active;
@@ -41,14 +41,14 @@ public class PromoCodeBusiness {
             }
         }
 
-        if (PromoCodeData.addPromoCode(new PromoCode(code, description, value, type, minOrder, fromDate, toDate, status))) {
+        if (PromoCodeData.addPromoCode(new PromoCode(code, description, value, discountType, type, minOrder, fromDate, toDate, status))) {
             LogBusiness.saveLog("Thêm mã giảm giá " + code + " vào hệ thống");
             return 1;
         }
         return 0;
     }
 
-    public static int updatePromoCode(String code, String description, int value, PromoCode.CodeType type, int minOrder, LocalDateTime fromDate, LocalDateTime toDate) {
+    public static int updatePromoCode(String code, String description, int value, PromoCode.CodeType discountType, PromoCode.Type type, int minOrder, LocalDateTime fromDate, LocalDateTime toDate) {
         PromoCode.CodeStatus status = PromoCode.CodeStatus.Active;
 
         if (fromDate != null) {
@@ -63,7 +63,7 @@ public class PromoCodeBusiness {
             }
         }
 
-        if (PromoCodeData.updatePromoCode(new PromoCode(code, description, value, type, minOrder, fromDate, toDate, status))) {
+        if (PromoCodeData.updatePromoCode(new PromoCode(code, description, value, discountType, type, minOrder, fromDate, toDate, status))) {
             LogBusiness.saveLog("Cập nhật mã giảm giá " + code + " trong hệ thống");
             return 1;
         }

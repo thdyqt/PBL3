@@ -300,8 +300,8 @@ public class POS implements Initializable {
     }
 
     private void loadPromoCodes() {
-        List<PromoCode> listCode = PromoCodeBusiness.getAllActivePromoCodes();
-        PromoCode allCode = new PromoCode("Không có", "Không có", 0, PromoCode.CodeType.Amount, 0, null, null, PromoCode.CodeStatus.Active);
+        List<PromoCode> listCode = PromoCodeBusiness.getAllActivePromoCodes(PromoCode.Type.Offline);
+        PromoCode allCode = new PromoCode("Không có", "Không có", 0, PromoCode.CodeType.Amount, PromoCode.Type.Offline, 0, null, null, PromoCode.CodeStatus.Active);
         listCode.add(0, allCode);
 
         cbbDiscount.setItems(FXCollections.observableArrayList(listCode));

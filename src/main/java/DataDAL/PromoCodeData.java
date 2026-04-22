@@ -10,14 +10,16 @@ import java.util.List;
 
 public class PromoCodeData {
     public static PromoCode mapResultSet(ResultSet rs) throws SQLException {
-        String type = rs.getString("DiscountType");
+        String discountType = rs.getString("DiscountType");
+        String type = rs.getString("Type");
         String status = rs.getString("status");
 
         return new PromoCode(
                 rs.getString("Code"),
                 rs.getString("Description"),
                 rs.getInt("DiscountValue"),
-                PromoCode.CodeType.valueOf(type),
+                PromoCode.CodeType.valueOf(discountType),
+                PromoCode.Type.valueOf(type),
                 rs.getInt("MinOrderValue"),
                 rs.getTimestamp("ValidFrom").toLocalDateTime(),
                 rs.getTimestamp("ValidTo").toLocalDateTime(),
@@ -78,7 +80,7 @@ public class PromoCodeData {
     }
 
     public static boolean addPromoCode(PromoCode p) {
-        String sql = "INSERT INTO PromoCode (Code, Description, DiscountValue, DiscountType, MinOrderValue, ValidFrom, ValidTo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PromoCode (Code, Description, DiscountValue, DiscountType, Type, MinOrderValue, ValidFrom, ValidTo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -87,10 +89,11 @@ public class PromoCodeData {
             stmt.setString(2, p.getDescription());
             stmt.setInt(3, p.getDiscountValue());
             stmt.setString(4, p.getDiscountType().name());
-            stmt.setInt(5, p.getMinOrderValue());
-            stmt.setTimestamp(6, java.sql.Timestamp.valueOf(p.getValidFrom()));
-            stmt.setTimestamp(7, java.sql.Timestamp.valueOf(p.getValidTo()));;
-            stmt.setString(8, p.getStatus().name());
+            stmt.setString(5, p.getType().name());
+            stmt.setInt(6, p.getMinOrderValue());
+            stmt.setTimestamp(7, java.sql.Timestamp.valueOf(p.getValidFrom()));
+            stmt.setTimestamp(8, java.sql.Timestamp.valueOf(p.getValidTo()));;
+            stmt.setString(9, p.getStatus().name());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -102,7 +105,7 @@ public class PromoCodeData {
     }
 
     public static boolean updatePromoCode(PromoCode p) {
-        String sql = "UPDATE PromoCode SET Description = ?, DiscountValue = ?, DiscountType = ?, MinOrderValue = ?, ValidFrom = ?, ValidTo = ?, status = ? WHERE Code = ?";
+        String sql = "UPDATE PromoCode SET Description = ?, DiscountValue = ?, DiscountType = ?, Type = ?, MinOrderValue = ?, ValidFrom = ?, ValidTo = ?, status = ? WHERE Code = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -110,11 +113,12 @@ public class PromoCodeData {
             stmt.setString(1, p.getDescription());
             stmt.setInt(2, p.getDiscountValue());
             stmt.setString(3, p.getDiscountType().name());
-            stmt.setInt(4, p.getMinOrderValue());
-            stmt.setTimestamp(5, java.sql.Timestamp.valueOf(p.getValidFrom()));
-            stmt.setTimestamp(6, java.sql.Timestamp.valueOf(p.getValidTo()));
-            stmt.setString(7, p.getStatus().name());
-            stmt.setString(8, p.getCode());
+            stmt.setString(4, p.getType().name());
+            stmt.setInt(5, p.getMinOrderValue());
+            stmt.setTimestamp(6, Timestamp.valueOf(p.getValidFrom()));
+            stmt.setTimestamp(7, Timestamp.valueOf(p.getValidTo()));
+            stmt.setString(8, p.getStatus().name());
+            stmt.setString(9, p.getCode());
 
             return stmt.executeUpdate() > 0;
 

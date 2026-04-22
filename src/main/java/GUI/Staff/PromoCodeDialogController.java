@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ import java.util.ResourceBundle;
 public class PromoCodeDialogController implements Initializable {
     @FXML private AnchorPane mainPanel;
     @FXML private TextField txtCode, txtDiscountValue, txtMinOrderValue;
-    @FXML private ComboBox<String> cbbDiscountType;
+    @FXML private ComboBox<String> cbbDiscountType, cbbApplyFor;
     @FXML private DatePicker dpValidFrom, dpValidTo;
     @FXML private TextArea txtDescription;
     @FXML private Label lblTitle, lblDesc;
@@ -30,6 +31,7 @@ public class PromoCodeDialogController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cbbDiscountType.setItems(FXCollections.observableArrayList("Percent", "Amount"));
+        cbbApplyFor.getItems().addAll("Cả 2", "Online", "Offline");
 
         Others.setMaxLength(txtCode, 20);
         Others.setMaxLength(txtDiscountValue, 10);
@@ -68,6 +70,10 @@ public class PromoCodeDialogController implements Initializable {
         txtMinOrderValue.setText(String.valueOf(promo.getMinOrderValue()));
         cbbDiscountType.setValue(String.valueOf(promo.getDiscountType()));
 
+        String type = String.valueOf(promo.getType());
+        if ("All".equals(type)) cbbApplyFor.setValue("Cả 2");
+        else cbbApplyFor.setValue(type);
+
         if (promo.getValidFrom() != null) dpValidFrom.setValue(promo.getValidFrom().toLocalDate());
         if (promo.getValidTo() != null) dpValidTo.setValue(promo.getValidTo().toLocalDate());
 
@@ -77,7 +83,12 @@ public class PromoCodeDialogController implements Initializable {
     @FXML
     void btnSaveClick(ActionEvent event) {
         String code = txtCode.getText().trim();
-        PromoCode.CodeType type = PromoCode.CodeType.valueOf(cbbDiscountType.getValue());
+        PromoCode.CodeType discountType = PromoCode.CodeType.valueOf(cbbDiscountType.getValue());
+
+        PromoCode.Type type = null;
+        if (cbbApplyFor.getValue().equals("Cả 2")) type = PromoCode.Type.All;
+        else type = PromoCode.Type.valueOf(cbbApplyFor.getValue());
+
         String valueStr = txtDiscountValue.getText().trim();
         String minStr = txtMinOrderValue.getText().trim();
         String desc = txtDescription.getText().trim();
@@ -87,7 +98,8 @@ public class PromoCodeDialogController implements Initializable {
 
         if (currentPromo != null) {
             boolean isCodeUnchanged = code.equals(currentPromo.getCode());
-            boolean isTypeUnchanged = type != null && type.equals(currentPromo.getDiscountType());
+            boolean isDiscountTypeUnchanged = discountType != null && discountType.equals(currentPromo.getDiscountType());
+            boolean isTypeUnchanged = type != null && type.equals(currentPromo.getType());
             boolean isValueUnchanged = valueStr.equals(String.valueOf(currentPromo.getDiscountValue()));
             boolean isMinUnchanged = minStr.equals(String.valueOf(currentPromo.getMinOrderValue()));
             boolean isDescUnchanged = desc.equals(currentPromo.getDescription() != null ? currentPromo.getDescription() : "");
@@ -97,13 +109,13 @@ public class PromoCodeDialogController implements Initializable {
             boolean isToUnchanged = (toDate == null && currentPromo.getValidTo() == null) ||
                     (toDate != null && currentPromo.getValidTo() != null && toDate.toString().equals(currentPromo.getValidTo().toString()));
 
-            if (isCodeUnchanged && isTypeUnchanged && isValueUnchanged && isMinUnchanged && isDescUnchanged && isFromUnchanged && isToUnchanged) {
+            if (isCodeUnchanged && isDiscountTypeUnchanged && isTypeUnchanged && isValueUnchanged && isMinUnchanged && isDescUnchanged && isFromUnchanged && isToUnchanged) {
                 Others.showAlert(mainPanel, "Không có thông tin nào được thay đổi!", true);
                 return;
             }
         }
 
-        if (code.isEmpty() || type == null || valueStr.isEmpty() || minStr.isEmpty()) {
+        if (code.isEmpty() || discountType == null || type == null || valueStr.isEmpty() || minStr.isEmpty()) {
             Others.showAlert(mainPanel, "Vui lòng điền đầy đủ thông tin bắt buộc!", true);
             return;
         }
@@ -111,7 +123,7 @@ public class PromoCodeDialogController implements Initializable {
         int value = Integer.parseInt(valueStr);
         int minOrder = Integer.parseInt(minStr);
 
-        if (type == PromoCode.CodeType.Percent && value > 100) {
+        if (discountType == PromoCode.CodeType.Percent && value > 100) {
             Others.showAlert(mainPanel, "Giảm theo phần trăm không được vượt quá 100%!", true);
             txtDiscountValue.requestFocus();
             return;
@@ -126,10 +138,11 @@ public class PromoCodeDialogController implements Initializable {
         btnSave.setDisable(true);
         Others.showAlert(mainPanel, "Đang kết nối máy chủ...", false);
 
+        PromoCode.Type finalType = type;
         new Thread(() -> {
             int status = (currentPromo == null)
-                    ? PromoCodeBusiness.addPromoCode(code, desc, value, type, minOrder, fromDate, toDate)
-                    : PromoCodeBusiness.updatePromoCode(code, desc, value, type, minOrder, fromDate, toDate);
+                    ? PromoCodeBusiness.addPromoCode(code, desc, value, discountType, finalType, minOrder, fromDate, toDate)
+                    : PromoCodeBusiness.updatePromoCode(code, desc, value, discountType, finalType, minOrder, fromDate, toDate);
 
             javafx.application.Platform.runLater(() -> {
                 btnCancel.setDisable(false);
@@ -140,8 +153,8 @@ public class PromoCodeDialogController implements Initializable {
                     else Others.showAlert(mainPanel, "Đã cập nhật mã giảm giá thành công!", false);
                     saveSuccess = true;
 
-                    var delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.0));
-                    delay.setOnFinished(e -> ((javafx.stage.Stage) btnSave.getScene().getWindow()).close());
+                    var delay = new javafx.animation.PauseTransition(Duration.seconds(2.0));
+                    delay.setOnFinished(e -> ((Stage) btnSave.getScene().getWindow()).close());
                     delay.play();
                 } else if (status == -1) {
                     Others.showAlert(mainPanel, "Mã code này đã tồn tại, vui lòng nhập mã khác!", true);

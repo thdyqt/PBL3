@@ -57,11 +57,12 @@
                     <columns>
                         <TableColumn fx:id="colSTT" prefWidth="50.0" text="STT" />
                         <TableColumn fx:id="colCode" prefWidth="99.22687530517578" text="Mã Code" />
-                        <TableColumn fx:id="colDesc" prefWidth="272.6723175048828" text="Mô tả" />
-                        <TableColumn fx:id="colMinValue" prefWidth="123.42849731445312" text="Giá trị tối thiểu" />
-                        <TableColumn fx:id="colStart" prefWidth="145.2100830078125" text="Thời gian bắt đầu" />
-                        <TableColumn fx:id="colEnd" prefWidth="159.73101806640625" text="Thời gian kết thúc" />
-                  <TableColumn fx:id="colStatus" prefWidth="134.7227783203125" text="Trạng thái hoạt động" />
+                        <TableColumn fx:id="colDesc" prefWidth="198.45375061035156" text="Mô tả" />
+                  <TableColumn fx:id="colType" prefWidth="120.20172119140625" text="Áp dụng" />
+                        <TableColumn fx:id="colMinValue" prefWidth="115.36129760742188" text="Giá trị tối thiểu" />
+                        <TableColumn fx:id="colStart" prefWidth="130.0" text="Thời gian bắt đầu" />
+                        <TableColumn fx:id="colEnd" prefWidth="130.0" text="Thời gian kết thúc" />
+                  <TableColumn fx:id="colStatus" prefWidth="141.176513671875" text="Trạng thái hoạt động" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
