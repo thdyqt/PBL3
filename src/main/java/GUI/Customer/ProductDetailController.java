@@ -201,7 +201,12 @@ public class ProductDetailController implements Initializable {
     @FXML
     void handleAddToCart(ActionEvent event) {
         int quantity = spinQuantity.getValue();
-        boolean success = CartManager.getInstance().addToCustomerCart(currentProduct, quantity);
+        int customerId = 0;
+        if (!Util.UserSession.getInstance().isGuest()) {
+            customerId = Util.UserSession.getInstance().getId();
+        }
+
+        boolean success = CartManager.getInstance().addToCustomerCart(customerId, currentProduct, quantity);
 
         if (success) {
             Others.showAlert(lblProductName, "Đã thêm " + quantity + " " + currentProduct.getProductName() + " vào giỏ hàng!", false);

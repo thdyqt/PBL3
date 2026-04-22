@@ -6,7 +6,7 @@ import EntityDTO.Category;
 import EntityDTO.Product;
 import Util.CartManager;
 import Util.Others;
-import javafx.animation.FadeTransition;
+import javafx.animation.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -44,6 +44,7 @@ public class CustomerProductController implements Initializable {
     private List<Product> allProducts = new ArrayList<>();
     private Map<Integer, String> categoryCache = new HashMap<>();
     private boolean isFilterVisible = true;
+    private double originalFilterWidth = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -181,10 +182,40 @@ public class CustomerProductController implements Initializable {
 
     @FXML
     private void handleToggleFilter(ActionEvent event) {
+        if (originalFilterWidth == 0) {
+            originalFilterWidth = paneFilter.getWidth();
+            paneFilter.setMinWidth(0);
+        }
+
         isFilterVisible = !isFilterVisible;
-        paneFilter.setVisible(isFilterVisible);
-        paneFilter.setManaged(isFilterVisible);
         btnToggleFilter.setText(isFilterVisible ? "Ẩn bộ lọc" : "Hiện bộ lọc");
+
+        Timeline timeline = new Timeline();
+
+        if (!isFilterVisible) {
+            KeyValue kvWidth = new KeyValue(paneFilter.prefWidthProperty(), 0, Interpolator.EASE_BOTH);
+            KeyValue kvOpacity = new KeyValue(paneFilter.opacityProperty(), 0, Interpolator.EASE_BOTH);
+            KeyFrame kf = new KeyFrame(Duration.millis(300), kvWidth, kvOpacity);
+
+            timeline.getKeyFrames().add(kf);
+
+            timeline.setOnFinished(e -> {
+                paneFilter.setVisible(false);
+                paneFilter.setManaged(false);
+            });
+
+        } else {
+            paneFilter.setVisible(true);
+            paneFilter.setManaged(true);
+
+            KeyValue kvWidth = new KeyValue(paneFilter.prefWidthProperty(), originalFilterWidth, Interpolator.EASE_BOTH);
+            KeyValue kvOpacity = new KeyValue(paneFilter.opacityProperty(), 1, Interpolator.EASE_BOTH);
+            KeyFrame kf = new KeyFrame(Duration.millis(300), kvWidth, kvOpacity);
+
+            timeline.getKeyFrames().add(kf);
+        }
+
+        timeline.play();
     }
 
     @FXML
@@ -216,7 +247,12 @@ public class CustomerProductController implements Initializable {
     }
 
     private void handleAddToCart(Product product) {
-        boolean success = CartManager.getInstance().addToCustomerCart(product, 1);
+        int customerId = 0;
+        if (!Util.UserSession.getInstance().isGuest()) {
+            customerId = Util.UserSession.getInstance().getId();
+        }
+
+        boolean success = CartManager.getInstance().addToCustomerCart(customerId, product, 1);
 
         if (success) {
             Others.showAlert(flowProducts, "Đã thêm " + product.getProductName() + " vào giỏ hàng!", false);

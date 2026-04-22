@@ -1,5 +1,6 @@
 package Util;
 
+import DataDAL.CartData;
 import EntityDTO.Customer;
 import EntityDTO.OrderDetail;
 import EntityDTO.Product;
@@ -33,11 +34,23 @@ public class CartManager {
         return customerCart;
     }
 
+    public void setCustomerCart(ObservableList<OrderDetail> customerCart) {
+        this.customerCart = customerCart;
+    }
+
     public IntegerProperty customerTotalCountProperty() {
         return customerTotalCount;
     }
 
-    public boolean addToCustomerCart(Product product, int quantityToAdd) {
+    public void loadCartOnLogin(int customerID) {
+        customerCart.clear();
+        if (customerID > 0) {
+            customerCart.addAll(CartData.loadCustomerCart(customerID));
+        }
+        updateCustomerTotal();
+    }
+
+    public boolean addToCustomerCart(int customerID, Product product, int quantityToAdd) {
         for (OrderDetail item : customerCart) {
             if (item.getProduct() != null && item.getProduct().getProductID() == product.getProductID()) {
                 int newQuantity = item.getQuantity() + quantityToAdd;
@@ -46,6 +59,10 @@ public class CartManager {
                 }
                 item.setQuantity(newQuantity);
                 updateCustomerTotal();
+
+                if (customerID > 0) {
+                    DataDAL.CartData.saveCartItem(customerID, product.getProductID(), newQuantity);
+                }
                 return true;
             }
         }
@@ -57,10 +74,32 @@ public class CartManager {
 
         customerCart.add(newItem);
         updateCustomerTotal();
+
+        if (customerID > 0) {
+            DataDAL.CartData.saveCartItem(customerID, product.getProductID(), quantityToAdd);
+        }
         return true;
     }
 
-    public void clearCustomerCart() {
+    public void removeCustomerCartItem(int customerID, Product product) {
+        customerCart.removeIf(item -> item.getProduct().getProductID() == product.getProductID());
+        updateCustomerTotal();
+
+        if (customerID > 0) {
+            DataDAL.CartData.removeCartItem(customerID, product.getProductID());
+        }
+    }
+
+    public void clearCustomerCart(int customerID) {
+        customerCart.clear();
+        updateCustomerTotal();
+
+        if (customerID > 0) {
+            DataDAL.CartData.clearCart(customerID);
+        }
+    }
+
+    public void clearCartOnLogout() {
         customerCart.clear();
         updateCustomerTotal();
     }

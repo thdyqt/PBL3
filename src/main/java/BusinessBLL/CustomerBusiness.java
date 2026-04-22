@@ -31,6 +31,7 @@ public class CustomerBusiness {
                         dbCustomer.getAddress(),
                         dbCustomer.getPoint()
                 );
+                CartManager.getInstance().loadCartOnLogin(dbCustomer.getId());
                 return "SUCCESS";
             } else {
                 return "WRONG PASSWORD";
@@ -46,7 +47,7 @@ public class CustomerBusiness {
     }
 
     public static void logout() {
-        CartManager.getInstance().clearCustomerCart();
+        CartManager.getInstance().clearCartOnLogout();
         UserSession.getInstance().clearSession();
     }
 

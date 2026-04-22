@@ -104,16 +104,6 @@ public class CustomerDashboardForm implements Initializable {
         pt.setInterpolator(Interpolator.EASE_OUT);
         pt.play();
 
-        CartManager.getInstance().customerTotalCountProperty().addListener((observable, oldValue, newValue) -> {
-            int count = newValue.intValue();
-            if (count > 0) {
-                lblCartBadge.setText(String.valueOf(count));
-                lblCartBadge.setVisible(true);
-            } else {
-                lblCartBadge.setVisible(false);
-            }
-        });
-
         if (UserSession.getInstance().isGuest()) {
             menuAcc.setVisible(false);
             menuAcc.setManaged(false);
@@ -135,7 +125,16 @@ public class CustomerDashboardForm implements Initializable {
             menuInfo.setOnAction(event -> openProfileDialog(true));
             menuEditAcc.setOnAction(event -> openProfileDialog(false));
             loadUserProfile();
+            CartManager.getInstance().loadCartOnLogin(UserSession.getInstance().getId());
         }
+
+        lblCartBadge.textProperty().bind(
+                CartManager.getInstance().customerTotalCountProperty().asString()
+        );
+
+        lblCartBadge.visibleProperty().bind(
+                CartManager.getInstance().customerTotalCountProperty().greaterThan(0)
+        );
 
         menuButtons = new Button[]{btnHome, btnProducts, btnCart, btnOrders};
         setActiveMenu(btnHome);
