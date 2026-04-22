@@ -94,7 +94,7 @@ public class OrderOnlineManagementForm implements Initializable {
                     setStyle("");
                 } else {
                     setText(item);
-                    setStyle("-fx-alignment: CENTER_RIGHT; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
+                    setStyle("-fx-alignment: CENTER; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
                 }
             }
         });
