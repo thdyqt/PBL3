@@ -109,11 +109,11 @@ public class Others {
     // ANIMATION KHI ẤN NÚT
     // Resize up and down slightly to make button clicking more tactile
     public static void playButtonAnimation(Node node){
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100),node);
-        scaleDown.setToX(0.95);
-        scaleDown.setToY(0.95);
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(50),node);
+        scaleDown.setToX(0.90);
+        scaleDown.setToY(0.90);
 
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100),node);
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(50),node);
         scaleUp.setToX(1);
         scaleUp.setToY(1);
 
@@ -127,6 +127,28 @@ public class Others {
             scaleUp.playFromStart();
         });
     }
+
+    public static void playHoverAnimation(Node node){
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100),node);
+        scaleDown.setToX(0.95);
+        scaleDown.setToY(0.95);
+
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100),node);
+        scaleUp.setToX(1);
+        scaleUp.setToY(1);
+
+        node.setOnMouseEntered(mouseEvent -> {
+            scaleUp.stop();
+            scaleDown.playFromStart();
+        });
+
+        node.setOnMouseExited(mouseEvent -> {
+            scaleDown.stop();
+            scaleUp.playFromStart();
+        });
+    }
+
+
 
     // ANIMATION KHI FORM HIỂN THỊ
     public static void playFormAnimation(Node formNode) {

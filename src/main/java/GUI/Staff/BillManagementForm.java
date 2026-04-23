@@ -89,7 +89,10 @@ public class BillManagementForm{
 
     private void setupButtons() {
         Others.playButtonAnimation(buttonOrderDetail);
+        Others.playHoverAnimation(buttonOrderDetail);
         Others.playButtonAnimation(buttonOrderReceipt);
+        Others.playHoverAnimation(buttonOrderReceipt);
+
 
         buttonOrderDetail.setOnAction(event -> {
             handleOrderDetail();
