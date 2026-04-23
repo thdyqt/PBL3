@@ -50,7 +50,7 @@ public class OrderOnlineManagementForm implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Khởi tạo các tùy chọn trạng thái cho ComboBox
         cbState.setItems(FXCollections.observableArrayList(
-                "Waiting_for_validation", "Processing", "Delivering", "Finished"
+                "Chờ xác nhận", "Đang xử lí", "Đang giao hàng", "Đã hoàn thành"
         ));
 
         // Cài đặt các cột cho bảng
@@ -111,21 +111,30 @@ public class OrderOnlineManagementForm implements Initializable {
                         setText(null);
                         setStyle("");
                     } else {
-                        setText(item);
                         // Chọn màu dựa trên trạng thái của đơn hàng
                         switch (item) {
                             case "Waiting_for_validation":
+                                setText("Chờ xác nhận");
+                                setStyle("-fx-text-fill: #fddc05; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                                break;
                             case "Processing":
+                                setText("Đang xử lí");
+                                setStyle("-fx-text-fill: #4c7102; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                                break;
                             case "Delivering":
+                                setText("Đang giao hàng");
                                 setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Xanh dương (Đang tiến hành)
                                 break;
                             case "Finished":
+                                setText("Đã hoàn thành");
                                 setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Xanh lá (Hoàn thành)
                                 break;
                             case "Cancelled":
+                                setText("Đã hủy");
                                 setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Đỏ (Đã hủy)
                                 break;
                             default:
+                                setText(item);
                                 setStyle("-fx-text-fill: #1E293B; -fx-alignment: CENTER;"); // Màu mặc định
                                 break;
                         }
@@ -191,10 +200,10 @@ public class OrderOnlineManagementForm implements Initializable {
 
             // Hiển thị kết quả từ BLL
             if (msg.contains("thành công")) {
-                Others.showAlert(rootPane, "Thành công", false);
+                Others.showAlert(rootPane, msg, false);
                 loadData(); // Tải lại bảng để cập nhật trạng thái mới
             } else {
-                Others.showAlert(rootPane, "Thất bại", true);
+                Others.showAlert(rootPane, msg, true);
             }
         }
     }
@@ -202,7 +211,13 @@ public class OrderOnlineManagementForm implements Initializable {
     @FXML
     void btnUpdateClick(ActionEvent event) {
         Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
-        String newState = cbState.getValue();
+        String newState = "";
+                switch (cbState.getValue()){
+            case "Chờ xác nhận": newState = Order.OrderStatus.Waiting_for_validation.name();break;
+            case "Đang xử lí": newState = Order.OrderStatus.Processing.name();break;
+            case "Đang giao hàng": newState = Order.OrderStatus.Delivering.name();break;
+            case "Đã hoàn thành" : newState = Order.OrderStatus.Finished.name();break;
+        }
 
         // Kiểm tra UI
         if (selectedOrder == null || newState == null) {

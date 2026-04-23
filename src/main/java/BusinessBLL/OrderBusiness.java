@@ -122,7 +122,7 @@ public class OrderBusiness {
 
         // Luật kinh doanh BR-22: Chỉ cho phép hủy khi đơn ở trạng thái Chờ xác nhận hoặc Mới tạo
         if (order.getStatus() != Order.OrderStatus.Waiting_for_validation) {
-            return "Lỗi: Đơn hàng đã được xử lý hoặc đang giao, không thể hủy!";
+            return "Lỗi: Đơn hàng đã được xử lý, đang giao hoặc đã hoàn thành, không thể hủy!";
         }
 
         // 1. Thay đổi trạng thái thành Hủy
