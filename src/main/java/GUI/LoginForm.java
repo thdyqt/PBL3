@@ -166,6 +166,8 @@ public class LoginForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //make it so that pressing enter will also press login
+        btnLogin.setDefaultButton(true);
         Others.playFormAnimation(mainForm);
 
         Others.setMaxLength(txtUser, 20);
