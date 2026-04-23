@@ -40,9 +40,9 @@ public class OrderOnlineDetailController {
         }
 
         if(order.getStatus().name().equals("Cancelled")){
-            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Lí do hủy: " + order.getCancelReason());
+            lblStatus.setText("Trạng thái đơn: " + ChangeToVie(order.getStatus().name()) + " | Lí do hủy: " + order.getCancelReason());
         }else
-            lblStatus.setText("Trạng thái đơn: " + order.getStatus().name() + " | Thanh toán: " + order.getPayment().name());
+            lblStatus.setText("Trạng thái đơn: " + ChangeToVie(order.getStatus().name()) + " | Thanh toán: " + order.getPayment().name());
 
         lblAddress.setText("Địa chỉ: " + order.getAddress());
         lblPromoCode.setText("Mã giảm giá: " + order.getAppliedCode());
@@ -76,6 +76,16 @@ public class OrderOnlineDetailController {
         } else {
             // Nếu đơn hàng chưa có món nào (lỗi logic khi tạo) hoặc không tìm thấy
             lblFinalTotal.setText("Tổng tiền thanh toán: 0 VNĐ");
+        }
+    }
+    public String ChangeToVie(String status){
+        switch (status){
+            case "Waiting_for_validation" : return "Chờ xác nhận";
+            case "Processing" : return "Đang xử lí";
+            case "Delivering" : return "Đang giao hàng";
+            case "Finished" : return "Đã hoàn thành";
+            case "Cancelled" : return "Đã hủy";
+            default: return "Không xác định";
         }
     }
 }
