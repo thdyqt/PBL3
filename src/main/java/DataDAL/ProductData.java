@@ -104,6 +104,25 @@ public class ProductData {
         return false;
     }
 
+    public static boolean updateProductAverageRating(int productId) {
+        String sql = "UPDATE Product " +
+                "SET rating = (SELECT IFNULL(AVG(RatingValue), 0) FROM ProductReview WHERE ProductID = ?) " +
+                "WHERE ProductID = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, productId);
+            stmt.setInt(2, productId);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi cập nhật rating trung bình: " + e.getMessage());
+            return false;
+        }
+    }
+
     // ===== NGỪNG KINH DOANH =====
     public static boolean stopBusiness(int productID) {
         String sql = "UPDATE Product SET status = 'Inactive' WHERE ProductID = ?";
@@ -167,6 +186,7 @@ public class ProductData {
         }
         return list;
     }
+
     // ===== LẤY SẢN PHẨM ĐÃ NGỪNG KINH DOANH =====
     public static List<Product> getInactiveProducts() {
         List<Product> list = new ArrayList<>();

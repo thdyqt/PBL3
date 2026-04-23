@@ -23,6 +23,13 @@ public class ProductReview {
         this.reviewDate = reviewDate;
     }
 
+    public ProductReview(int productID, int customerID, int rating, String comment) {
+        this.productID = productID;
+        this.customerID = customerID;
+        this.rating = rating;
+        this.comment = comment;
+    }
+
     public int getReviewID() { return reviewID; }
     public void setReviewID(int reviewID) { this.reviewID = reviewID; }
 

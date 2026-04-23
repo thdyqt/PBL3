@@ -12,6 +12,15 @@ public class ProductBusiness {
         return ProductData.getAllProduct();
     }
 
+    public static double getProductRating(int productID) {
+        for (Product p : getAllProducts()) {
+            if (p.getProductID() == productID) {
+                return p.getRating();
+            }
+        }
+        return 0.0;
+    }
+
     public static String addProduct(Product product) {
         if (ProductData.isProductExist(product.getProductName())) {
             return "Sản phẩm đã tồn tại!";

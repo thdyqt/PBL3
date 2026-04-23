@@ -1,7 +1,9 @@
 package BusinessBLL;
 
+import DataDAL.ProductData;
 import DataDAL.ReviewData;
 import EntityDTO.ProductReview;
+
 import java.util.List;
 
 public class ReviewBusiness {
@@ -17,7 +19,7 @@ public class ReviewBusiness {
             return "Số sao không hợp lệ!";
         }
 
-        if (ReviewData.addReview(review)) {
+        if (ReviewData.addReview(review) && ProductData.updateProductAverageRating(review.getProductID())) {
             return "success";
         }
         return "Lỗi kết nối cơ sở dữ liệu!";

@@ -1,5 +1,6 @@
 package GUI.Customer;
 
+import BusinessBLL.ProductBusiness;
 import BusinessBLL.ReviewBusiness;
 import EntityDTO.Product;
 import EntityDTO.ProductReview;
@@ -37,14 +38,14 @@ public class ProductDetailController implements Initializable {
     @FXML private VBox paneWriteReview, vboxOtherReviews;
 
     private Product currentProduct;
-    private int selectedRating = 0;
+    private int currentRating = 0;
     private Label[] starLabels = new Label[5];
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);
         spinQuantity.setValueFactory(valueFactory);
-        setupStarRatingSystem();
+        setupStarRating();
         Others.playButtonAnimation(btnAddToCart);
         Others.playButtonAnimation(btnSubmitReview);
     }
@@ -73,24 +74,36 @@ public class ProductDetailController implements Initializable {
         loadExistingReviews();
     }
 
-    private void setupStarRatingSystem() {
+    private void setupStarRating() {
         starRatingContainer.getChildren().clear();
-        for (int i = 0; i < 5; i++) {
-            int ratingValue = i + 1;
-            Label star = new Label("☆");
-            star.setStyle("-fx-font-size: 30; -fx-cursor: hand;");
-            star.setTextFill(Color.web("#D4891A"));
-            star.setOnMouseClicked(e -> updateStarUI(ratingValue));
-            starLabels[i] = star;
+
+        for (int i = 1; i <= 5; i++) {
+            Label star = new Label("★");
+            star.setStyle("-fx-font-size: 30px; -fx-text-fill: #D4891A; -fx-cursor: hand;");
+
+            final int ratingValue = i;
+
+            star.setOnMouseEntered(e -> updateStars(ratingValue));
+            star.setOnMouseExited(e -> updateStars(currentRating));
+
+            star.setOnMouseClicked(e -> {
+                currentRating = ratingValue;
+                updateStars(currentRating);
+            });
+
             starRatingContainer.getChildren().add(star);
         }
+        updateStars(currentRating);
     }
 
-    private void updateStarUI(int rating) {
-        this.selectedRating = rating;
-        for (int i = 0; i < 5; i++) {
-            if (i < rating) starLabels[i].setText("★");
-            else starLabels[i].setText("☆");
+    private void updateStars(int rating) {
+        for (int i = 0; i < starRatingContainer.getChildren().size(); i++) {
+            Label star = (Label) starRatingContainer.getChildren().get(i);
+            if (i < rating) {
+                star.setStyle("-fx-font-size: 30px; -fx-text-fill: #D4891A; -fx-cursor: hand;");
+            } else {
+                star.setStyle("-fx-font-size: 30px; -fx-text-fill: #CBD5E1; -fx-cursor: hand;");
+            }
         }
     }
 
@@ -119,7 +132,7 @@ public class ProductDetailController implements Initializable {
 
     @FXML
     void handleSubmitReview(ActionEvent event) {
-        if (selectedRating == 0) {
+        if (currentRating == 0) {
             Others.showAlert(lblProductName, "Vui lòng chọn số sao đánh giá!", true);
             return;
         }
@@ -134,12 +147,14 @@ public class ProductDetailController implements Initializable {
         ProductReview newReview = new ProductReview();
         newReview.setProductID(currentProduct.getProductID());
         newReview.setCustomerID(currentUserId);
-        newReview.setRating(selectedRating);
+        newReview.setRating(currentRating);
         newReview.setComment(comment);
 
         String result = ReviewBusiness.addReview(newReview);
 
         if ("success".equals(result)) {
+            double newAverage = ProductBusiness.getProductRating(currentProduct.getProductID());
+            lblAverageRating.setText(String.format("(%.1f ★)", newAverage));
             Others.showAlert(lblProductName, "Cảm ơn bạn đã gửi đánh giá!", false);
             checkUserReviewPermission();
             txtReviewComment.clear();
