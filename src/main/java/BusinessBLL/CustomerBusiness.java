@@ -65,10 +65,10 @@ public class CustomerBusiness {
         return CustomerData.getCustomerByUsernameOrPhone(text);
     }
 
-    public static int updateCustomer(int id, String phone, String name, String username, String password, int point) {
+    public static int updateCustomer(int id, String phone, String name, String username, String password, String address, int point) {
         if (CustomerData.isAccountExist(username, phone, id)) return -1;
 
-        if (CustomerData.updateCustomer(new Customer(id, phone, name, username, password, point))){
+        if (CustomerData.updateCustomer(new Customer(id, phone, name, username, password, address, point))){
             LogBusiness.saveLog("Cập nhật thông tin khách hàng " + name + " (" + phone + ")");
             return 1;
         }

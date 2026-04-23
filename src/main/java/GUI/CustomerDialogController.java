@@ -190,7 +190,7 @@ public class CustomerDialogController implements Initializable {
         new Thread(() -> {
             int status = (currentCustomer == null) ?
                     CustomerBusiness.register(phone, name, username, rawPassword) :
-                    CustomerBusiness.updateCustomer(currentCustomer.getId(), phone, name, username, rawPassword, point);
+                    CustomerBusiness.updateCustomer(currentCustomer.getId(), phone, name, username, rawPassword, address, point);
 
             Platform.runLater(() -> {
                 btnCancel.setDisable(false);
@@ -202,7 +202,7 @@ public class CustomerDialogController implements Initializable {
 
                     if (isEditingSelf) {
                         String sessionPass = rawPassword.isEmpty() ? UserSession.getInstance().getPassword() : rawPassword;
-                        UserSession.getInstance().setCustomer(UserSession.getInstance().getId(), phone, name, username, sessionPass, currentCustomer.getAddress(), point);
+                        UserSession.getInstance().setCustomer(UserSession.getInstance().getId(), phone, name, username, sessionPass, address, point);
                     }
 
                     var delay = new PauseTransition(Duration.seconds(2.0));
@@ -226,6 +226,7 @@ public class CustomerDialogController implements Initializable {
         txtPassword.setEditable(false);
         txtPassword.setPromptText("Đã bảo mật");
         txtAddress.setEditable(false);
+        txtAddress.setPromptText("Không có");
 
         btnSave.setVisible(false);
         btnCancel.setText("Đóng");
