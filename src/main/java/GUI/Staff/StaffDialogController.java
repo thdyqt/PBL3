@@ -106,11 +106,12 @@ public class StaffDialogController implements Initializable {
 
     @FXML
     void btnSaveClick(ActionEvent event) {
-        String name = Others.standardizeName(txtName.getText());
-        String phone = txtPhone.getText().trim();
-        String user = txtUsername.getText().trim();
-        String pass = txtPassword.getText().trim();
-        String role = cbRole.getValue();
+        String rawName = txtName.getText() == null ? "" : txtName.getText();
+        String name = Others.standardizeName(rawName);
+        String phone = txtPhone.getText() == null ? "" : txtPhone.getText().trim();
+        String user = txtUsername.getText() == null ? "" : txtUsername.getText().trim();
+        String pass = txtPassword.getText() == null ? "" : txtPassword.getText().trim();
+        String role = cbRole.getValue() == null ? "Staff" : cbRole.getValue();
         Date hire_date = dpHireDate.getValue() != null ? Date.valueOf(dpHireDate.getValue()) : new Date(System.currentTimeMillis());
 
         if (currentStaff != null) {

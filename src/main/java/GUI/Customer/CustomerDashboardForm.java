@@ -250,13 +250,14 @@ public class CustomerDashboardForm implements Initializable {
     }
 
     @FXML
-    void btnOrdersClick(ActionEvent event) {
-        setActiveMenu(btnOrders);
+    void btnCartClick(ActionEvent event) {
+        setActiveMenu(btnCart);
+        switchForm("/GUI/Customer/CustomerCart.fxml");
     }
 
     @FXML
-    void btnCartClick(ActionEvent event) {
-        setActiveMenu(btnCart);
+    void btnOrdersClick(ActionEvent event) {
+        setActiveMenu(btnOrders);
     }
 
     private void openProfileDialog(boolean isViewOnly) {

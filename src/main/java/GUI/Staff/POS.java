@@ -469,6 +469,7 @@ public class POS implements Initializable {
 
         lblCustomerName.setText(currentCustomer.getName());
         lblCustomerName.setStyle("-fx-text-fill: #16A34A; -fx-font-weight: bold;");
+        Others.showAlert(mainPane, "Đã tìm thấy số điện thoại!";
         CartManager.getInstance().setCurrentCustomer(currentCustomer);
         calculateTotal();
     }

@@ -56,7 +56,7 @@ public class CustomerData {
     }
 
     public static boolean addCustomer(Customer c) {
-        String sql = "INSERT INTO Customer (phone, full_name, username, pass_word, point) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Customer (phone, full_name, username, pass_word, address, point) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -67,7 +67,8 @@ public class CustomerData {
             stmt.setString(2, c.getName());
             stmt.setString(3, c.getUser());
             stmt.setString(4, hashedPassword);
-            stmt.setInt(5, c.getPoint());
+            stmt.setString(5, c.getAddress());
+            stmt.setInt(6, c.getPoint());
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;

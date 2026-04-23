@@ -1,5 +1,6 @@
 package Util;
 
+import EntityDTO.Customer;
 import EntityDTO.Staff;
 
 import java.sql.Date;
@@ -111,4 +112,6 @@ public class UserSession {
     public Staff getStaff() {
         return new Staff(id, phone, name, username, password, position, hire_date, "Active");
     }
+
+    public Customer getCustomer() { return new Customer(id, phone, name, username, password, address, point); }
 }

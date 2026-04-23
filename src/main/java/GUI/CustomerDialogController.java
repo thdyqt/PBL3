@@ -22,7 +22,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class CustomerDialogController implements Initializable {
-
     @FXML
     private AnchorPane mainPanel;
 
@@ -45,6 +44,9 @@ public class CustomerDialogController implements Initializable {
     private PasswordField txtPassword;
 
     @FXML
+    private TextField txtAddress;
+
+    @FXML
     private Button btnCancel;
 
     @FXML
@@ -60,6 +62,7 @@ public class CustomerDialogController implements Initializable {
         Others.setMaxLength(txtUsername, 20);
         Others.setMaxLength(txtName, 100);
         Others.setMaxLength(txtPassword, 20);
+        Others.setMaxLength(txtAddress, 255);
 
         txtPhone.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
@@ -101,6 +104,8 @@ public class CustomerDialogController implements Initializable {
         if(customer == null){
             txtPassword.setPromptText("Mật khẩu mặc định là số điện thoại");
             txtPassword.setEditable(false);
+            txtUsername.setEditable(false);
+            txtAddress.setEditable(false);
         }
 
         if(customer != null) {
@@ -110,6 +115,7 @@ public class CustomerDialogController implements Initializable {
             txtName.setText(customer.getName());
             txtPhone.setText(customer.getPhone());
             txtUsername.setText(customer.getUser());
+            txtAddress.setText(customer.getAddress());
         }
     }
 
@@ -120,9 +126,10 @@ public class CustomerDialogController implements Initializable {
 
     @FXML
     void btnSaveClick(ActionEvent event) {
-        String name = Others.standardizeName(txtName.getText());
-        String phone = txtPhone.getText().trim();
-        String username = txtUsername.getText().trim();
+        String rawName = txtName.getText() == null ? "" : txtName.getText();
+        String name = Others.standardizeName(rawName);
+        String phone = txtPhone.getText() == null ? "" : txtPhone.getText().trim();
+        String username = txtUsername.getText() == null ? "" : txtUsername.getText().trim();
 
         String rawPassword;
         if (currentCustomer == null) {
@@ -131,6 +138,7 @@ public class CustomerDialogController implements Initializable {
             rawPassword = txtPassword.getText().trim();
         }
 
+        String address = txtAddress.getText() == null ? "" : txtAddress.getText().trim();
         int point = (currentCustomer != null) ? currentCustomer.getPoint() : 0;
 
         if (currentCustomer != null) {
@@ -138,8 +146,9 @@ public class CustomerDialogController implements Initializable {
             boolean isPhoneUnchanged = phone.equals(currentCustomer.getPhone());
             boolean isUserUnchanged = username.equals(currentCustomer.getUser());
             boolean isPassUnchanged = rawPassword.isEmpty();
+            boolean isAddressUnchanged = address.equals(currentCustomer.getAddress());
 
-            if (isNameUnchanged && isPhoneUnchanged && isUserUnchanged && isPassUnchanged) {
+            if (isNameUnchanged && isPhoneUnchanged && isUserUnchanged && isPassUnchanged && isAddressUnchanged) {
                 Others.showAlert(mainPanel, "Không có thông tin nào được thay đổi!", true);
                 return;
             }
@@ -215,8 +224,9 @@ public class CustomerDialogController implements Initializable {
         txtPhone.setEditable(false);
         txtUsername.setEditable(false);
         txtPassword.setEditable(false);
-
         txtPassword.setPromptText("Đã bảo mật");
+        txtAddress.setEditable(false);
+
         btnSave.setVisible(false);
         btnCancel.setText("Đóng");
     }
