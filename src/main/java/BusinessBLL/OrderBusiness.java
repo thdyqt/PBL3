@@ -49,15 +49,7 @@ public class OrderBusiness {
     }
 
     public static List<Order> getOnlineOrders_BLL() {
-        List<Order> allOrders = OrderData.getAllOrders();
-
-        if (allOrders != null) {
-            List<Order> onlineOrders = allOrders.stream()
-                    .filter(o -> o.getType() == Order.OrderType.Online)
-                    .collect(Collectors.toList());
-            return onlineOrders;
-        }
-        return null;
+        return OrderData.getOnlineOrders();
     }
 
     public static String updateOrder_BLL(Order order, String status){
