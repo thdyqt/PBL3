@@ -20,11 +20,9 @@ public class OrderBusiness {
 
         int newOrderId = OrderData.addOrder(order);
 
-        if (newOrderId > 0) {
-            String typeStr = (order.getType() == Order.OrderType.Offline) ? "Offline (Tại quầy)" : "Online";
-            String creatorName = (order.getStaff() != null) ? order.getStaff().getName() : "Khách hàng tự đặt";
-
-            LogBusiness.saveLog("Tài khoản [" + creatorName + "] đã tạo một đơn hàng " + typeStr + " mới (Mã: #" + newOrderId + ")");
+        if (newOrderId > 0 && order.getType() == Order.OrderType.Offline) {
+            String creatorName = order.getStaff().getName();
+            LogBusiness.saveLog("Tài khoản [" + creatorName + "] đã tạo một đơn hàng tại quầy mới (Mã: #" + newOrderId + ")");
         }
 
         return newOrderId;

@@ -22,8 +22,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -35,7 +33,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -585,7 +582,7 @@ public class POS implements Initializable {
 
         btnTransfer.setOnAction(e -> {
             dialogStage.close();
-            showVietQRAndCheckout(finalTotal);
+            Others.showVietQR(finalTotal, "Thanh toán đơn hàng DUT Bakery", "✅ ĐÃ NHẬN ĐƯỢC TIỀN", mainPane, () -> processCheckout("Chuyển khoản", finalTotal));
         });
 
         dialogStage.showAndWait();
@@ -662,74 +659,6 @@ public class POS implements Initializable {
             resetPOS();
         } else {
             Others.showAlert(mainPane, "Lỗi hệ thống! Không thể lưu đơn hàng xuống Database.", true);
-        }
-    }
-
-    private void showVietQRAndCheckout(int amount) {
-        try {
-            String bankID = "MB";
-            String accountNo = "000002907";
-            String accountName = URLEncoder.encode("PHAN THANH DUY", "UTF-8").replace("+", "%20");
-            String addInfo = URLEncoder.encode("Thanh toan don hang DUT Bakery", "UTF-8").replace("+", "%20");
-
-            String qrUrl = String.format("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
-                    bankID, accountNo, amount, addInfo, accountName);
-
-            Image qrImage = new Image(qrUrl, false);
-
-            if (qrImage.isError()) {
-                throw new Exception("Không thể tải ảnh QR từ máy chủ!");
-            }
-
-            ImageView imageView = new ImageView(qrImage);
-            imageView.setFitWidth(500);
-            imageView.setFitHeight(500);
-            imageView.setPreserveRatio(true);
-
-            Stage qrStage = new Stage();
-            qrStage.initModality(Modality.APPLICATION_MODAL);
-            qrStage.setTitle("Thanh toán Chuyển khoản");
-            qrStage.setMaximized(true);
-
-            VBox root = new VBox(30);
-            root.setAlignment(Pos.CENTER);
-            root.setStyle("-fx-background-color: #F8FAFC;");
-
-            Label lblTitle = new Label("QUÉT MÃ ĐỂ THANH TOÁN");
-            lblTitle.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
-
-            Label lblAmount = new Label("Số tiền cần chuyển: " + Others.formatPrice(amount));
-            lblAmount.setStyle("-fx-font-size: 28px; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
-
-            HBox btnBox = new HBox(20);
-            btnBox.setAlignment(Pos.CENTER);
-
-            Button btnCancel = new Button("Đóng / Hủy");
-            btnCancel.setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
-
-            Button btnConfirm = new Button("✅ ĐÃ NHẬN ĐƯỢC TIỀN");
-            btnConfirm.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
-
-            btnBox.getChildren().addAll(btnCancel, btnConfirm);
-            root.getChildren().addAll(lblTitle, lblAmount, imageView, btnBox);
-
-            Scene scene = new Scene(root);
-            qrStage.setScene(scene);
-
-            btnCancel.setOnAction(e -> qrStage.close());
-
-            btnConfirm.setOnAction(e -> {
-                qrStage.close();
-                Platform.runLater(() -> {
-                    processCheckout("Chuyển khoản", amount);
-                });
-            });
-
-            qrStage.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Others.showAlert(mainPane, "Lỗi khi tạo mã QR. Vui lòng kiểm tra mạng!", true);
         }
     }
 }

@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -104,6 +105,75 @@ public class Others {
 
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
+    }
+
+    public static void showVietQR(int amount, String orderInfo, String confirmBtnText, Region mainPane, Runnable onSuccess) {
+        try {
+            String bankID = "MB";
+            String accountNo = "000002907";
+            String accountName = java.net.URLEncoder.encode("PHAN THANH DUY", "UTF-8").replace("+", "%20");
+
+            String addInfo = java.net.URLEncoder.encode(orderInfo, "UTF-8").replace("+", "%20");
+
+            String qrUrl = String.format("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
+                    bankID, accountNo, amount, addInfo, accountName);
+
+            javafx.scene.image.Image qrImage = new javafx.scene.image.Image(qrUrl, false);
+
+            if (qrImage.isError()) {
+                throw new Exception("Không thể tải ảnh QR từ máy chủ!");
+            }
+
+            javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(qrImage);
+            imageView.setFitWidth(500);
+            imageView.setFitHeight(500);
+            imageView.setPreserveRatio(true);
+
+            javafx.stage.Stage qrStage = new javafx.stage.Stage();
+            qrStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            qrStage.setTitle("Thanh toán Chuyển khoản");
+            qrStage.setMaximized(true);
+
+            javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(30);
+            root.setAlignment(javafx.geometry.Pos.CENTER);
+            root.setStyle("-fx-background-color: #F8FAFC;");
+
+            javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("QUÉT MÃ ĐỂ THANH TOÁN");
+            lblTitle.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
+
+            javafx.scene.control.Label lblAmount = new javafx.scene.control.Label("Số tiền cần chuyển: " + formatPrice(amount));
+            lblAmount.setStyle("-fx-font-size: 28px; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
+
+            javafx.scene.layout.HBox btnBox = new javafx.scene.layout.HBox(20);
+            btnBox.setAlignment(javafx.geometry.Pos.CENTER);
+
+            javafx.scene.control.Button btnCancel = new javafx.scene.control.Button("Đóng / Hủy");
+            btnCancel.setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
+
+            javafx.scene.control.Button btnConfirm = new javafx.scene.control.Button(confirmBtnText);
+            btnConfirm.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
+
+            btnBox.getChildren().addAll(btnCancel, btnConfirm);
+            root.getChildren().addAll(lblTitle, lblAmount, imageView, btnBox);
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            qrStage.setScene(scene);
+
+            btnCancel.setOnAction(e -> qrStage.close());
+
+            btnConfirm.setOnAction(e -> {
+                qrStage.close();
+                javafx.application.Platform.runLater(onSuccess);
+            });
+
+            qrStage.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (mainPane != null) {
+                showAlert(mainPane, "Lỗi khi tạo mã QR. Vui lòng kiểm tra mạng!", true);
+            }
+        }
     }
 
     // ANIMATION KHI ẤN NÚT
