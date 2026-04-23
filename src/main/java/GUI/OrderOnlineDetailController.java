@@ -3,6 +3,7 @@ package GUI;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import BusinessBLL.OrderDetailBusiness;
+import Util.Others;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,7 +46,7 @@ public class OrderOnlineDetailController {
 
         lblAddress.setText("Địa chỉ: " + order.getAddress());
         lblPromoCode.setText("Mã giảm giá: " + order.getAppliedCode());
-        lblDiscount.setText("Số tiền được giảm: " + order.getDiscountAmount() + "đ");
+        lblDiscount.setText("Số tiền được giảm: " + Others.formatPrice(order.getDiscountAmount()));
 
         // 2. Cài đặt các cột cho TableView
         // Lưu ý: Dựa theo OrderDetailData của bạn, Product dùng thuộc tính ProductName
