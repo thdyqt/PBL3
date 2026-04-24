@@ -83,10 +83,29 @@ public class CustomerDashboardForm implements Initializable {
     @FXML
     private StackPane cartContainer;
 
+    public static CustomerDashboardForm instance;
     private Button[] menuButtons;
+
+    public Button getBtnHome() {
+        return btnHome;
+    }
+
+    public Button getBtnOrders() {
+        return btnOrders;
+    }
+
+    public Button getBtnProducts() {
+        return btnProducts;
+    }
+
+    public Button getBtnCart() {
+        return btnCart;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        instance = this;
+
         mainBorderPane.setOpacity(0);
         mainBorderPane.setScaleX(0.95);
         mainBorderPane.setScaleY(0.95);
@@ -160,7 +179,7 @@ public class CustomerDashboardForm implements Initializable {
         lblPoint.setText("Điểm tích lũy: " + point);
     }
 
-    private void setActiveMenu(Button activeButton) {
+    public void setActiveMenu(Button activeButton) {
         if (menuButtons == null) return;
 
         for (Button btn : menuButtons) {
@@ -187,7 +206,7 @@ public class CustomerDashboardForm implements Initializable {
         }
     }
 
-    private void switchForm(String fxmlFileName) {
+    public void switchForm(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Node node = loader.load();
@@ -241,6 +260,7 @@ public class CustomerDashboardForm implements Initializable {
     @FXML
     void btnHomeClick(ActionEvent event) {
         setActiveMenu(btnHome);
+        switchForm("/GUI/Customer/CustomerHome.fxml");
     }
 
     @FXML

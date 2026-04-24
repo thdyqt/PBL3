@@ -38,7 +38,49 @@ public class ProductData {
             }
 
         } catch (SQLException e) {
-            System.err.println("Lỗi getAll Product: " + e.getMessage());
+            System.err.println("Lỗi getAllProduct: " + e.getMessage());
+        }
+        return list;
+    }
+
+    //====Lấy Top sản phẩm bán chạy====
+    public static List<Product> getTopBestSellers(int quantity){
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT p.* FROM Product p JOIN OrderDetail od ON p.ProductID = od.id_Product WHERE p.status = 'Active' GROUP BY p.ProductID ORDER BY SUM(od.quantity) DESC LIMIT ?;";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, quantity);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getTopBestSellers: " + e.getMessage());
+        }
+        return list;
+    }
+
+    //====Lấy Top sản phẩm bán chạy====
+    public static List<Product> getNewestProducts(int quantity){
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT p.* FROM Product p WHERE p.status = 'Active' ORDER BY ProductID DESC LIMIT ?;";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, quantity);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi getNewestProducts: " + e.getMessage());
         }
         return list;
     }

@@ -347,28 +347,14 @@ public class CustomerCartController implements Initializable {
             stage.showAndWait();
 
             if (controller.isViewOrderSelected()) {
-                // Others.loadContent(mainPane, "/GUI/Customer/OrderHistory.fxml");
+                // CustomerDashboardForm.instance.switchForm("/GUI/Customer/CustomerProduct.fxml");
+                CustomerDashboardForm.instance.setActiveMenu(CustomerDashboardForm.instance.getBtnOrders());
             } else {
-                switchView("/GUI/Customer/CustomerProduct.fxml");
+                CustomerDashboardForm.instance.switchForm("/GUI/Customer/CustomerProduct.fxml");
+                CustomerDashboardForm.instance.setActiveMenu(CustomerDashboardForm.instance.getBtnProducts());
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void switchView(String fxmlPath) {
-        try {
-            Parent newView = FXMLLoader.load(getClass().getResource(fxmlPath));
-            mainPane.getChildren().clear();
-            mainPane.getChildren().add(newView);
-
-            AnchorPane.setTopAnchor(newView, 0.0);
-            AnchorPane.setBottomAnchor(newView, 0.0);
-            AnchorPane.setLeftAnchor(newView, 0.0);
-            AnchorPane.setRightAnchor(newView, 0.0);
-        } catch (Exception e) {
-            System.err.println("Không tìm thấy file: " + fxmlPath);
             e.printStackTrace();
         }
     }

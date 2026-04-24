@@ -12,6 +12,14 @@ public class ProductBusiness {
         return ProductData.getAllProduct();
     }
 
+    public static List<Product> getTopBestSellers(int quantity) {
+        return ProductData.getTopBestSellers(quantity);
+    }
+
+    public static List<Product> getNewestProducts(int quantity) {
+        return ProductData.getNewestProducts(quantity);
+    }
+
     public static double getProductRating(int productID) {
         for (Product p : getAllProducts()) {
             if (p.getProductID() == productID) {

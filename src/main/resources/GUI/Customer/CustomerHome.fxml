@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainPane" prefHeight="750.0" prefWidth="1000.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Customer.CustomerHomeController">
+    <children>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <content>
+                <VBox spacing="30.0">
+                    <padding>
+                        <Insets bottom="40.0" left="30.0" right="30.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                            <children>
+                                <VBox>
+                                    <children>
+                                        <Label fx:id="lblWelcome" style="-fx-text-fill: #1E293B;" text="Chào buổi sáng, Duy!">
+                                            <font>
+                                                <Font name="System Bold" size="24.0" />
+                                            </font>
+                                        </Label>
+                                        <Label style="-fx-text-fill: #64748B;" text="Hôm nay bạn muốn thưởng thức món bánh gì?" />
+                                    </children>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS" />
+                                <HBox alignment="CENTER_LEFT" maxWidth="400.0" prefHeight="53.0" prefWidth="240.0" style="-fx-background-color: white; -fx-background-radius: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5); -fx-padding: 0 15;">
+                                    <children>
+                                        <Label style="-fx-text-fill: #94A3B8;" text="🔍">
+                                            <font>
+                                                <Font size="18.0" />
+                                            </font>
+                                        </Label>
+                                        <TextField fx:id="txtSearch" promptText="Tìm kiếm bánh kem, bánh mì..." style="-fx-background-color: transparent; -fx-border-color: transparent;" HBox.hgrow="ALWAYS" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+
+                        <StackPane fx:id="paneBanner" prefHeight="280.0" style="-fx-background-color: #1E293B; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
+                            <children>
+                                <Region style="-fx-background-color: linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 60%, transparent 100%); -fx-background-radius: 20;" />
+
+                                <VBox alignment="CENTER_LEFT" spacing="12.0">
+                                    <padding>
+                                        <Insets left="60.0" right="60.0" />
+                                    </padding>
+                                    <children>
+                                        <Label style="-fx-text-fill: white;" text="DUT Bakery">
+                                            <font>
+                                                <Font name="System Bold" size="40.0" />
+                                            </font>
+                                        </Label>
+                                        <Label maxWidth="500.0" style="-fx-text-fill: #F1F5F9;" text="Hương vị trọn vẹn từ sự tận tâm.&#10;Thưởng thức bánh tươi mới mỗi ngày với nguyên liệu hảo hạng nhất." wrapText="true">
+                                            <font>
+                                                <Font size="17.0" />
+                                            </font>
+                                        </Label>
+                                        <Region prefHeight="10.0" />
+                                        <Button mnemonicParsing="false" onAction="#handleViewMenu" style="-fx-background-color: #D4891A; -fx-text-fill: white; -fx-background-radius: 30; -fx-padding: 12 35; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);" text="XEM MENU NGAY">
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                            <font>
+                                                <Font size="16.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </VBox>
+
+                                <HBox fx:id="hboxBannerIndicators" alignment="BOTTOM_CENTER" fillHeight="false" spacing="10.0" StackPane.alignment="BOTTOM_CENTER">
+                                    <padding>
+                                        <Insets bottom="20.0" />
+                                    </padding>
+                                </HBox>
+                            </children>
+                        </StackPane>
+
+                        <VBox spacing="15.0">
+                            <children>
+                                <Label style="-fx-text-fill: #1E293B;" text="Danh mục nổi bật">
+                                    <font>
+                                        <Font name="System Bold" size="20.0" />
+                                    </font>
+                                </Label>
+                                <HBox fx:id="hboxCategories" alignment="CENTER_LEFT" spacing="20.0" />
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="15.0">
+                            <children>
+                                <Label style="-fx-text-fill: #1E293B;" text="🔥 Món bánh bán chạy">
+                                    <font>
+                                        <Font name="System Bold" size="22.0" />
+                                    </font>
+                                </Label>
+                                <ScrollPane fitToHeight="true" minHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" vbarPolicy="NEVER">
+                                    <content>
+                                        <HBox fx:id="hboxBestSellers" spacing="25.0" />
+                                    </content>
+                                </ScrollPane>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="15.0">
+                            <children>
+                                <Label style="-fx-text-fill: #1E293B;" text="✨ Bánh mới ra lò">
+                                    <font>
+                                        <Font name="System Bold" size="22.0" />
+                                    </font>
+                                </Label>
+                                <ScrollPane fitToHeight="true" minHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" vbarPolicy="NEVER">
+                                    <content>
+                                        <HBox fx:id="hboxNewArrivals" spacing="25.0" />
+                                    </content>
+                                </ScrollPane>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</AnchorPane>

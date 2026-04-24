@@ -180,6 +180,14 @@ public class CustomerProductController implements Initializable {
         }
     }
 
+    public void setSearchKeyword(String keyword) {
+        txtSearch.setText(keyword);
+    }
+
+    public void setSelectedCategory(String categoryName) {
+        cbCategory.getSelectionModel().select(categoryName);
+    }
+
     @FXML
     private void handleToggleFilter(ActionEvent event) {
         if (originalFilterWidth == 0) {
