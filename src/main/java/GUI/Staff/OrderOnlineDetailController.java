@@ -1,9 +1,9 @@
 package GUI.Staff;
 
 import BusinessBLL.DeliveryInfoBusiness;
+import BusinessBLL.OrderDetailBusiness;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
-import BusinessBLL.OrderDetailBusiness;
 import Util.Others;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -17,12 +17,12 @@ import java.util.List;
 
 public class OrderOnlineDetailController {
 
-    @FXML private Label lblCustomerInfo;
+    @FXML private Label lblOrderId;
+    @FXML private Label lblReceiverName;
+    @FXML private Label lblReceiverPhone;
     @FXML private Label lblAddress;
     @FXML private Label lblStatus;
-    @FXML private Label lblFinalTotal;
-    @FXML private Label lblPromoCode;
-    @FXML private Label lblDiscount;
+    @FXML private Label lblPayment;
 
     @FXML private TableView<OrderDetail> tableDetail;
     @FXML private TableColumn<OrderDetail, String> colProductName;
@@ -30,27 +30,41 @@ public class OrderOnlineDetailController {
     @FXML private TableColumn<OrderDetail, String> colPrice;
     @FXML private TableColumn<OrderDetail, String> colTotal;
 
+    @FXML private Label lblSubTotal;
+    @FXML private Label lblDiscount;
+    @FXML private Label lblFinalTotal;
+
     public void setOrderData(Order order) {
         if (order == null) return;
+
+        lblOrderId.setText("Chi tiết Đơn hàng #" + order.getId());
 
         EntityDTO.DeliveryInfo deliveryInfo = DeliveryInfoBusiness.getDeliveryInfo(order.getId());
 
         if (deliveryInfo != null) {
-            lblCustomerInfo.setText("Người nhận: " + deliveryInfo.getReceiverName() + " - SĐT: " + deliveryInfo.getReceiverPhone());
-            lblAddress.setText("Địa chỉ: " + deliveryInfo.getDeliveryAddress());
+            lblReceiverName.setText(deliveryInfo.getReceiverName());
+            lblReceiverPhone.setText(deliveryInfo.getReceiverPhone());
+            lblAddress.setText(deliveryInfo.getDeliveryAddress());
         } else {
-            lblCustomerInfo.setText("Người nhận: Không xác định - SĐT: N/A");
-            lblAddress.setText("Địa chỉ: Không xác định");
+            lblReceiverName.setText("Khách vãng lai");
+            lblReceiverPhone.setText("N/A");
+            lblAddress.setText("N/A");
         }
 
-        if(order.getStatus().name().equals("Cancelled")){
-            lblStatus.setText("Trạng thái đơn: " + ChangeToVie(order.getStatus().name()) + " | Lí do hủy: " + order.getCancelReason());
+        if (order.getStatus().name().equals("Cancelled")) {
+            lblStatus.setText(ChangeToVie(order.getStatus().name()) + " (Lý do: " + order.getCancelReason() + ")");
+            lblStatus.setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold;");
         } else {
-            lblStatus.setText("Trạng thái đơn: " + ChangeToVie(order.getStatus().name()) + " | Thanh toán: " + order.getPayment().name());
+            lblStatus.setText(ChangeToVie(order.getStatus().name()));
+            lblStatus.setStyle("-fx-text-fill: #D4891A; -fx-font-weight: bold;");
         }
 
-        lblPromoCode.setText("Mã giảm giá: " + (order.getAppliedCode() != null ? order.getAppliedCode() : "Không có"));
-        lblDiscount.setText("Số tiền được giảm: " + Others.formatPrice(order.getDiscountAmount()));
+        String paymentStr = order.getPayment().name().equals("Card") ? "Chuyển khoản (Card)" : "Tiền mặt (COD)";
+        lblPayment.setText(paymentStr);
+
+        lblSubTotal.setText(Others.formatPrice(order.getSubTotal()));
+        lblDiscount.setText("- " + Others.formatPrice(order.getDiscountAmount()));
+        lblFinalTotal.setText(Others.formatPrice(order.getFinalAmount()));
 
         colProductName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getProduct() != null) {
@@ -60,26 +74,20 @@ public class OrderOnlineDetailController {
         });
 
         colQuantity.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getQuantity())));
-        colPrice.setCellValueFactory(cellData -> new SimpleStringProperty(String.format("%,d đ", cellData.getValue().getPrice())));
-        colTotal.setCellValueFactory(cellData -> new SimpleStringProperty(String.format("%,d đ", cellData.getValue().getTotalPrice())));
+        colPrice.setCellValueFactory(cellData -> new SimpleStringProperty(Others.formatPrice(cellData.getValue().getPrice())));
+        colTotal.setCellValueFactory(cellData -> new SimpleStringProperty(Others.formatPrice(cellData.getValue().getTotalPrice())));
 
         List<OrderDetail> details = OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
-
         if (details != null && !details.isEmpty()) {
             ObservableList<OrderDetail> list = FXCollections.observableArrayList(details);
             tableDetail.setItems(list);
-
-
-            lblFinalTotal.setText(String.format("Tổng tiền thanh toán: %,d VNĐ", order.getFinalAmount()));
-        } else {
-            lblFinalTotal.setText("Tổng tiền thanh toán: 0 VNĐ");
         }
     }
 
     public String ChangeToVie(String status){
         switch (status){
             case "Waiting_for_validation" : return "Chờ xác nhận";
-            case "Processing" : return "Đang xử lí";
+            case "Processing" : return "Đang xử lý";
             case "Delivering" : return "Đang giao hàng";
             case "Finished" : return "Đã hoàn thành";
             case "Cancelled" : return "Đã hủy";

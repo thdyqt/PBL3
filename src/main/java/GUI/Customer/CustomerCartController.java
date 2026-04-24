@@ -3,7 +3,6 @@ package GUI.Customer;
 import BusinessBLL.OrderBusiness;
 import BusinessBLL.PromoCodeBusiness;
 import EntityDTO.*;
-import GUI.CustomerDialogController;
 import Util.CartManager;
 import Util.Others;
 import Util.UserSession;
@@ -43,12 +42,19 @@ public class CustomerCartController implements Initializable {
     @FXML private Button btnCheckout;
 
     private final int SHIPPING_FEE = 15000;
-    private String guestName = "";
-    private String guestPhone = "";
-    private String guestAddress = "";
+    private String deliveryName = "";
+    private String deliveryPhone = "";
+    private String deliveryAddress = "";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if (!UserSession.getInstance().isGuest()) {
+            UserSession session = UserSession.getInstance();
+            deliveryName = session.getName() != null ? session.getName() : "";
+            deliveryPhone = session.getPhone() != null ? session.getPhone() : "";
+            deliveryAddress = session.getAddress() != null ? session.getAddress() : "";
+        }
+
         loadCartItems();
         setupVoucherComboBox();
         setupPaymentComboBox();
@@ -156,83 +162,35 @@ public class CustomerCartController implements Initializable {
     }
 
     private void updateDeliveryInfoUI() {
-        if (UserSession.getInstance().isGuest()) {
-            String nameStr = guestName.isEmpty() ? "Khách mua lẻ" : guestName;
-            String phoneStr = guestPhone.isEmpty() ? "Chưa có SĐT" : guestPhone;
-            String addressStr = guestAddress.isEmpty() ? "Chưa có địa chỉ (Vui lòng cập nhật)" : guestAddress;
-
-            lblDeliveryInfo.setText(nameStr + " - " + phoneStr + "\n📍 " + addressStr);
-            return;
-        }
-
-        UserSession session = UserSession.getInstance();
-        String nameStr = session.getName() == null ? "Chưa có tên" : session.getName();
-        String phoneStr = session.getPhone() == null ? "Chưa có SĐT" : session.getPhone();
-        String addressStr = (session.getAddress() == null || session.getAddress().trim().isEmpty())
-                ? "Chưa có địa chỉ (Vui lòng cập nhật)"
-                : session.getAddress();
+        String nameStr = deliveryName.isEmpty() ? (UserSession.getInstance().isGuest() ? "Khách mua lẻ" : "Chưa có tên") : deliveryName;
+        String phoneStr = deliveryPhone.isEmpty() ? "Chưa có SĐT" : deliveryPhone;
+        String addressStr = deliveryAddress.isEmpty() ? "Chưa có địa chỉ (Vui lòng cập nhật)" : deliveryAddress;
 
         lblDeliveryInfo.setText(nameStr + " - " + phoneStr + "\n📍 " + addressStr);
     }
 
     @FXML private void handleEditDeliveryInfo() {
-        if (UserSession.getInstance().isGuest()) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/GuestDeliveryDialog.fxml"));
-                Parent root = loader.load();
-
-                GuestDeliveryDialogController controller = loader.getController();
-                controller.setData(guestName, guestPhone, guestAddress);
-
-                Stage stage = new Stage();
-                stage.setTitle("Thông tin giao hàng");
-                stage.setScene(new javafx.scene.Scene(root));
-                stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-                stage.setResizable(false);
-                stage.showAndWait();
-
-                if (controller.isSaveSuccess()) {
-                    guestName = controller.getGuestName();
-                    guestPhone = controller.getGuestPhone();
-                    guestAddress = controller.getGuestAddress();
-                    updateDeliveryInfoUI();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/CustomerDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/GuestDeliveryDialog.fxml"));
             Parent root = loader.load();
 
-            CustomerDialogController controller = loader.getController();
+            GuestDeliveryDialogController controller = loader.getController();
 
-            UserSession session = UserSession.getInstance();
-            Customer currentCustomer = new Customer(
-                    session.getId(),
-                    session.getPhone(),
-                    session.getName(),
-                    session.getUsername(),
-                    session.getAddress(),
-                    session.getPoint()
-            );
-
-            controller.setCustomerData(currentCustomer);
-            controller.setProfileEditMode();
+            controller.setData(deliveryName, deliveryPhone, deliveryAddress);
 
             Stage stage = new Stage();
-            stage.setTitle("Chỉnh sửa thông tin giao hàng");
-            stage.setScene(new Scene(root));
+            stage.setTitle("Thông tin nhận hàng");
+            stage.setScene(new javafx.scene.Scene(root));
             stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             stage.setResizable(false);
             stage.showAndWait();
 
             if (controller.isSaveSuccess()) {
+                deliveryName = controller.getGuestName();
+                deliveryPhone = controller.getGuestPhone();
+                deliveryAddress = controller.getGuestAddress();
                 updateDeliveryInfoUI();
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -244,29 +202,10 @@ public class CustomerCartController implements Initializable {
             return;
         }
 
-        String rName = "";
-        String rPhone = "";
-        String rAddress = "";
-
-        if (UserSession.getInstance().isGuest()) {
-            if (guestName.isEmpty() || guestPhone.isEmpty() || guestAddress.isEmpty()) {
-                Others.showAlert(mainPane, "Vui lòng cập nhật đầy đủ thông tin giao hàng!", true);
-                handleEditDeliveryInfo();
-                return;
-            }
-            rName = guestName;
-            rPhone = guestPhone;
-            rAddress = guestAddress;
-        } else {
-            String address = UserSession.getInstance().getAddress();
-            if (address == null || address.trim().isEmpty()) {
-                Others.showAlert(mainPane, "Vui lòng cập nhật địa chỉ giao hàng trước khi thanh toán!", true);
-                handleEditDeliveryInfo();
-                return;
-            }
-            rName = UserSession.getInstance().getName();
-            rPhone = UserSession.getInstance().getPhone();
-            rAddress = address;
+        if (deliveryName.isEmpty() || deliveryPhone.isEmpty() || deliveryAddress.isEmpty()) {
+            Others.showAlert(mainPane, "Vui lòng cập nhật đầy đủ thông tin người nhận!", true);
+            handleEditDeliveryInfo();
+            return;
         }
 
         if (!Others.showCustomConfirm("Xác nhận thanh toán", "Bạn có chắc chắn muốn tiến hành đặt đơn hàng này không?", "Xác nhận", "Trở lại")) {
@@ -309,7 +248,7 @@ public class CustomerCartController implements Initializable {
                 ""
         );
 
-        DeliveryInfo deliveryInfo = new DeliveryInfo(0, rName, rPhone, rAddress);
+        DeliveryInfo deliveryInfo = new DeliveryInfo(0, deliveryName, deliveryPhone, deliveryAddress);
 
         if (payment == Order.OrderPayment.Card) {
             Others.showVietQR(finalTotal, "Thanh toán đơn hàng DUT Bakery Online", "✅ TÔI ĐÃ CHUYỂN KHOẢN", mainPane, () -> {

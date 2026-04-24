@@ -25,6 +25,7 @@ public class CartItemCardController {
         lblName.setText(item.getProduct().getProductName());
         lblPrice.setText(Others.formatPrice(item.getPrice()));
 
+        txtQuantity.setText(String.valueOf(item.getQuantity()));
         Others.setMaxLength(txtQuantity, 3);
 
         txtQuantity.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -36,7 +37,7 @@ public class CartItemCardController {
         txtQuantity.setOnAction(e -> handleManualQuantityInput());
 
         txtQuantity.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) { // Khi mất focus
+            if (!newValue) {
                 handleManualQuantityInput();
             }
         });
@@ -46,6 +47,7 @@ public class CartItemCardController {
 
     @FXML private void handlePlus() {
         int customerId = UserSession.getInstance().isGuest() ? 0 : UserSession.getInstance().getId();
+
         boolean success = CartManager.getInstance().addToCustomerCart(customerId, currentItem.getProduct(), 1);
         if (success) {
             txtQuantity.setText(String.valueOf(currentItem.getQuantity()));
@@ -58,9 +60,12 @@ public class CartItemCardController {
     @FXML private void handleMinus() {
         if (currentItem.getQuantity() > 1) {
             int customerId = UserSession.getInstance().isGuest() ? 0 : UserSession.getInstance().getId();
-            CartManager.getInstance().addToCustomerCart(customerId, currentItem.getProduct(), -1);
-            txtQuantity.setText(String.valueOf(currentItem.getQuantity()));
-            if (onUpdateListener != null) onUpdateListener.run();
+
+            boolean success = CartManager.getInstance().addToCustomerCart(customerId, currentItem.getProduct(), -1);
+            if (success) {
+                txtQuantity.setText(String.valueOf(currentItem.getQuantity()));
+                if (onUpdateListener != null) onUpdateListener.run();
+            }
         } else {
             handleDelete();
         }
@@ -81,6 +86,7 @@ public class CartItemCardController {
             if (diff == 0) return;
 
             int customerId = UserSession.getInstance().isGuest() ? 0 : UserSession.getInstance().getId();
+
             boolean success = CartManager.getInstance().addToCustomerCart(customerId, currentItem.getProduct(), diff);
 
             if (success) {
