@@ -8,17 +8,17 @@ import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import EntityDTO.PromoCode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class OrderBusiness {
-    public static int createOrder(Order order) {
+    public static int createOrder(Order order, EntityDTO.DeliveryInfo deliveryInfo) {
         if (order == null || order.getOrderDetail() == null || order.getOrderDetail().isEmpty()) {
             return -1;
         }
 
-        int newOrderId = OrderData.addOrder(order);
+        int newOrderId = OrderData.addOrder(order, deliveryInfo);
 
         if (newOrderId > 0 && order.getType() == Order.OrderType.Offline) {
             String creatorName = order.getStaff().getName();
@@ -49,11 +49,16 @@ public class OrderBusiness {
     }
 
     public static List<Order> getOnlineOrders_BLL() {
-        return OrderData.getOnlineOrders();
+        ArrayList<Order> list = new ArrayList<>();
+        for (Order o : getAllOrder_BLL()) {
+            if (o.getType() == Order.OrderType.Online) {
+                list.add(o);
+            }
+        }
+        return list;
     }
 
     public static String updateOrder_BLL(Order order, String status){
-        //so the id does exist and is valid
         if (order == null || order.getId() <= 0){
             return "Order doesnt exist/ have invalid ID";
         }

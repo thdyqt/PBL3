@@ -1,5 +1,6 @@
-package GUI;
+package GUI.Staff;
 
+import BusinessBLL.DeliveryInfoBusiness;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import BusinessBLL.OrderDetailBusiness;
@@ -32,24 +33,25 @@ public class OrderOnlineDetailController {
     public void setOrderData(Order order) {
         if (order == null) return;
 
-        // 1. Hiển thị thông tin chung của đơn hàng
-        if(order.getCustomer() != null) {
-            lblCustomerInfo.setText("Khách hàng: " + order.getCustomer().getName() + " - SĐT: " + order.getCustomer().getPhone());
+        EntityDTO.DeliveryInfo deliveryInfo = DeliveryInfoBusiness.getDeliveryInfo(order.getId());
+
+        if (deliveryInfo != null) {
+            lblCustomerInfo.setText("Người nhận: " + deliveryInfo.getReceiverName() + " - SĐT: " + deliveryInfo.getReceiverPhone());
+            lblAddress.setText("Địa chỉ: " + deliveryInfo.getDeliveryAddress());
         } else {
-            lblCustomerInfo.setText("Khách hàng: Khách vãng lai - SĐT: N/A");
+            lblCustomerInfo.setText("Người nhận: Không xác định - SĐT: N/A");
+            lblAddress.setText("Địa chỉ: Không xác định");
         }
 
         if(order.getStatus().name().equals("Cancelled")){
             lblStatus.setText("Trạng thái đơn: " + ChangeToVie(order.getStatus().name()) + " | Lí do hủy: " + order.getCancelReason());
-        }else
+        } else {
             lblStatus.setText("Trạng thái đơn: " + ChangeToVie(order.getStatus().name()) + " | Thanh toán: " + order.getPayment().name());
+        }
 
-        lblAddress.setText("Địa chỉ: " + order.getAddress());
-        lblPromoCode.setText("Mã giảm giá: " + order.getAppliedCode());
+        lblPromoCode.setText("Mã giảm giá: " + (order.getAppliedCode() != null ? order.getAppliedCode() : "Không có"));
         lblDiscount.setText("Số tiền được giảm: " + Others.formatPrice(order.getDiscountAmount()));
 
-        // 2. Cài đặt các cột cho TableView
-        // Lưu ý: Dựa theo OrderDetailData của bạn, Product dùng thuộc tính ProductName
         colProductName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getProduct() != null) {
                 return new SimpleStringProperty(cellData.getValue().getProduct().getProductName());
@@ -61,12 +63,8 @@ public class OrderOnlineDetailController {
         colPrice.setCellValueFactory(cellData -> new SimpleStringProperty(String.format("%,d đ", cellData.getValue().getPrice())));
         colTotal.setCellValueFactory(cellData -> new SimpleStringProperty(String.format("%,d đ", cellData.getValue().getTotalPrice())));
 
-        // ---------------------------------------------------------
-        // 3. ĐIỂM QUAN TRỌNG: GỌI BLL ĐỂ LẤY DỮ LIỆU CHI TIẾT
-        // ---------------------------------------------------------
         List<OrderDetail> details = OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
 
-        // 4. Đổ dữ liệu vào bảng và tính tổng tiền
         if (details != null && !details.isEmpty()) {
             ObservableList<OrderDetail> list = FXCollections.observableArrayList(details);
             tableDetail.setItems(list);
@@ -74,10 +72,10 @@ public class OrderOnlineDetailController {
 
             lblFinalTotal.setText(String.format("Tổng tiền thanh toán: %,d VNĐ", order.getFinalAmount()));
         } else {
-            // Nếu đơn hàng chưa có món nào (lỗi logic khi tạo) hoặc không tìm thấy
             lblFinalTotal.setText("Tổng tiền thanh toán: 0 VNĐ");
         }
     }
+
     public String ChangeToVie(String status){
         switch (status){
             case "Waiting_for_validation" : return "Chờ xác nhận";

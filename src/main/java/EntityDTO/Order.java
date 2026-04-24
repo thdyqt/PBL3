@@ -21,7 +21,6 @@ public class Order {
     //offline -> status = {Finished}
     //online -> status = {Waiting_for_validation, Processing, Delivering, Finished, Cancelled}
 
-    //attributes
     private int id;
     private LocalDateTime orderTime;
     private Staff staff;
@@ -34,13 +33,12 @@ public class Order {
     private String appliedCode;
     private int discountAmount;
     private int finalAmount;
-    private String address;
     private String cancelReason;
 
     //constructors
     public Order(){this.orderDetail = new ArrayList<>();}
 
-    public Order(LocalDateTime orderTime, Staff staff, Customer customer, List<OrderDetail> orderDetail, OrderStatus status, OrderType type, OrderPayment payment, int subTotal, String appliedCode, int discountAmount, int finalAmount, String address, String cancelReason) {
+    public Order(LocalDateTime orderTime, Staff staff, Customer customer, List<OrderDetail> orderDetail, OrderStatus status, OrderType type, OrderPayment payment, int subTotal, String appliedCode, int discountAmount, int finalAmount, String cancelReason) {
         this.orderTime = orderTime;
         this.staff = staff;
         this.customer = customer;
@@ -52,7 +50,6 @@ public class Order {
         this.appliedCode = appliedCode;
         this.discountAmount = discountAmount;
         this.finalAmount = finalAmount;
-        this.address = address;
         this.cancelReason = cancelReason;
     }
 
@@ -102,9 +99,6 @@ public class Order {
 
     public int getFinalAmount(){return finalAmount;}
     public void setFinalAmount(int finalAmount){this.finalAmount = finalAmount;}
-
-    public String getAddress(){return address;}
-    public void setAddress(String address){this.address = address;}
 
     public String getCancelReason(){return cancelReason;}
     public void setCancelReason(String cancelReason){this.cancelReason = cancelReason;}

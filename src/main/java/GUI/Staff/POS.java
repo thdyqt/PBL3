@@ -626,11 +626,10 @@ public class POS implements Initializable {
                 code,
                 discountAmount,
                 finalTotal,
-                "",
                 ""
                 );
 
-        int newOrderId = OrderBusiness.createOrder(newOrder);
+        int newOrderId = OrderBusiness.createOrder(newOrder, null);
 
         if (newOrderId > 0) {
             newOrder.setId(newOrderId);

@@ -244,7 +244,9 @@ public class CustomerCartController implements Initializable {
             return;
         }
 
-        String deliveryAddress = "";
+        String rName = "";
+        String rPhone = "";
+        String rAddress = "";
 
         if (UserSession.getInstance().isGuest()) {
             if (guestName.isEmpty() || guestPhone.isEmpty() || guestAddress.isEmpty()) {
@@ -252,8 +254,9 @@ public class CustomerCartController implements Initializable {
                 handleEditDeliveryInfo();
                 return;
             }
-
-            deliveryAddress = guestName + " - " + guestPhone + " | " + guestAddress;
+            rName = guestName;
+            rPhone = guestPhone;
+            rAddress = guestAddress;
         } else {
             String address = UserSession.getInstance().getAddress();
             if (address == null || address.trim().isEmpty()) {
@@ -261,8 +264,9 @@ public class CustomerCartController implements Initializable {
                 handleEditDeliveryInfo();
                 return;
             }
-
-            deliveryAddress = UserSession.getInstance().getName() + " - " + UserSession.getInstance().getPhone() + " | " + address;
+            rName = UserSession.getInstance().getName();
+            rPhone = UserSession.getInstance().getPhone();
+            rAddress = address;
         }
 
         if (!Others.showCustomConfirm("Xác nhận thanh toán", "Bạn có chắc chắn muốn tiến hành đặt đơn hàng này không?", "Xác nhận", "Trở lại")) {
@@ -270,7 +274,6 @@ public class CustomerCartController implements Initializable {
         }
 
         String paymentMethod = cbbPaymentMethod.getValue() != null ? cbbPaymentMethod.getValue() : "";
-
         Customer currentCustomer = UserSession.getInstance().isGuest() ? null : UserSession.getInstance().getCustomer();
         Order.OrderPayment payment = paymentMethod.contains("Chuyển khoản") ? Order.OrderPayment.Card : Order.OrderPayment.Cash;
 
@@ -289,7 +292,7 @@ public class CustomerCartController implements Initializable {
         }
 
         int discountAmount = OrderBusiness.getDiscountAmount(subtotal, currentCustomer, selectedPromo);
-        int finalTotal = subtotal - discountAmount + 15000;
+        int finalTotal = subtotal - discountAmount + SHIPPING_FEE;
 
         Order newOrder = new Order(
                 LocalDateTime.now(),
@@ -303,13 +306,14 @@ public class CustomerCartController implements Initializable {
                 code,
                 discountAmount,
                 finalTotal,
-                deliveryAddress,
                 ""
         );
 
+        DeliveryInfo deliveryInfo = new DeliveryInfo(0, rName, rPhone, rAddress);
+
         if (payment == Order.OrderPayment.Card) {
             Others.showVietQR(finalTotal, "Thanh toán đơn hàng DUT Bakery Online", "✅ TÔI ĐÃ CHUYỂN KHOẢN", mainPane, () -> {
-                int orderId = OrderBusiness.createOrder(newOrder);
+                int orderId = OrderBusiness.createOrder(newOrder, deliveryInfo);
                 if (orderId > 0) {
                     showSuccessScreen(orderId);
                 } else {
@@ -317,7 +321,7 @@ public class CustomerCartController implements Initializable {
                 }
             });
         } else {
-            int orderId = OrderBusiness.createOrder(newOrder);
+            int orderId = OrderBusiness.createOrder(newOrder, deliveryInfo);
             if (orderId > 0) {
                 showSuccessScreen(orderId);
             } else {
