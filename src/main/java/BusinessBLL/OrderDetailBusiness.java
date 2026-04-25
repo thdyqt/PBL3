@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDetailBusiness {
-
-
-    //read
     public static List<OrderDetail> getDetailsByOrderId_BLL(int id_Order) {
         if (id_Order <= 0) {
             return new ArrayList<>();

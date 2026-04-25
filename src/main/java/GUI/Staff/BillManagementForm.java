@@ -5,28 +5,24 @@ import EntityDTO.Order;
 import Util.Others;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 
 public class BillManagementForm{
-
     @FXML
     private Button buttonOrderDetail;
 
@@ -49,15 +45,7 @@ public class BillManagementForm{
     private TableColumn<EntityDTO.Order, Integer> col_OrderID;
 
     @FXML
-    private TableColumn<EntityDTO.Order, Order.OrderStatus> col_OrderStatus;
-
-    @FXML
-    private TableColumn<EntityDTO.Order, String> col_OrderType;
-
-    @FXML
     private TableColumn<EntityDTO.Order, String> col_PhoneCustomer;
-
-
 
     @FXML
     private BorderPane mainPane;
@@ -68,12 +56,7 @@ public class BillManagementForm{
     @FXML
     private TextField txtSearch;
 
-    //objects
-    //an active version of the database
-    //will update itself when changes are made
     private ObservableList<EntityDTO.Order> masterData = FXCollections.observableArrayList();
-    //for search function
-    //work by hiding unrelated data
     private FilteredList<EntityDTO.Order> filteredData;
 
     //methods
@@ -125,56 +108,26 @@ public class BillManagementForm{
                     case "Tìm kiếm theo ID order":
                         txtSearch.setPromptText("Nhập ID Đơn hàng");
                         break;
-                    case "Tìm kiếm theo ID nhân viên thực hiện":
-                        txtSearch.setPromptText("Nhập ID Nhân viên");
+                    case "Tìm kiếm theo Tên nhân viên thực hiện":
+                        txtSearch.setPromptText("Nhập Tên Nhân viên");
                         break;
                     case "Tìm kiếm theo SĐT khách hàng":
                         txtSearch.setPromptText("Nhập SĐT Khách hàng");
                         break;
                     default:
-                        txtSearch.setPromptText("Nhập từ khóa tìm kiếm");
+                        txtSearch.setPromptText("\uD83D\uDD0D Tìm kiếm đơn hàng...");
                 }
             }
         });
     }
 
-    private void setupTable(){
-        //automatic search
-        //work via calling getId() and getStatus
-        //underlying mechanism
-        //convert id into Id() -> add get into it to make getId()
-        //then it looks for method named getId() in EntityDTO.Order
-        //finally return the value of it
-        //impractical
-        //only use for those 2 because the naming of the getters in Order concidently
+    private void setupTable() {
         col_OrderID.setCellValueFactory(new PropertyValueFactory<>("id"));
-        col_OrderStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-        col_OrderStatus.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, Order.OrderStatus>() {
-            @Override
-            protected void updateItem(Order.OrderStatus item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    switch (item) {
-                        case Waiting_for_validation: setText("Chờ xác nhận"); break;
-                        case Processing: setText("Đang xử lý"); break;
-                        case Delivering: setText("Đang giao hàng"); break;
-                        case Finished: setText("Đã hoàn thành"); break;
-                        case Cancelled: setText("Đã hủy"); break;
-                        default: setText(item.name());
-                    }
-                }
-            }
-        });
 
-        col_OrderType.setCellValueFactory(new PropertyValueFactory<>("type"));
-
-        //same thing as all the methods below
-        //albeit modified to format the date
         colProcessTime.setCellValueFactory(new PropertyValueFactory<>("orderTime"));
         colProcessTime.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, java.time.LocalDateTime>() {
             private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
             @Override
             protected void updateItem(java.time.LocalDateTime item, boolean empty) {
                 super.updateItem(item, empty);
@@ -186,19 +139,18 @@ public class BillManagementForm{
             }
         });
 
-        //just get the value of Y in X if X is not null, yadda yadda
         colProcessStaffName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getStaff() != null) {
                 return new SimpleStringProperty(cellData.getValue().getStaff().getName());
             }
-            return new SimpleStringProperty("Name unspecified.");
+            return new SimpleStringProperty("");
         });
 
         col_CustomerName.setCellValueFactory(cellData -> {
             if (cellData.getValue().getCustomer() != null) {
                 return new SimpleStringProperty(cellData.getValue().getCustomer().getName());
             }
-            return new SimpleStringProperty("Non registered customer");
+            return new SimpleStringProperty("Khách lẻ");
         });
 
         col_PhoneCustomer.setCellValueFactory(cellData -> {
@@ -208,24 +160,20 @@ public class BillManagementForm{
             return new SimpleStringProperty("");
         });
 
-        //css
         col_OrderID.setStyle("-fx-alignment: CENTER;");
         col_CustomerName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
-        col_OrderStatus.setStyle("-fx-alignment: CENTER;");
         col_PhoneCustomer.setStyle("-fx-alignment: CENTER;");
         colProcessStaffName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         colProcessTime.setStyle("-fx-alignment: CENTER;");
-        col_OrderType.setStyle("-fx-alignment: CENTER;");}
+    }
 
     private void search(){
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(order -> {
-                //empty query
                 if (newValue == null || newValue.trim().isEmpty()){
                     return true;
                 }
 
-                //normalizer
                 String keyword = newValue.toLowerCase().trim();
                 String searchOption = cbbSearchOption.getValue();
 
@@ -238,9 +186,9 @@ public class BillManagementForm{
                         return true;
                     case "Tìm kiếm theo ID order":
                         return String.valueOf(order.getId()).contains(keyword);
-                    case "Tìm kiếm theo ID nhân viên thực hiện":
+                    case "Tìm kiếm theo Tên nhân viên thực hiện":
                         if (order.getStaff() != null){
-                            return String.valueOf(order.getStaff().getId()).contains(keyword);
+                            return String.valueOf(order.getStaff().getName()).contains(keyword);
                         }
                         return false;
                     case "Tìm kiếm theo SĐT khách hàng":
@@ -255,7 +203,6 @@ public class BillManagementForm{
             });
 
             });
-            //force reset when cbb option change
             cbbSearchOption.valueProperty().addListener((obs, oldVal, newVal) -> {
             String currentText = txtSearch.getText();
             txtSearch.setText("");
@@ -314,22 +261,15 @@ public class BillManagementForm{
     }
 
     private void loadTable(){
-        //load static database
-        //with all the data unrestricted
-        java.util.List<EntityDTO.Order> list = BusinessBLL.OrderBusiness.getAllOrder_BLL();
-        //make it active
+        List<Order> list = BusinessBLL.OrderBusiness.getFilteredOrders(Order.OrderType.Offline);
         masterData.setAll(list);
-
-        //by default, filter nothing, let all go through
         filteredData = new FilteredList<>(masterData, temp -> true);
 
         SortedList<EntityDTO.Order> sortedData = new SortedList<>(filteredData);
-        //sort binding
         sortedData.comparatorProperty().bind(tbOrder.comparatorProperty());
 
         tbOrder.setItems(sortedData);
 
         Others.animateTableRows(tbOrder);
     }
-
 }

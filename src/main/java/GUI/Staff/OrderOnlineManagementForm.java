@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class OrderOnlineManagementForm implements Initializable {
-
     @FXML private Button btnCancel;
     @FXML private Button btnDetail;
     @FXML private Button btnUpdate;
@@ -145,7 +144,7 @@ public class OrderOnlineManagementForm implements Initializable {
 
     private void loadData() {
         // GỌI BLL: Lấy danh sách đã được BLL lọc sẵn (chỉ Đơn Online)
-        List<Order> onlineOrders = OrderBusiness.getOnlineOrders_BLL();
+        List<Order> onlineOrders = OrderBusiness.getFilteredOrders(Order.OrderType.Online);
 
         if (onlineOrders != null) {
             orderList = FXCollections.observableArrayList(onlineOrders);
