@@ -17,7 +17,7 @@ public class OrderData {
                 "c.full_name AS customer_name, c.phone AS customer_phone, c.point AS customer_point " +
                 "FROM Orders o " +
                 "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
-                "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang";
+                "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang ORDER BY o.order_time DESC";
 
         try (
             Connection conn = DBConnection.getConnection();

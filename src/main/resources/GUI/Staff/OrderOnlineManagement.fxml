@@ -83,7 +83,7 @@
                             <columns>
                                 <TableColumn fx:id="colSTT" prefWidth="50.0" style="-fx-alignment: CENTER; -fx-font-weight: bold;" text="STT" />
                                 <TableColumn fx:id="colID" prefWidth="120.0" style="-fx-alignment: CENTER;" text="MÃ ĐƠN" />
-                                <TableColumn fx:id="colName" prefWidth="180.0" style="-fx-alignment: CENTER; -fx-font-weight: bold;" text="KHÁCH HÀNG" />
+                                <TableColumn fx:id="colName" prefWidth="180.0" style="-fx-alignment: CENTER_LEFT; -fx-font-weight: bold;" text="KHÁCH HÀNG" />
                                 <TableColumn fx:id="colPhone" prefWidth="130.0" style="-fx-alignment: CENTER;" text="SỐ ĐIỆN THOẠI" />
                                 <TableColumn fx:id="colTotal" prefWidth="130.0" style="-fx-alignment: CENTER_RIGHT; -fx-font-weight: bold;" text="TỔNG TIỀN" />
                                 <TableColumn fx:id="colState" prefWidth="150.0" style="-fx-alignment: CENTER;" text="TRẠNG THÁI" />

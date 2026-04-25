@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 
-<AnchorPane prefHeight="650.0" prefWidth="750.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.OrderOnlineDetailController">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.OrderOnlineDetailController">
 
     <stylesheets>
         <URL value="@../style.css" />
@@ -32,7 +32,7 @@
                             </font>
                         </Label>
 
-                        <Region minHeight="35.0" prefHeight="35.0" />
+                        <Region minHeight="30.0" prefHeight="30.0" />
 
                         <GridPane hgap="30.0" vgap="15.0">
                             <columnConstraints>
@@ -45,18 +45,26 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" />
                             </rowConstraints>
                             <children>
                                 <Label style="-fx-text-fill: #64748B;" text="Người nhận:" GridPane.columnIndex="0" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblReceiverName" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
+
                                 <Label style="-fx-text-fill: #64748B;" text="Số điện thoại:" GridPane.columnIndex="2" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblReceiverPhone" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="3" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
+
                                 <Label style="-fx-text-fill: #64748B;" text="Địa chỉ:" GridPane.columnIndex="0" GridPane.rowIndex="1"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblAddress" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1"><font><Font size="14.0" /></font></Label>
+
                                 <Label style="-fx-text-fill: #64748B;" text="Trạng thái:" GridPane.columnIndex="0" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblStatus" style="-fx-text-fill: #D4891A; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
+
                                 <Label style="-fx-text-fill: #64748B;" text="Thanh toán:" GridPane.columnIndex="2" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblPayment" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="3" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
+
+                                <Label style="-fx-text-fill: #64748B;" text="Thời gian:" GridPane.columnIndex="0" GridPane.rowIndex="3"><font><Font size="14.0" /></font></Label>
+                                <Label fx:id="lblOrderTime" style="-fx-text-fill: #D4891A; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3"><font><Font size="14.0" /></font></Label>
                             </children>
                         </GridPane>
                     </children>
@@ -64,12 +72,14 @@
 
                 <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);" VBox.vgrow="ALWAYS">
                     <children>
-                        <TableView fx:id="tableDetail" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tableDetail" styleClass="modern-order-table" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn fx:id="colProductName" prefWidth="320.0" text="Tên sản phẩm" />
-                                <TableColumn fx:id="colQuantity" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Số lượng" />
-                                <TableColumn fx:id="colPrice" prefWidth="140.0" style="-fx-alignment: CENTER-RIGHT;" text="Đơn giá" />
-                                <TableColumn fx:id="colTotal" prefWidth="150.0" style="-fx-alignment: CENTER-RIGHT;" text="Thành tiền" />
+                                <TableColumn fx:id="col_STT" prefWidth="50.0" style="-fx-alignment: CENTER;" text="STT" />
+                                <TableColumn fx:id="colImage" prefWidth="80.0" style="-fx-alignment: CENTER;" text="Hình ảnh" />
+                                <TableColumn fx:id="colProductName" prefWidth="250.0" text="Tên sản phẩm" />
+                                <TableColumn fx:id="colQuantity" prefWidth="90.0" styleClass="col-quantity" text="Số lượng" />
+                                <TableColumn fx:id="colPrice" prefWidth="130.0" styleClass="col-price" text="Đơn giá" />
+                                <TableColumn fx:id="colTotal" prefWidth="140.0" styleClass="col-price" text="Thành tiền" />
                             </columns>
                         </TableView>
                     </children>
@@ -77,6 +87,13 @@
 
                 <VBox alignment="CENTER_RIGHT" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5); -fx-padding: 20;">
                     <children>
+                        <HBox alignment="CENTER_RIGHT" spacing="20.0">
+                            <children>
+                                <Label style="-fx-text-fill: #64748B;" text="Tổng số lượng sản phẩm:"><font><Font size="15.0" /></font></Label>
+                                <Label fx:id="lblTotalItems" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="0"><font><Font size="15.0" /></font></Label>
+                            </children>
+                        </HBox>
+
                         <HBox alignment="CENTER_RIGHT" spacing="20.0">
                             <children>
                                 <Label style="-fx-text-fill: #64748B;" text="Tạm tính (Subtotal):"><font><Font size="15.0" /></font></Label>

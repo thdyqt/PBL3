@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -12,8 +12,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import java.net.URL?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillDetailController">
+<AnchorPane prefHeight="700.0" prefWidth="850.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.BillDetailController">
 
     <stylesheets>
         <URL value="@../style.css" />
@@ -49,7 +50,7 @@
                                 <Label style="-fx-text-fill: #64748B;" text="Khách hàng:" GridPane.columnIndex="0" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblReceiverName" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
 
-                                <Label style="-fx-text-fill: #64748B;" text="SĐT Khách hàng:" GridPane.columnIndex="2" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
+                                <Label style="-fx-text-fill: #64748B;" text="SĐT Khách:" GridPane.columnIndex="2" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblReceiverPhone" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="3" GridPane.rowIndex="0"><font><Font size="14.0" /></font></Label>
 
                                 <Label style="-fx-text-fill: #64748B;" text="Nhân viên:" GridPane.columnIndex="0" GridPane.rowIndex="1"><font><Font size="14.0" /></font></Label>
@@ -59,7 +60,10 @@
                                 <Label fx:id="lblStaffPhone" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="3" GridPane.rowIndex="1"><font><Font size="14.0" /></font></Label>
 
                                 <Label style="-fx-text-fill: #64748B;" text="Thời gian:" GridPane.columnIndex="0" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
-                                <Label fx:id="lblProcessTime" style="-fx-text-fill: #D4891A; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
+                                <Label fx:id="lblProcessTime" style="-fx-text-fill: #D4891A; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
+
+                                <Label style="-fx-text-fill: #64748B;" text="Thanh toán:" GridPane.columnIndex="2" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
+                                <Label fx:id="lblPayment" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="3" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
                             </children>
                         </GridPane>
                     </children>
@@ -69,8 +73,9 @@
                     <children>
                         <TableView fx:id="tbOrderDetail" styleClass="modern-order-table" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn fx:id="col_STT" prefWidth="60.0" style="-fx-alignment: CENTER;" text="STT" />
-                                <TableColumn fx:id="col_ItemName" prefWidth="300.0" text="Tên sản phẩm" />
+                                <TableColumn fx:id="col_STT" prefWidth="50.0" style="-fx-alignment: CENTER;" text="STT" />
+                                <TableColumn fx:id="colImage" prefWidth="80.0" style="-fx-alignment: CENTER;" text="Hình ảnh" />
+                                <TableColumn fx:id="col_ItemName" prefWidth="280.0" text="Tên sản phẩm" />
                                 <TableColumn fx:id="col_ItemQuantity" prefWidth="90.0" styleClass="col-quantity" text="Số lượng" />
                                 <TableColumn fx:id="col_Price" prefWidth="130.0" styleClass="col-price" text="Đơn giá" />
                                 <TableColumn fx:id="col_TotalPrice" prefWidth="140.0" styleClass="col-price" text="Thành tiền" />

@@ -161,9 +161,9 @@ public class BillManagementForm{
         });
 
         col_OrderID.setStyle("-fx-alignment: CENTER;");
-        col_CustomerName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+        col_CustomerName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         col_PhoneCustomer.setStyle("-fx-alignment: CENTER;");
-        colProcessStaffName.setStyle("-fx-alignment: CENTER; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+        colProcessStaffName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         colProcessTime.setStyle("-fx-alignment: CENTER;");
     }
 

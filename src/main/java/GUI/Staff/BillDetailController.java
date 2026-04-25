@@ -1,8 +1,8 @@
 package GUI.Staff;
 
+import BusinessBLL.OrderDetailBusiness;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
-import BusinessBLL.OrderDetailBusiness;
 import Util.Others;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.ImageView;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -23,9 +24,11 @@ public class BillDetailController {
     @FXML private Label lblStaffName;
     @FXML private Label lblStaffPhone;
     @FXML private Label lblProcessTime;
+    @FXML private Label lblPayment;
 
     @FXML private TableView<OrderDetail> tbOrderDetail;
     @FXML private TableColumn<OrderDetail, Void> col_STT;
+    @FXML private TableColumn<OrderDetail, String> colImage;
     @FXML private TableColumn<OrderDetail, String> col_ItemName;
     @FXML private TableColumn<OrderDetail, String> col_ItemQuantity;
     @FXML private TableColumn<OrderDetail, String> col_Price;
@@ -50,7 +53,32 @@ public class BillDetailController {
                     setText(null);
                 } else {
                     setText(String.valueOf(getIndex() + 1));
+                    setStyle("-fx-alignment: CENTER;");
                 }
+            }
+        });
+
+        colImage.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getProduct() != null) {
+                return new SimpleStringProperty(cellData.getValue().getProduct().getImage());
+            }
+            return new SimpleStringProperty("");
+        });
+        colImage.setCellFactory(c -> new TableCell<>() {
+            private final ImageView iv = new ImageView();
+            @Override protected void updateItem(String imgName, boolean empty) {
+                super.updateItem(imgName, empty);
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                iv.setFitWidth(50);
+                iv.setFitHeight(50);
+                iv.setPreserveRatio(true);
+
+                Others.loadImage(imgName, iv, 50, 50);
+                setGraphic(iv);
             }
         });
 
@@ -58,7 +86,7 @@ public class BillDetailController {
             if (cellData.getValue().getProduct() != null) {
                 return new SimpleStringProperty(cellData.getValue().getProduct().getProductName());
             }
-            return new SimpleStringProperty("Sản phẩm lỗi/Đã xóa");
+            return new SimpleStringProperty("Sản phẩm không xác định");
         });
 
         col_ItemQuantity.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getQuantity())));
@@ -74,15 +102,14 @@ public class BillDetailController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         lblProcessTime.setText(order.getOrderTime().format(formatter));
 
+        String paymentStr = order.getPayment().name().equals("Card") ? "Chuyển khoản" : "Tiền mặt";
+        lblPayment.setText(paymentStr);
+
         if (order.getStaff() != null) {
             lblStaffName.setText(order.getStaff().getName());
-            lblStaffPhone.setText("N/A"); // Entity Staff mặc định chưa lấy SĐT từ DB
-        } else {
-            lblStaffName.setText("Hệ thống / Không xác định");
             lblStaffPhone.setText("N/A");
         }
 
-        // 3. Thông tin Khách hàng / Người nhận
         if (order.getCustomer() != null) {
             lblReceiverName.setText(order.getCustomer().getName());
             lblReceiverPhone.setText(order.getCustomer().getPhone());
@@ -94,16 +121,14 @@ public class BillDetailController {
         List<OrderDetail> detailsList = OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
         if (detailsList != null) {
             tbOrderDetail.setItems(FXCollections.observableArrayList(detailsList));
-        }
 
-        int totalQuantity = 0;
-        if (detailsList != null) {
+            int totalQty = 0;
             for (OrderDetail detail : detailsList) {
-                totalQuantity += detail.getQuantity();
+                totalQty += detail.getQuantity();
             }
+            lblTotalItems.setText(String.valueOf(totalQty));
         }
 
-        lblTotalItems.setText(String.valueOf(totalQuantity));
         lblSubTotal.setText(Others.formatPrice(order.getSubTotal()));
         lblDiscount.setText("- " + Others.formatPrice(order.getDiscountAmount()));
         lblFinalTotal.setText(Others.formatPrice(order.getFinalAmount()));
