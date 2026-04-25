@@ -51,6 +51,7 @@ public class OrderDetailData {
                     product.setProductID(rs.getInt("id_Product"));
                     product.setProductName(rs.getString("ProductName"));
                     product.setCategoryID(rs.getInt("CategoryID"));
+                    product.setImage(rs.getString("Image"));
                     orderDetail.setProduct(product);
 
                     orderDetailList.add(orderDetail);
@@ -65,7 +66,7 @@ public class OrderDetailData {
 
     //mutiple search methods (id_Order/id_Product)
     public static List<OrderDetail> searchOrderDetail_ById_Order(int id_Order){
-        String sql = "SELECT od.*, p.ProductName, p.CategoryID " +
+        String sql = "SELECT od.*, p.ProductName, p.CategoryID, p.image " +
                 "FROM OrderDetail od " +
                 "JOIN Product p ON od.id_Product = p.ProductID " +
                 "WHERE od.id_Order = ?";
@@ -73,7 +74,7 @@ public class OrderDetailData {
     }
 
     public static List<OrderDetail> searchOrderDetail_ById_Product(int id_Product){
-        String sql = "SELECT od.*, p.ProductName, p.CategoryID " +
+        String sql = "SELECT od.*, p.ProductName, p.CategoryID, p.image " +
                 "FROM OrderDetail od " +
                 "JOIN Product p ON od.id_Product = p.ProductID " +
                 "WHERE od.id_Product = ?";

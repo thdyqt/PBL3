@@ -100,6 +100,21 @@
     -fx-border-color: #F1F5F9;
     -fx-cell-size: 45px;
 }
+.table-cell {
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-border-color: transparent;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.col-quantity {
+    -fx-alignment: CENTER;
+}
+
+.col-price {
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 0 15 0 0;
+}
 /* Hiệu ứng Hover và Select */
 .table-row-cell:hover {
     -fx-background-color: #F8FAFC;

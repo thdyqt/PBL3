@@ -28,8 +28,18 @@ public class OrderBusiness {
         return newOrderId;
     }
 
-    public static List<Order> getAllOrder_BLL(){
+    public static List<Order> getAllOrder(){
         return OrderData.getAllOrders();
+    }
+
+    public static List<Order> getFilteredOrders(Order.OrderType orderType) {
+        ArrayList<Order> list = new ArrayList<>();
+        for (Order o : getAllOrder()) {
+            if (o.getType() == orderType) {
+                list.add(o);
+            }
+        }
+        return list;
     }
 
     public static boolean isValidStatus(Order order, String status){
@@ -48,16 +58,6 @@ public class OrderBusiness {
         return false;
     }
 
-    public static List<Order> getOnlineOrders_BLL() {
-        ArrayList<Order> list = new ArrayList<>();
-        for (Order o : getAllOrder_BLL()) {
-            if (o.getType() == Order.OrderType.Online) {
-                list.add(o);
-            }
-        }
-        return list;
-    }
-
     public static String updateOrder_BLL(Order order, String status){
         if (order == null || order.getId() <= 0){
             return "Order doesnt exist/ have invalid ID";
@@ -67,7 +67,6 @@ public class OrderBusiness {
             return "LỖI: Trạng thái '" + status + "' không hợp lệ cho đơn hàng " + order.getType();
         }
 
-        //but does the order with that id actually exist in the database?
         Order orderToUpdate = OrderData.searchOrder_ByID(order.getId());
         if (orderToUpdate == null){
             return "The order doesnt exist";
