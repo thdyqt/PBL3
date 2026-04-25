@@ -262,7 +262,20 @@ public class ProductData {
         }
         return null;
     }
+    public static String getImage(int productID){
+        String sql = "SELECT * FROM Product WHERE ProductID = ?";
+        try(Connection conn = DBConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1,productID);
 
+            try(ResultSet rs = stmt.executeQuery()){
+                if(rs.next()) return mapResultSet(rs).getImage();
+            }
+        } catch (SQLException e){
+            System.err.println("Lỗi lấy hình ảnh: "+e.getMessage());
+        }
+        return null;
+}
     public static boolean isProductExist(String productName) {
         String sql = "SELECT 1 FROM Product WHERE ProductName = ?";
 

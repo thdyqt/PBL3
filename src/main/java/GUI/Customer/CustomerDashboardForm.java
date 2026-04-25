@@ -278,6 +278,7 @@ public class CustomerDashboardForm implements Initializable {
     @FXML
     void btnOrdersClick(ActionEvent event) {
         setActiveMenu(btnOrders);
+        switchForm("/GUI/Customer/MyOrderView.fxml");
     }
 
     private void openProfileDialog(boolean isViewOnly) {
