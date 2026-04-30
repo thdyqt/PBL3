@@ -1,6 +1,7 @@
 package DataDAL;
 
 import EntityDTO.Customer;
+import EntityDTO.DeliveryInfo;
 import EntityDTO.Order;
 import EntityDTO.Staff;
 import Util.DBConnection;
@@ -16,7 +17,7 @@ public class OrderData {
         String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, " +
                 "c.full_name AS customer_name, c.phone AS customer_phone, c.point AS customer_point " +
                 "FROM Orders o " +
-                "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
+                "LEFT JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
                 "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang ORDER BY o.order_time DESC";
 
         try (
@@ -75,7 +76,7 @@ public class OrderData {
         return list;
     }
 
-    public static int addOrder(Order order, EntityDTO.DeliveryInfo deliveryInfo) {
+    public static int addOrder(Order order, DeliveryInfo deliveryInfo) {
         Connection conn = null;
         int generatedOrderId = -1;
 
@@ -166,7 +167,7 @@ public class OrderData {
     public static Order searchOrder_ByID(int id_Order){
         String sql = "SELECT o.*, s.full_name AS staff_name, s.username AS staff_username, c.full_name AS customer_name, c.phone AS customer_phone " +
                 "FROM Orders o " +
-                "JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
+                "LEFT JOIN Staff s ON o.id_Staff = s.id_nhan_vien " +
                 "LEFT JOIN Customer c ON o.id_Customer = c.id_khach_hang " +
                 "WHERE o.id_Order = ?";
 
@@ -220,7 +221,12 @@ public class OrderData {
                 PreparedStatement stmt = conn.prepareStatement(sql)
         ) {
             stmt.setTimestamp(1, java.sql.Timestamp.valueOf(order.getOrderTime()));
-            stmt.setInt(2, order.getStaff().getId());
+
+            if (order.getStaff() != null && order.getStaff().getId() > 0) {
+                stmt.setInt(2, order.getStaff().getId());
+            } else {
+                stmt.setNull(2, Types.INTEGER);
+            }
 
             if (order.getCustomer() != null) {
                 stmt.setInt(3, order.getCustomer().getId());

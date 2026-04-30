@@ -52,6 +52,11 @@ public class ProductBusiness {
         }
     }
 
+    public static boolean addStock(int productId, int quantityToAdd) {
+        if (productId <= 0 || quantityToAdd <= 0) return false;
+        return DataDAL.ProductData.addStock(productId, quantityToAdd);
+    }
+
     // ===== NGỪNG KINH DOANH =====
     public static String stopBusiness(int productID) {
         Product p = ProductData.getByID(productID);

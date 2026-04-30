@@ -208,8 +208,22 @@ public class ProductData {
         }
     }
 
-    public static List<Product> getByCategory(int categoryID) {
+    public static boolean addStock(int productId, int quantityToAdd) {
+        String sql = "UPDATE Product SET quantity = quantity + ? WHERE ProductID = ?";
+        try (
+                Connection conn = Util.DBConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setInt(1, quantityToAdd);
+            stmt.setInt(2, productId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
+    public static List<Product> getByCategory(int categoryID) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM Product WHERE CategoryID = ? AND status = 'Active'";
         System.out.println("=== DEBUG getByCategory ===");
@@ -246,6 +260,7 @@ public class ProductData {
         }
         return list;
     }
+
     public static Product getByID(int productID) {
         String sql = "SELECT * FROM Product WHERE ProductID = ?";
 

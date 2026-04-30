@@ -18,10 +18,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class OrderOnlineManagementForm implements Initializable {
@@ -160,8 +160,6 @@ public class OrderOnlineManagementForm implements Initializable {
 
     }
 
-
-
     @FXML
     void Search() {
         String keyword = txtSearch.getText().toLowerCase().trim();
@@ -177,29 +175,25 @@ public class OrderOnlineManagementForm implements Initializable {
     void btnCancelClick(ActionEvent event) {
         Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
 
-        // Chỉ kiểm tra UI (đã chọn dòng nào chưa)
         if (selectedOrder == null) {
             Others.showAlert(rootPane, "Chưa chọn đơn hàng, vui lòng chọn đơn hàng để Hủy!", true);
             return;
         }
 
-        // Mở popup nhập lý do hủy đơn
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Hủy đơn hàng");
-        dialog.setHeaderText("Xác nhận hủy đơn hàng #" + selectedOrder.getId());
-        dialog.setContentText("Nhập lý do hủy đơn:");
+        if (selectedOrder.getStatus() != Order.OrderStatus.Waiting_for_validation) {
+            Others.showAlert(rootPane, "Không thể hủy đơn hàng nếu đã xác nhận!", true);
+            return;
+        }
 
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent() && !result.get().trim().isEmpty()) {
-            String reason = result.get().trim();
+        Window ownerWindow = rootPane.getScene().getWindow();
+        String reason = Others.showCancelReasonDialog(ownerWindow, String.valueOf(selectedOrder.getId()));
 
-            // GỌI BLL: Đẩy toàn bộ trách nhiệm kiểm tra trạng thái và hoàn kho xuống BLL
-            String msg = OrderBusiness.cancelOnlineOrder_BLL(selectedOrder, reason);
+        if (reason != null && !reason.trim().isEmpty()) {
+            String msg = OrderBusiness.cancelOnlineOrder(selectedOrder, reason);
 
-            // Hiển thị kết quả từ BLL
             if (msg.contains("thành công")) {
                 Others.showAlert(rootPane, msg, false);
-                loadData(); // Tải lại bảng để cập nhật trạng thái mới
+                loadData();
             } else {
                 Others.showAlert(rootPane, msg, true);
             }
@@ -209,27 +203,24 @@ public class OrderOnlineManagementForm implements Initializable {
     @FXML
     void btnUpdateClick(ActionEvent event) {
         Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
-        String newState = "";
-                switch (cbState.getValue()){
-            case "Chờ xác nhận": newState = Order.OrderStatus.Waiting_for_validation.name();break;
-            case "Đang xử lí": newState = Order.OrderStatus.Processing.name();break;
-            case "Đang giao hàng": newState = Order.OrderStatus.Delivering.name();break;
-            case "Đã hoàn thành" : newState = Order.OrderStatus.Finished.name();break;
+        Order.OrderStatus newState = null;
+        switch (cbState.getValue()){
+            case "Chờ xác nhận": newState = Order.OrderStatus.Waiting_for_validation; break;
+            case "Đang xử lí": newState = Order.OrderStatus.Processing; break;
+            case "Đang giao hàng": newState = Order.OrderStatus.Delivering; break;
+            case "Đã hoàn thành" : newState = Order.OrderStatus.Finished; break;
         }
 
-        // Kiểm tra UI
         if (selectedOrder == null || newState == null) {
-            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng và trạng thái cần chuyển !", true);
+            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng và trạng thái cần chuyển!", true);
             return;
         }
 
-        // GỌI BLL: Tận dụng lại hàm updateOrder_BLL cũ để kiểm tra và cập nhật trạng thái
-        String msg = OrderBusiness.updateOrder_BLL(selectedOrder, newState);
+        String msg = OrderBusiness.updateOrder(selectedOrder, newState);
 
-        // Hiển thị thông báo
-        if (msg.contains("Order updated successfully")) {
+        if (msg.contains("Đã cập nhật trạng thái đơn hàng thành công.")) {
             Others.showAlert(rootPane, msg, false);
-            loadData(); // Refresh lại bảng
+            loadData();
         } else {
             Others.showAlert(rootPane, msg, true);
         }

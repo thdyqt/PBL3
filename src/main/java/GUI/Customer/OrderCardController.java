@@ -6,22 +6,24 @@ import DataDAL.ProductData;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import GUI.Staff.OrderOnlineDetailController;
+import Util.Others;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 
-import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 public class OrderCardController {
-
     // ===== FXML COMPONENTS =====
     @FXML private Label  lblOrderID;
     @FXML private Label  lblOrderDate;
@@ -76,7 +78,7 @@ public class OrderCardController {
         }
 
         // Tổng tiền
-        lblTotal.setText(formatMoney(currentOrder.getFinalAmount()) + " đ");
+        lblTotal.setText(Others.formatPrice(currentOrder.getFinalAmount()));
 
         // Nút Hủy — chỉ hiện khi Chờ xác nhận
         if (currentOrder.getStatus() == Order.OrderStatus.Waiting_for_validation) {
@@ -169,38 +171,22 @@ public class OrderCardController {
     // ===== HỦY ĐƠN =====
     @FXML
     private void handleCancel() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Xác nhận hủy đơn");
-        confirm.setHeaderText("Hủy đơn #DH" + String.format("%03d", currentOrder.getId()) + "?");
-        confirm.setContentText("Bạn có chắc muốn hủy đơn hàng này không?");
+        Window ownerWindow = btnCancel.getScene().getWindow();
+        String orderCode = "#DH" + String.format("%03d", currentOrder.getId());
+        String reason = Others.showCancelReasonDialog(ownerWindow, orderCode);
+        if (reason != null) {
+            String result = OrderBusiness.cancelOnlineOrder(currentOrder, reason);
 
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Hỏi lý do hủy
-                TextInputDialog reasonDialog = new TextInputDialog();
-                reasonDialog.setTitle("Lý do hủy");
-                reasonDialog.setHeaderText("Vui lòng cho biết lý do hủy đơn:");
-                reasonDialog.setContentText("Lý do:");
+            if (result.contains("thành công")) {
+                showAlert("✅ " + result);
 
-                reasonDialog.showAndWait().ifPresent(reason -> {
-                    String result = OrderBusiness.cancelOnlineOrder_BLL(
-                            currentOrder,
-                            reason.isBlank() ? "Khách hàng hủy" : reason
-                    );
-
-                    if (result.contains("thành công")) {
-                        showAlert("✅ " + result);
-                        // Ẩn nút hủy sau khi hủy thành công
-                        btnCancel.setVisible(false);
-                        btnCancel.setManaged(false);
-                        // Cập nhật lại trạng thái trên card
-                        renderStatus();
-                    } else {
-                        showAlert("❌ " + result);
-                    }
-                });
+                btnCancel.setVisible(false);
+                btnCancel.setManaged(false);
+                renderStatus();
+            } else {
+                showAlert("❌ " + result);
             }
-        });
+        }
     }
 
     // ===== XEM CHI TIẾT =====
@@ -232,9 +218,5 @@ public class OrderCardController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    private String formatMoney(int amount) {
-        return NumberFormat.getNumberInstance(new Locale("vi", "VN")).format(amount);
     }
 }

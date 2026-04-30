@@ -454,4 +454,68 @@ public class Others {
 
         return isConfirmed[0];
     }
+
+    // HỘP THOẠI NHẬP LÝ DO HỦY
+    public static String showCancelReasonDialog(javafx.stage.Window ownerWindow, String orderCode) {
+        final String[] reasonResult = {null};
+
+        javafx.stage.Stage stage = new javafx.stage.Stage(javafx.stage.StageStyle.TRANSPARENT);
+        stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+        if (ownerWindow != null) {
+            stage.initOwner(ownerWindow);
+        }
+
+        javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(12);
+        root.setPadding(new javafx.geometry.Insets(25));
+        root.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #E2E8F0; -fx-border-width: 1;");
+
+        javafx.scene.effect.DropShadow shadow = new javafx.scene.effect.DropShadow(20, new javafx.scene.paint.Color(0, 0, 0, 0.15));
+        root.setEffect(shadow);
+
+        javafx.scene.control.Label lblHeader = new javafx.scene.control.Label("Xác nhận hủy đơn");
+        lblHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+
+        javafx.scene.control.Label lblDesc = new javafx.scene.control.Label("Bạn có chắc muốn hủy đơn " + orderCode + "? Vui lòng cho biết lý do:");
+        lblDesc.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B;");
+
+        javafx.scene.control.TextField txtReason = new javafx.scene.control.TextField();
+        txtReason.setPromptText("Nhập lý do hủy đơn (Không bắt buộc)...");
+        txtReason.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
+        txtReason.setPrefWidth(320);
+
+        javafx.scene.control.Button btnCancelPopup = new javafx.scene.control.Button("Quay lại");
+        btnCancelPopup.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+        btnCancelPopup.setOnAction(e -> stage.close());
+
+        javafx.scene.control.Button btnConfirmPopup = new javafx.scene.control.Button("Xác nhận hủy");
+        btnConfirmPopup.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+
+        Runnable checkAction = () -> {
+            String input = txtReason.getText().trim();
+            if (input.isEmpty()) {
+                reasonResult[0] = "Khách hàng hủy";
+            } else {
+                reasonResult[0] = input;
+            }
+            stage.close();
+        };
+
+        btnConfirmPopup.setOnAction(e -> checkAction.run());
+        txtReason.setOnAction(e -> checkAction.run());
+
+        javafx.scene.layout.HBox buttonBox = new javafx.scene.layout.HBox(10, btnCancelPopup, btnConfirmPopup);
+        buttonBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+        root.getChildren().addAll(lblHeader, lblDesc, txtReason, buttonBox);
+
+        javafx.scene.Scene scene = new javafx.scene.Scene(root);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        stage.setScene(scene);
+
+        javafx.application.Platform.runLater(txtReason::requestFocus);
+        stage.showAndWait();
+
+        return reasonResult[0];
+    }
 }
