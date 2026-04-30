@@ -57,12 +57,13 @@ public class MyOrderController implements Initializable {
 
     public void setContentArea(StackPane contentArea) {
         this.contentArea = contentArea;
+        renderOrders();
     }
 
     // ===== LOAD ORDERS =====
     private void loadOrders() {
         // Lấy tất cả online orders rồi lọc theo customer hiện tại
-        allOrders = OrderBusiness.getOnlineOrders_BLL()
+        allOrders = OrderBusiness.getAllOrder()
                 .stream()
                 .filter(o -> o.getCustomer() != null
                         && o.getCustomer().getId() == currentCustomer.getId())

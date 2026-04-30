@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
 
 <AnchorPane fx:id="mainPane" prefHeight="750.0" prefWidth="1000.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Customer.CustomerHomeController">
     <children>
@@ -23,14 +24,14 @@
                         <Insets bottom="40.0" left="30.0" right="30.0" top="20.0" />
                     </padding>
                     <children>
+
+                        <!-- ══ HEADER: Welcome + Search ══ -->
                         <HBox alignment="CENTER_LEFT" spacing="20.0">
                             <children>
                                 <VBox>
                                     <children>
                                         <Label fx:id="lblWelcome" style="-fx-text-fill: #1E293B;" text="Chào buổi sáng, Duy!">
-                                            <font>
-                                                <Font name="System Bold" size="24.0" />
-                                            </font>
+                                            <font><Font name="System Bold" size="24.0" /></font>
                                         </Label>
                                         <Label style="-fx-text-fill: #64748B;" text="Hôm nay bạn muốn thưởng thức món bánh gì?" />
                                     </children>
@@ -39,9 +40,7 @@
                                 <HBox alignment="CENTER_LEFT" maxWidth="400.0" prefHeight="53.0" prefWidth="240.0" style="-fx-background-color: white; -fx-background-radius: 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5); -fx-padding: 0 15;">
                                     <children>
                                         <Label style="-fx-text-fill: #94A3B8;" text="🔍">
-                                            <font>
-                                                <Font size="18.0" />
-                                            </font>
+                                            <font><Font size="18.0" /></font>
                                         </Label>
                                         <TextField fx:id="txtSearch" promptText="Tìm kiếm bánh kem, bánh mì..." style="-fx-background-color: transparent; -fx-border-color: transparent;" HBox.hgrow="ALWAYS" />
                                     </children>
@@ -49,62 +48,60 @@
                             </children>
                         </HBox>
 
+                        <!-- ══ BANNER ══ -->
                         <StackPane fx:id="paneBanner" prefHeight="280.0" style="-fx-background-color: #1E293B; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);">
                             <children>
                                 <Region style="-fx-background-color: linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 60%, transparent 100%); -fx-background-radius: 20;" />
-
                                 <VBox alignment="CENTER_LEFT" spacing="12.0">
-                                    <padding>
-                                        <Insets left="60.0" right="60.0" />
-                                    </padding>
+                                    <padding><Insets left="60.0" right="60.0" /></padding>
                                     <children>
                                         <Label style="-fx-text-fill: white;" text="DUT Bakery">
-                                            <font>
-                                                <Font name="System Bold" size="40.0" />
-                                            </font>
+                                            <font><Font name="System Bold" size="40.0" /></font>
                                         </Label>
                                         <Label maxWidth="500.0" style="-fx-text-fill: #F1F5F9;" text="Hương vị trọn vẹn từ sự tận tâm.&#10;Thưởng thức bánh tươi mới mỗi ngày với nguyên liệu hảo hạng nhất." wrapText="true">
-                                            <font>
-                                                <Font size="17.0" />
-                                            </font>
+                                            <font><Font size="17.0" /></font>
                                         </Label>
                                         <Region prefHeight="10.0" />
                                         <Button mnemonicParsing="false" onAction="#handleViewMenu" style="-fx-background-color: #D4891A; -fx-text-fill: white; -fx-background-radius: 30; -fx-padding: 12 35; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);" text="XEM MENU NGAY">
-                                            <cursor>
-                                                <Cursor fx:constant="HAND" />
-                                            </cursor>
-                                            <font>
-                                                <Font size="16.0" />
-                                            </font>
+                                            <cursor><Cursor fx:constant="HAND" /></cursor>
+                                            <font><Font size="16.0" /></font>
                                         </Button>
                                     </children>
                                 </VBox>
-
                                 <HBox fx:id="hboxBannerIndicators" alignment="BOTTOM_CENTER" fillHeight="false" spacing="10.0" StackPane.alignment="BOTTOM_CENTER">
-                                    <padding>
-                                        <Insets bottom="20.0" />
-                                    </padding>
+                                    <padding><Insets bottom="20.0" /></padding>
                                 </HBox>
                             </children>
                         </StackPane>
 
+                        <!-- ══ DANH MỤC ══ -->
                         <VBox spacing="15.0">
                             <children>
                                 <Label style="-fx-text-fill: #1E293B;" text="Danh mục nổi bật">
-                                    <font>
-                                        <Font name="System Bold" size="20.0" />
-                                    </font>
+                                    <font><Font name="System Bold" size="20.0" /></font>
                                 </Label>
                                 <HBox fx:id="hboxCategories" alignment="CENTER_LEFT" spacing="20.0" />
                             </children>
                         </VBox>
 
+                        <!-- ══ MÃ KHUYẾN MÃI ══ -->
+                        <VBox spacing="12" style="-fx-background-color: linear-gradient(to right, #FFF8EE, #FFF3E0); -fx-background-radius: 16; -fx-padding: 20; -fx-border-color: #F2B950; -fx-border-width: 1; -fx-border-radius: 16;">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <children>
+                                        <Label style="-fx-font-size: 18px;" text="🎟️" />
+                                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #92400E; -fx-font-family: 'Serif';" text="Mã Khuyến Mãi Đang Hoạt Động" />
+                                    </children>
+                                </HBox>
+                                <HBox fx:id="hboxPromoCodes" spacing="12" />
+                            </children>
+                        </VBox>
+
+                        <!-- ══ BEST SELLERS ══ -->
                         <VBox spacing="15.0">
                             <children>
                                 <Label style="-fx-text-fill: #1E293B;" text="🔥 Món bánh bán chạy">
-                                    <font>
-                                        <Font name="System Bold" size="22.0" />
-                                    </font>
+                                    <font><Font name="System Bold" size="22.0" /></font>
                                 </Label>
                                 <ScrollPane fitToHeight="true" minHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" vbarPolicy="NEVER">
                                     <content>
@@ -114,12 +111,11 @@
                             </children>
                         </VBox>
 
+                        <!-- ══ NEW ARRIVALS ══ -->
                         <VBox spacing="15.0">
                             <children>
                                 <Label style="-fx-text-fill: #1E293B;" text="✨ Bánh mới ra lò">
-                                    <font>
-                                        <Font name="System Bold" size="22.0" />
-                                    </font>
+                                    <font><Font name="System Bold" size="22.0" /></font>
                                 </Label>
                                 <ScrollPane fitToHeight="true" minHeight="300.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" vbarPolicy="NEVER">
                                     <content>
@@ -128,6 +124,84 @@
                                 </ScrollPane>
                             </children>
                         </VBox>
+
+                        <!-- ══ ĐƠN HÀNG GẦN NHẤT ══ -->
+                        <VBox spacing="12">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <children>
+                                        <Label style="-fx-font-size: 18px;" text="📋" />
+                                        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1A0C04; -fx-font-family: 'Serif';" text="Đơn Hàng Gần Nhất" />
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="lblViewAllOrders" onMouseClicked="#handleViewAllOrders" style="-fx-font-size: 13px; -fx-text-fill: #D4891A; -fx-cursor: hand; -fx-underline: true;" text="Xem tất cả →" />
+                                    </children>
+                                </HBox>
+                                <VBox fx:id="vboxRecentOrders" spacing="10" />
+                            </children>
+                        </VBox>
+
+                        <!-- ══ THÔNG TIN VỀ CHÚNG TÔI ══ -->
+                        <VBox spacing="20" style="-fx-background-color: #1A0C04; -fx-background-radius: 16; -fx-padding: 30;">
+                            <children>
+                                <HBox spacing="30">
+                                    <children>
+
+                                        <!-- Cột trái: Thông tin -->
+                                        <VBox spacing="16" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #F2B950; -fx-font-family: 'Serif';" text="🧁 DUT BAKERY" />
+                                                <Label style="-fx-font-size: 13px; -fx-text-fill: #BBA898; -fx-font-family: 'Serif'; -fx-wrap-text: true;" text="Bánh mì tươi ngon mỗi ngày — được làm từ những nguyên liệu tự nhiên, chọn lọc kỹ càng. Hương vị đậm đà, truyền thống." wrapText="true" />
+
+                                                <!-- Địa chỉ -->
+                                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 14px;" text="📍" />
+                                                        <Label style="-fx-font-size: 13px; -fx-text-fill: #F5DEB3; -fx-font-family: 'Serif';" text="54 Nguyễn Lương Bằng, P. Hòa Khánh, Đà Nẵng" />
+                                                    </children>
+                                                </HBox>
+
+                                                <!-- Giờ mở cửa -->
+                                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 14px;" text="🕐" />
+                                                        <Label style="-fx-font-size: 13px; -fx-text-fill: #F5DEB3; -fx-font-family: 'Serif';" text="7:00 - 22:00 hàng ngày" />
+                                                    </children>
+                                                </HBox>
+
+                                                <!-- Điện thoại -->
+                                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                                    <children>
+                                                        <Label style="-fx-font-size: 14px;" text="📞" />
+                                                        <Label style="-fx-font-size: 13px; -fx-text-fill: #F5DEB3; -fx-font-family: 'Serif';" text="0346 327 123" />
+                                                    </children>
+                                                </HBox>
+
+                                                <!-- Mạng xã hội -->
+                                                <HBox spacing="10">
+                                                    <children>
+                                                        <Label onMouseClicked="#handleOpenFacebook" style="-fx-background-color: #3b5998; -fx-text-fill: white; -fx-padding: 6 14; -fx-background-radius: 8; -fx-font-size: 12px; -fx-cursor: hand;" text="Facebook" />
+                                                        <Label onMouseClicked="#handleOpenInstagram" style="-fx-background-color: #e1306c; -fx-text-fill: white; -fx-padding: 6 14; -fx-background-radius: 8; -fx-font-size: 12px; -fx-cursor: hand;" text="Instagram" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+
+                                        <!-- Cột phải: Bản đồ -->
+                                        <VBox alignment="CENTER" prefWidth="400" spacing="8">
+                                            <children>
+                                                <Label style="-fx-font-size: 13px; -fx-text-fill: #9C8472; -fx-font-family: 'Serif';" text="📍 Bản đồ cửa hàng" />
+                                                <WebView fx:id="mapView" prefHeight="220" prefWidth="400" />
+                                            </children>
+                                        </VBox>
+
+                                    </children>
+                                </HBox>
+
+                                <!-- Copyright -->
+                                <Label style="-fx-font-size: 11px; -fx-text-fill: #5C3A1E; -fx-font-family: 'Serif';" text="© 2026 DUT Bakery. All rights reserved." />
+                            </children>
+                        </VBox>
+
                     </children>
                 </VBox>
             </content>

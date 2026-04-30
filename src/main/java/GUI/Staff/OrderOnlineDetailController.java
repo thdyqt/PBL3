@@ -14,6 +14,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,7 +40,11 @@ public class OrderOnlineDetailController {
     @FXML private Label lblSubTotal;
     @FXML private Label lblDiscount;
     @FXML private Label lblFinalTotal;
+    private StackPane contentArea;
 
+    public void setContentArea(StackPane contentArea) {
+        this.contentArea = contentArea;
+    }
     @FXML
     public void initialize() {
         setupTable();
