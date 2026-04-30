@@ -98,12 +98,51 @@ public class StaffDashboardForm implements Initializable {
     @FXML
     private VBox sidebar;
 
+    public static StaffDashboardForm instance;
     private Button[] menuButtons;
     private boolean isSidebarVisible = true;
     private Timeline sidebarTimeline;
 
+    public Button getBtnCustomer() {
+        return btnCustomer;
+    }
+
+    public Button getBtnBill() {
+        return btnBill;
+    }
+
+    public Button getBtnHome() {
+        return btnHome;
+    }
+
+    public Button getBtnOnline() {
+        return btnOnline;
+    }
+
+    public Button getBtnOrder() {
+        return btnOrder;
+    }
+
+    public Button getBtnProduct() {
+        return btnProduct;
+    }
+
+    public Button getBtnStaff() {
+        return btnStaff;
+    }
+
+    public Button getBtnPromoCode() {
+        return btnPromoCode;
+    }
+
+    public Button getBtnStatistic() {
+        return btnStatistic;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        instance = this;
+
         menuInfo.setOnAction(event -> openProfileDialog(true));
         menuEditAcc.setOnAction(event -> openProfileDialog(false));
 
@@ -240,7 +279,7 @@ public class StaffDashboardForm implements Initializable {
     }
 
     // SIDEBAR
-    private void setActiveMenu(Button activeButton) {
+    public void setActiveMenu(Button activeButton) {
         if (menuButtons == null) return;
 
         for (Button btn : menuButtons) {
@@ -260,7 +299,7 @@ public class StaffDashboardForm implements Initializable {
         }
     }
 
-    private void switchForm(String fxmlFileName) {
+    public void switchForm(String fxmlFileName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
             Node node = loader.load();
@@ -280,6 +319,7 @@ public class StaffDashboardForm implements Initializable {
     @FXML
     void btnHomeClick(ActionEvent event) {
         setActiveMenu(btnHome);
+        switchForm("/GUI/Staff/StaffHome.fxml");
     }
 
     @FXML

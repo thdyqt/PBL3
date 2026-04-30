@@ -118,27 +118,27 @@ public class Others {
             String qrUrl = String.format("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
                     bankID, accountNo, amount, addInfo, accountName);
 
-            javafx.scene.image.Image qrImage = new javafx.scene.image.Image(qrUrl, false);
+            Image qrImage = new Image(qrUrl, false);
 
             if (qrImage.isError()) {
                 throw new Exception("Không thể tải ảnh QR từ máy chủ!");
             }
 
-            javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(qrImage);
+            ImageView imageView = new ImageView(qrImage);
             imageView.setFitWidth(500);
             imageView.setFitHeight(500);
             imageView.setPreserveRatio(true);
 
-            javafx.stage.Stage qrStage = new javafx.stage.Stage();
+            Stage qrStage = new Stage();
             qrStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             qrStage.setTitle("Thanh toán Chuyển khoản");
             qrStage.setMaximized(true);
 
-            javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(30);
+            VBox root = new VBox(30);
             root.setAlignment(javafx.geometry.Pos.CENTER);
             root.setStyle("-fx-background-color: #F8FAFC;");
 
-            javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("QUÉT MÃ ĐỂ THANH TOÁN");
+            Label lblTitle = new Label("QUÉT MÃ ĐỂ THANH TOÁN");
             lblTitle.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
 
             javafx.scene.control.Label lblAmount = new javafx.scene.control.Label("Số tiền cần chuyển: " + formatPrice(amount));
@@ -163,7 +163,7 @@ public class Others {
 
             btnConfirm.setOnAction(e -> {
                 qrStage.close();
-                javafx.application.Platform.runLater(onSuccess);
+                Platform.runLater(onSuccess);
             });
 
             qrStage.showAndWait();
@@ -177,7 +177,6 @@ public class Others {
     }
 
     // ANIMATION KHI ẤN NÚT
-    // Resize up and down slightly to make button clicking more tactile
     public static void playButtonAnimation(Node node){
         ScaleTransition scaleDown = new ScaleTransition(Duration.millis(50),node);
         scaleDown.setToX(0.90);
@@ -217,8 +216,6 @@ public class Others {
             scaleUp.playFromStart();
         });
     }
-
-
 
     // ANIMATION KHI FORM HIỂN THỊ
     public static void playFormAnimation(Node formNode) {

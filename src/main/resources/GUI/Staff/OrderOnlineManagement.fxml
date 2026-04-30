@@ -36,6 +36,8 @@
                                     </font>
                                 </TextField>
 
+                                <ComboBox fx:id="cbFilterState" prefWidth="160.0" promptText="Lọc trạng thái..." style="-fx-background-color: #F1F5F9; -fx-background-radius: 5; -fx-padding: 4 8;" />
+
                                 <Region HBox.hgrow="ALWAYS" />
 
                                 <ComboBox fx:id="cbState" prefWidth="160.0" promptText="Chọn trạng thái..." style="-fx-background-color: #F1F5F9; -fx-background-radius: 5; -fx-padding: 4 8;" />

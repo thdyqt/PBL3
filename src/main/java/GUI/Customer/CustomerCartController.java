@@ -290,7 +290,7 @@ public class CustomerCartController implements Initializable {
             stage.showAndWait();
 
             if (controller.isViewOrderSelected()) {
-                // CustomerDashboardForm.instance.switchForm("/GUI/Customer/CustomerProduct.fxml");
+                CustomerDashboardForm.instance.switchForm("/GUI/Customer/MyOrderView.fxml");
                 CustomerDashboardForm.instance.setActiveMenu(CustomerDashboardForm.instance.getBtnOrders());
             } else {
                 CustomerDashboardForm.instance.switchForm("/GUI/Customer/CustomerProduct.fxml");
