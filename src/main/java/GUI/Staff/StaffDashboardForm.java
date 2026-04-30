@@ -377,6 +377,16 @@ public class StaffDashboardForm implements Initializable {
     }
 
     @FXML
+    void btnStatisticClick(ActionEvent event) {
+        if (!UserSession.getInstance().getPosition().equals("Admin")){
+            Others.showAlert(mainBorderPane, "Bạn không có quyền truy cập vào tính năng này", true);
+            return;
+        }
+        setActiveMenu(btnStatistic);
+        switchForm("/GUI/Staff/Statistic.fxml");
+    }
+
+    @FXML
     void btnExitClick(ActionEvent event) {
         boolean isConfirm = Util.Others.showCustomConfirm(
                 "Kết thúc ca trực",
