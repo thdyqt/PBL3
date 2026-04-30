@@ -15,7 +15,12 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -109,9 +114,7 @@ public class StatisticController implements Initializable {
 
         btnFilter.setOnAction(e -> loadStatistics());
 
-        btnExport.setOnAction(e -> {
-            Others.showAlert(rootPane, "Tính năng Xuất Excel đang được phát triển!", false);
-        });
+        btnExport.setOnAction(e -> exportToExcel());
     }
 
     private void loadStatistics() {
@@ -260,5 +263,51 @@ public class StatisticController implements Initializable {
         public String getName() { return name; }
         public int getTotalSpent() { return totalSpent; }
         public void addSpent(int amount) { this.totalSpent += amount; }
+    }
+
+    private void exportToExcel() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Xuất báo cáo Thống kê");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files (*.csv)", "*.csv"));
+        fileChooser.setInitialFileName("BaoCao_ThongKe_" + java.time.LocalDate.now() + ".csv");
+
+        File file = fileChooser.showSaveDialog(rootPane.getScene().getWindow());
+        if (file != null) {
+            try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), java.nio.charset.StandardCharsets.UTF_8))) {
+                writer.write('\ufeff');
+
+                writer.println("BÁO CÁO THỐNG KÊ HOẠT ĐỘNG KINH DOANH");
+                writer.println("Từ ngày:," + (dpStartDate.getValue() != null ? dpStartDate.getValue() : "Bắt đầu"));
+                writer.println("Đến ngày:," + (dpEndDate.getValue() != null ? dpEndDate.getValue() : "Hiện tại"));
+                writer.println();
+
+                writer.println("TỔNG QUAN:");
+                writer.println("Tổng doanh thu:,\"" + lblTotalRevenue.getText() + "\"");
+                writer.println("Tổng đơn hoàn thành:," + lblTotalOrders.getText());
+                writer.println("Sản phẩm đã bán:," + lblTotalProducts.getText());
+                writer.println("Tỉ lệ hủy đơn:," + lblCancelRate.getText());
+                writer.println();
+
+                writer.println("TOP BÁNH BÁN CHẠY NHẤT");
+                writer.println("STT,Tên bánh,Số lượng đã bán");
+                for (int i = 0; i < tableTopProducts.getItems().size(); i++) {
+                    ProductStat p = tableTopProducts.getItems().get(i);
+                    writer.println((i + 1) + ",\"" + p.getName() + "\"," + p.getQuantity());
+                }
+                writer.println();
+
+                writer.println("TOP KHÁCH HÀNG CHI TIÊU NHIỀU NHẤT");
+                writer.println("STT,Khách hàng,Tổng chi tiêu");
+                for (int i = 0; i < tableTopCustomers.getItems().size(); i++) {
+                    CustomerStat c = tableTopCustomers.getItems().get(i);
+                    writer.println((i + 1) + ",\"" + c.getName() + "\",\"" + Others.formatPrice(c.getTotalSpent()) + "\"");
+                }
+
+                Others.showAlert(rootPane, "Xuất báo cáo thành công!", false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Others.showAlert(rootPane, "Lỗi khi lưu file: " + e.getMessage(), true);
+            }
+        }
     }
 }
