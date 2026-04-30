@@ -3,12 +3,14 @@ package GUI.Customer;
 import BusinessBLL.OrderBusiness;
 import EntityDTO.Customer;
 import EntityDTO.Order;
-import GUI.Staff.OrderOnlineDetailController;
 import Util.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -62,7 +64,7 @@ public class MyOrderController implements Initializable {
     // ===== LOAD ORDERS =====
     private void loadOrders() {
         // Lấy tất cả online orders rồi lọc theo customer hiện tại
-        allOrders = OrderBusiness.getOnlineOrders_BLL()
+        allOrders = OrderBusiness.getFilteredOrders(Order.OrderType.Online)
                 .stream()
                 .filter(o -> o.getCustomer() != null
                         && o.getCustomer().getId() == currentCustomer.getId())
