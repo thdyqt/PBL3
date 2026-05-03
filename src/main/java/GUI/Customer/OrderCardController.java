@@ -163,6 +163,26 @@ public class OrderCardController {
 
     @FXML
     private void handleCancel() {
+        Order latestOrder = OrderBusiness.getAllOrder().stream()
+                .filter(o -> o.getId() == currentOrder.getId())
+                .findFirst()
+                .orElse(null);
+
+        if (latestOrder == null || latestOrder.getStatus() != Order.OrderStatus.Waiting_for_validation) {
+            StackPane targetPane = this.contentArea;
+            if (targetPane == null && btnCancel.getScene().getRoot() instanceof StackPane) {
+                targetPane = (StackPane) btnCancel.getScene().getRoot();
+            }
+
+            Others.showAlert(targetPane, "Rất tiếc! Đơn hàng này đã được nhân viên tiếp nhận và xử lý, bạn không thể hủy nữa.", true);
+
+            if (latestOrder != null) {
+                currentOrder.setStatus(latestOrder.getStatus());
+                render();
+            }
+            return;
+        }
+
         Window ownerWindow = btnCancel.getScene().getWindow();
         String reason = Others.showCancelReasonDialog(ownerWindow, String.valueOf(currentOrder.getId()));
 
