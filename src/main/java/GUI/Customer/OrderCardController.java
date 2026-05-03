@@ -5,7 +5,9 @@ import BusinessBLL.OrderDetailBusiness;
 import DataDAL.ProductData;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
-import GUI.Staff.OrderOnlineDetailController;
+import GUI.OrderOnlineDetailController;
+import Util.Others;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,18 +17,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
-import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 public class OrderCardController {
-
-    // ===== FXML COMPONENTS =====
     @FXML private Label  lblOrderID;
     @FXML private Label  lblOrderDate;
     @FXML private Label  lblStatus;
@@ -37,59 +35,56 @@ public class OrderCardController {
     @FXML private Button btnCancel;
     @FXML private Button btnDetail;
 
-    // ===== DATA =====
     private Order      currentOrder;
     private StackPane  contentArea;
 
-    // ===== NHẬN DỮ LIỆU TỪ MyOrderController =====
     public void setOrder(Order order, StackPane contentArea) {
         this.currentOrder = order;
         this.contentArea  = contentArea;
         render();
     }
 
-    // ===== RENDER CARD =====
     private void render() {
-        // Mã đơn
         lblOrderID.setText("#DH" + String.format("%03d", currentOrder.getId()));
-
-        // Ngày đặt
         lblOrderDate.setText(currentOrder.getOrderTime()
                 .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-
-        // Trạng thái
         renderStatus();
+        lblTotal.setText(Others.formatPrice(currentOrder.getFinalAmount()));
 
-        // Sản phẩm
-        List<OrderDetail> details = currentOrder.getOrderDetail();
-        if (details == null || details.isEmpty()) {
-            details = OrderDetailBusiness.getDetailsByOrderId_BLL(currentOrder.getId());
-        }
-
-        if (details != null && !details.isEmpty()) {
-            String names = details.stream()
-                    .map(d -> d.getProduct().getProductName())
-                    .reduce((a, b) -> a + ", " + b)
-                    .orElse("");
-            lblProductNames.setText(names);
-
-            int totalItems = details.stream().mapToInt(OrderDetail::getQuantity).sum();
-            lblItemCount.setText(totalItems + " món");
-
-            loadImages(details);
-        }
-
-        // Tổng tiền
-        lblTotal.setText(formatMoney(currentOrder.getFinalAmount()) + " đ");
-
-        // Nút Hủy — chỉ hiện khi Chờ xác nhận
         if (currentOrder.getStatus() == Order.OrderStatus.Waiting_for_validation) {
             btnCancel.setVisible(true);
             btnCancel.setManaged(true);
+        } else {
+            btnCancel.setVisible(false);
+            btnCancel.setManaged(false);
         }
+
+        Thread bgThread = new Thread(() -> {
+            List<OrderDetail> details = currentOrder.getOrderDetail();
+            if (details == null || details.isEmpty()) {
+                details = OrderDetailBusiness.getDetailsByOrderId_BLL(currentOrder.getId());
+            }
+            final List<OrderDetail> finalDetails = details;
+
+            Platform.runLater(() -> {
+                if (finalDetails != null && !finalDetails.isEmpty()) {
+                    String names = finalDetails.stream()
+                            .map(d -> d.getProduct().getProductName())
+                            .reduce((a, b) -> a + ", " + b)
+                            .orElse("");
+                    lblProductNames.setText(names);
+
+                    int totalItems = finalDetails.stream().mapToInt(OrderDetail::getQuantity).sum();
+                    lblItemCount.setText(totalItems + " món");
+
+                    loadImagesAsync(finalDetails);
+                }
+            });
+        });
+        bgThread.setDaemon(true);
+        bgThread.start();
     }
 
-    // ===== RENDER TRẠNG THÁI =====
     private void renderStatus() {
         String text;
         String style;
@@ -97,23 +92,23 @@ public class OrderCardController {
         switch (currentOrder.getStatus()) {
             case Waiting_for_validation -> {
                 text  = "⏳ Chờ xác nhận";
-                style = "-fx-background-color: #FFF8EE; -fx-text-fill: #D4891A; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 4 12; -fx-background-radius: 12; -fx-border-color: #F2B950; -fx-border-width: 1; -fx-border-radius: 12;";
+                style = "-fx-background-color: #FEF3C7; -fx-text-fill: #D97706; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
             }
             case Processing -> {
-                text  = "👨‍🍳 Đang chuẩn bị";
-                style = "-fx-background-color: #F0F8FF; -fx-text-fill: #1565C0; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 4 12; -fx-background-radius: 12; -fx-border-color: #90CAF9; -fx-border-width: 1; -fx-border-radius: 12;";
+                text  = "👨‍🍳 Đang xử lý";
+                style = "-fx-background-color: #EFF6FF; -fx-text-fill: #2563EB; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
             }
             case Delivering -> {
                 text  = "🚗 Đang giao";
-                style = "-fx-background-color: #F3F0FF; -fx-text-fill: #6A1B9A; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 4 12; -fx-background-radius: 12; -fx-border-color: #CE93D8; -fx-border-width: 1; -fx-border-radius: 12;";
+                style = "-fx-background-color: #F3E8FF; -fx-text-fill: #7E22CE; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
             }
             case Finished -> {
                 text  = "✅ Hoàn thành";
-                style = "-fx-background-color: #F1FFF3; -fx-text-fill: #2E7D32; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 4 12; -fx-background-radius: 12; -fx-border-color: #A5D6A7; -fx-border-width: 1; -fx-border-radius: 12;";
+                style = "-fx-background-color: #D1FAE5; -fx-text-fill: #059669; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
             }
             case Cancelled -> {
                 text  = "❌ Đã hủy";
-                style = "-fx-background-color: #FFF5F5; -fx-text-fill: #C62828; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 4 12; -fx-background-radius: 12; -fx-border-color: #EF9A9A; -fx-border-width: 1; -fx-border-radius: 12;";
+                style = "-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
             }
             default -> {
                 text  = "Không rõ";
@@ -125,101 +120,85 @@ public class OrderCardController {
         lblStatus.setStyle(style);
     }
 
-    // ===== LOAD ẢNH SCROLL NGANG =====
-    private void loadImages(List<OrderDetail> details) {
+    private void loadImagesAsync(List<OrderDetail> actualDetails) {
         imageContainer.getChildren().clear();
 
-        // ✅ Nếu details rỗng → gọi DB lấy lại
-        List<OrderDetail> actualDetails = details;
-        if (actualDetails == null || actualDetails.isEmpty()) {
-            actualDetails = OrderDetailBusiness.getDetailsByOrderId_BLL(currentOrder.getId());
-        }
+        Thread imgThread = new Thread(() -> {
+            for (OrderDetail detail : actualDetails) {
+                int productID = detail.getProduct().getProductID();
+                String imageName = ProductData.getImage(productID); // Nặng vì Query DB
 
-        if (actualDetails == null || actualDetails.isEmpty()) {
-            System.out.println("Không có sản phẩm trong đơn #" + currentOrder.getId());
-            return;
-        }
+                Image image = null;
+                try {
+                    var stream = (imageName != null)
+                            ? getClass().getResourceAsStream("/images/" + imageName)
+                            : getClass().getResourceAsStream("/images/default.png");
 
-        for (OrderDetail detail : actualDetails) {
-            int productID = detail.getProduct().getProductID();
-            String imageName = ProductData.getImage(productID);
-
-            ImageView iv = new ImageView();
-            iv.setFitWidth(80);
-            iv.setFitHeight(80);
-            iv.setPreserveRatio(true);
-            iv.setStyle("-fx-border-color: #EEE5D8; -fx-border-width: 1;");
-
-            try {
-                var stream = (imageName != null)
-                        ? getClass().getResourceAsStream("/images/" + imageName)
-                        : getClass().getResourceAsStream("/images/default.png");
-
-                if (stream != null) {
-                    iv.setImage(new Image(stream));
-                }
-            } catch (Exception e) {
-                System.err.println("Lỗi load ảnh: " + e.getMessage());
-            }
-
-            Tooltip tip = new Tooltip(
-                    detail.getProduct().getProductName() + " x" + detail.getQuantity()
-            );
-            Tooltip.install(iv, tip);
-            imageContainer.getChildren().add(iv);
-        }
-    }
-
-    // ===== HỦY ĐƠN =====
-    @FXML
-    private void handleCancel() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Xác nhận hủy đơn");
-        confirm.setHeaderText("Hủy đơn #DH" + String.format("%03d", currentOrder.getId()) + "?");
-        confirm.setContentText("Bạn có chắc muốn hủy đơn hàng này không?");
-
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                // Hỏi lý do hủy
-                TextInputDialog reasonDialog = new TextInputDialog();
-                reasonDialog.setTitle("Lý do hủy");
-                reasonDialog.setHeaderText("Vui lòng cho biết lý do hủy đơn:");
-                reasonDialog.setContentText("Lý do:");
-
-                reasonDialog.showAndWait().ifPresent(reason -> {
-                    String result = OrderBusiness.cancelOnlineOrder(
-                            currentOrder,
-                            reason.isBlank() ? "Khách hàng hủy" : reason
-                    );
-
-                    if (result.contains("thành công")) {
-                        showAlert("✅ " + result);
-                        // Ẩn nút hủy sau khi hủy thành công
-                        btnCancel.setVisible(false);
-                        btnCancel.setManaged(false);
-                        // Cập nhật lại trạng thái trên card
-                        renderStatus();
-                    } else {
-                        showAlert("❌ " + result);
+                    if (stream != null) {
+                        image = new Image(stream, 80, 80, true, true);
                     }
+                } catch (Exception e) {}
+
+                final Image finalImg = image;
+                Platform.runLater(() -> {
+                    ImageView iv = new ImageView();
+                    iv.setFitWidth(80);
+                    iv.setFitHeight(80);
+                    iv.setPreserveRatio(true);
+                    iv.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 1);");
+
+                    if (finalImg != null) {
+                        iv.setImage(finalImg);
+                    }
+
+                    Tooltip tip = new Tooltip(detail.getProduct().getProductName() + " x" + detail.getQuantity());
+                    Tooltip.install(iv, tip);
+                    imageContainer.getChildren().add(iv);
                 });
             }
         });
+        imgThread.setDaemon(true);
+        imgThread.start();
     }
 
-    // ===== XEM CHI TIẾT =====
+    @FXML
+    private void handleCancel() {
+        Window ownerWindow = btnCancel.getScene().getWindow();
+        String reason = Others.showCancelReasonDialog(ownerWindow, String.valueOf(currentOrder.getId()));
+
+        if (reason != null && !reason.trim().isEmpty()) {
+            String msg = OrderBusiness.cancelOnlineOrder(currentOrder, reason);
+
+            if (msg.contains("thành công")) {
+                currentOrder.setStatus(Order.OrderStatus.Cancelled);
+
+                StackPane targetPane = this.contentArea;
+                if (targetPane == null && btnCancel.getScene().getRoot() instanceof StackPane) {
+                    targetPane = (StackPane) btnCancel.getScene().getRoot();
+                }
+                Others.showAlert(targetPane, msg, false);
+                render();
+            } else {
+                StackPane targetPane = this.contentArea;
+                if (targetPane == null && btnCancel.getScene().getRoot() instanceof StackPane) {
+                    targetPane = (StackPane) btnCancel.getScene().getRoot();
+                }
+                Others.showAlert(targetPane, msg, true);
+            }
+        }
+    }
+
     @FXML
     private void handleDetail() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/GUI/Staff/OrderOnlineDetail.fxml") // ✅ đúng đường dẫn
+                    getClass().getResource("/GUI/OrderOnlineDetail.fxml")
             );
             Parent root = loader.load();
 
             OrderOnlineDetailController ctrl = loader.getController();
             ctrl.setOrderData(currentOrder);
 
-            // ✅ Mở trong Stage mới (popup) như nhân viên
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Chi tiết đơn hàng #" + currentOrder.getId());
@@ -230,18 +209,5 @@ public class OrderCardController {
             System.err.println("Lỗi mở chi tiết đơn: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    // ===== HELPER =====
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Thông báo");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private String formatMoney(int amount) {
-        return NumberFormat.getNumberInstance(new Locale("vi", "VN")).format(amount);
     }
 }

@@ -59,7 +59,8 @@
                         <StackPane fx:id="paneBanner" prefHeight="280.0" style="-fx-background-color: #1E293B; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
                             <children>
                                 <Region style="-fx-background-color: linear-gradient(to right, rgba(15, 23, 43, 0.8) 0%, rgba(30, 41, 59, 0.4) 60%, transparent 100%); -fx-background-radius: 16;" />
-                                <VBox alignment="CENTER_LEFT" spacing="12.0">
+
+                                <VBox alignment="CENTER_LEFT" pickOnBounds="false" spacing="12.0">
                                     <padding>
                                         <Insets left="60.0" right="60.0" />
                                     </padding>
@@ -85,7 +86,9 @@
                                         </Button>
                                     </children>
                                 </VBox>
-                                <HBox fx:id="hboxBannerIndicators" alignment="BOTTOM_CENTER" fillHeight="false" spacing="10.0" StackPane.alignment="BOTTOM_CENTER">
+
+                                <!-- Bỏ chặn chuột xuyên thấu cho HBox chứa dấu chấm -->
+                                <HBox fx:id="hboxBannerIndicators" alignment="BOTTOM_CENTER" fillHeight="false" pickOnBounds="false" spacing="10.0" StackPane.alignment="BOTTOM_CENTER">
                                     <padding>
                                         <Insets bottom="20.0" />
                                     </padding>

@@ -41,13 +41,10 @@
         <Label fx:id="lblProductNames" style="-fx-font-size: 14px; -fx-text-fill: #334155; -fx-font-weight: bold;" text="Bánh mì thịt, Hamburger bò,..." />
     </HBox>
 
-    <!-- ══ SCROLL ẢNH SẢN PHẨM (NGANG) ══ -->
+    <!-- ══ SCROLL ẢNH SẢN PHẨM (Đã chuyển Padding vào HBox) ══ -->
     <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" prefHeight="115" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent; -fx-padding: 0;" vbarPolicy="NEVER">
-        <padding>
-            <Insets bottom="10" left="20" right="20" top="5" />
-        </padding>
         <content>
-            <HBox fx:id="imageContainer" alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: transparent;" />
+            <HBox fx:id="imageContainer" alignment="CENTER_LEFT" spacing="12" style="-fx-background-color: transparent; -fx-padding: 5 20 10 20;" />
         </content>
     </ScrollPane>
 
@@ -69,7 +66,7 @@
 
         <Region prefWidth="10" />
 
-        <!-- Nút Hủy đơn (chỉ hiện khi Chờ xác nhận) -->
+        <!-- Nút Hủy đơn -->
         <Button fx:id="btnCancel" managed="false" onAction="#handleCancel" prefHeight="36" style="-fx-background-color: #FEF2F2; -fx-text-fill: #DC2626; -fx-font-size: 13px; -fx-font-weight: bold; -fx-border-color: #FECACA; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 0 16; -fx-cursor: hand;" text="✕ Hủy đơn" visible="false" />
 
         <!-- Nút Xem chi tiết -->

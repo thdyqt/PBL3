@@ -99,7 +99,6 @@ public class OrderBusiness {
         boolean isUpdated = DataDAL.OrderData.updateOrder(order);
 
         if (isUpdated) {
-            // Xử lý cộng điểm ĐỘC LẬP (chỉ chạy khi Finished và có tài khoản)
             if (order.getStatus() == Order.OrderStatus.Finished && order.getCustomer() != null && order.getCustomer().getId() > 0) {
                 int pointsEarned = order.getFinalAmount() / 1000;
                 if (pointsEarned > 0) {
@@ -174,94 +173,5 @@ public class OrderBusiness {
 
     public static int getFinalTotal(int subtotal, int discountAmount) {
         return subtotal - discountAmount;
-    }
-
-    //all things money related of order
-    public static String calculateMoney(Order order){
-        //calculate subtotal
-        int calSubTotal = 0;
-        if (order.getOrderDetail() != null){
-            for (EntityDTO.OrderDetail item : order.getOrderDetail()){
-                calSubTotal += item.getTotalPrice();
-            }
-        }
-        order.setSubTotal(calSubTotal);
-
-        //discount stack multiplicatively
-        //calculate discount
-        //discount from rank
-        int rankDiscount = 0;
-        String rankMessage = "";
-        if (order.getCustomer() != null){
-            int rankPercent = CustomerBusiness.getDiscountPercent(order.getCustomer());
-            if (rankPercent > 0){
-                rankDiscount = (int) (calSubTotal * (rankPercent / 100.0));
-                rankMessage = "Hạng " + order.getCustomer().getCustomerRank().name() + " (-" + rankPercent + "%). ";
-            }
-        }
-
-        //multiplicative discount post-rank but pre-promo
-        int discoutedTotal_Post = calSubTotal - rankDiscount;
-
-        //discount from code
-        int promoDiscount = 0;
-        String code = order.getAppliedCode();
-        String promoMessage = "Tính tiền thành công.";
-
-        //code is not empty
-        if (code != null && !code.trim().isEmpty()){
-            code = code.trim();
-            //fetch
-            EntityDTO.PromoCode promoCode = DataDAL.PromoCodeData.getPromoCode(code);
-
-            //code doesnt exist/ doesnt match
-            if (promoCode == null || !promoCode.getCode().equals(code)){
-                order.setAppliedCode(null);
-                promoMessage = "ERROR: code doesnt exist/ doesnt match.";
-            }else {
-                java.time.LocalDateTime now = java.time.LocalDateTime.now();
-
-                //code exist but is inactive
-                if (promoCode.getStatus() != PromoCode.CodeStatus.Active){
-                    order.setAppliedCode(null);
-                    promoMessage = "ERROR: code is inactive.";
-                //before the code can even be used/ after the code has been expired
-                } else if (now.isBefore(promoCode.getValidFrom()) || now.isAfter(promoCode.getValidTo())){
-                    order.setAppliedCode(null);
-                    promoMessage = "ERROR: code is not used within the active timespan.";
-                //value of order is lower than min threshold
-                } else if (calSubTotal < promoCode.getMinOrderValue()) {
-                    order.setAppliedCode(null);
-                    promoMessage = "ERROR: order has lower value than min threshold of code.";
-                //valid code, calculate its discount value
-                } else{
-                    if (promoCode.getDiscountType() == PromoCode.CodeType.Percent){
-                        promoDiscount = (int) (discoutedTotal_Post * (promoCode.getDiscountValue() / 100.0));
-                    } else if (promoCode.getDiscountType() == PromoCode.CodeType.Amount){
-                        promoDiscount = promoCode.getDiscountValue();
-                    }
-                }
-            }
-        }
-
-        //calculate final
-        int totalDiscount = rankDiscount + promoDiscount;
-        int finalTotal = calSubTotal - totalDiscount;
-        if (finalTotal < 0){
-            finalTotal = 0;
-        }
-
-        order.setDiscountAmount(totalDiscount);
-        order.setFinalAmount(finalTotal);
-
-        //display message
-        if (rankMessage.isEmpty() && promoMessage.isEmpty()){
-            return "Tính tiền thành công.";
-        } else if (!rankMessage.isEmpty() && promoMessage.isEmpty() || promoMessage.startsWith("ERROR")) {
-            //rank sucess, promo failed
-            return rankMessage + promoMessage;
-        } else {
-            return rankMessage + promoMessage;
-        }
     }
 }

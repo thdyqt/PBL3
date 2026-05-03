@@ -2,6 +2,7 @@ package GUI.Staff;
 
 import BusinessBLL.OrderBusiness;
 import EntityDTO.Order;
+import GUI.OrderOnlineDetailController;
 import Util.Others;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -278,7 +279,7 @@ public class OrderOnlineManagementForm implements Initializable {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/OrderOnlineDetail.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/OrderOnlineDetail.fxml"));
             Parent root = loader.load();
 
             OrderOnlineDetailController controller = loader.getController();

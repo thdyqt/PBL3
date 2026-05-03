@@ -3,25 +3,25 @@ package GUI.Customer;
 import BusinessBLL.OrderBusiness;
 import EntityDTO.Customer;
 import EntityDTO.Order;
-import GUI.Staff.OrderOnlineDetailController;
+import Util.IContentArea;
+import Util.Others;
 import Util.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class MyOrderController implements Initializable {
-
-    // ===== FXML COMPONENTS =====
+public class MyOrderController implements Initializable, IContentArea {
     @FXML private TextField     txtSearch;
     @FXML private Label         lblTotalOrders;
     @FXML private Label         lblDoneOrders;
@@ -40,7 +40,6 @@ public class MyOrderController implements Initializable {
     @FXML private ToggleButton  tabCancelled;
     @FXML private ToggleGroup   filterGroup;
 
-    // ===== DATA =====
     private Customer            currentCustomer;
     private List<Order>         allOrders;
     private List<Order>         filteredOrders;
@@ -55,14 +54,13 @@ public class MyOrderController implements Initializable {
         setupSearch();
     }
 
+    @Override
     public void setContentArea(StackPane contentArea) {
         this.contentArea = contentArea;
-        renderOrders();
     }
 
     // ===== LOAD ORDERS =====
     private void loadOrders() {
-        // Lấy tất cả online orders rồi lọc theo customer hiện tại
         allOrders = OrderBusiness.getAllOrder()
                 .stream()
                 .filter(o -> o.getCustomer() != null
@@ -90,7 +88,7 @@ public class MyOrderController implements Initializable {
         lblDoneOrders.setText(String.valueOf(done));
         lblActiveOrders.setText(String.valueOf(active));
         lblCancelOrders.setText(String.valueOf(cancel));
-        lblTotalSpent.setText(formatMoney(spent) + " đ");
+        lblTotalSpent.setText(Others.formatPrice(spent));
     }
 
     // ===== FILTER TABS =====
@@ -110,7 +108,6 @@ public class MyOrderController implements Initializable {
         String keyword = txtSearch.getText().toLowerCase().trim();
 
         filteredOrders = allOrders.stream().filter(o -> {
-            // Lọc theo tab
             boolean matchFilter = switch (currentFilter) {
                 case "Chờ xác nhận"   -> o.getStatus() == Order.OrderStatus.Waiting_for_validation;
                 case "Đang chuẩn bị"  -> o.getStatus() == Order.OrderStatus.Processing;
@@ -120,7 +117,6 @@ public class MyOrderController implements Initializable {
                 default               -> true; // ALL
             };
 
-            // Lọc theo search
             boolean matchSearch = keyword.isEmpty()
                     || String.valueOf(o.getId()).contains(keyword);
 
@@ -150,7 +146,7 @@ public class MyOrderController implements Initializable {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/GUI/Customer/OrderCard.fxml")
                 );
-                javafx.scene.layout.VBox card = loader.load();
+                VBox card = loader.load();
                 OrderCardController ctrl = loader.getController();
                 ctrl.setOrder(order,contentArea);
                 orderContainer.getChildren().add(card);
@@ -165,10 +161,5 @@ public class MyOrderController implements Initializable {
     // ===== SEARCH =====
     private void setupSearch() {
         txtSearch.textProperty().addListener((obs, oldVal, newVal) -> applyFilter());
-    }
-
-    // ===== HELPER =====
-    private String formatMoney(int amount) {
-        return NumberFormat.getNumberInstance(new Locale("vi", "VN")).format(amount);
     }
 }

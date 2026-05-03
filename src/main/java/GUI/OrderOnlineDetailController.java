@@ -1,4 +1,4 @@
-package GUI.Staff;
+package GUI;
 
 import BusinessBLL.DeliveryInfoBusiness;
 import BusinessBLL.OrderDetailBusiness;

@@ -32,8 +32,7 @@
                 </VBox>
                 <Region HBox.hgrow="ALWAYS" />
 
-                <!-- Search box -->
-                <HBox alignment="CENTER_LEFT" prefHeight="38" prefWidth="260" spacing="8" style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 0 14 0 14;">
+                <HBox alignment="CENTER_LEFT" minWidth="260.0" prefWidth="260.0" maxWidth="260.0" prefHeight="38.0" maxHeight="38.0" spacing="8" style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 0 14 0 14;">
                     <Label style="-fx-font-size: 14px; -fx-text-fill: #94A3B8;" text="🔍" />
                     <TextField fx:id="txtSearch" promptText="Tìm theo mã đơn..." style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 14px; -fx-text-fill: #1E293B;" HBox.hgrow="ALWAYS" />
                 </HBox>
