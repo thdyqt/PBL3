@@ -1,6 +1,7 @@
 package GUI.Customer;
 
 import BusinessBLL.OrderBusiness;
+import BusinessBLL.ProductBusiness;
 import BusinessBLL.PromoCodeBusiness;
 import EntityDTO.*;
 import Util.CartManager;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -55,11 +57,40 @@ public class CustomerCartController implements Initializable {
             deliveryAddress = session.getAddress() != null ? session.getAddress() : "";
         }
 
+        checkAndRemoveOutOfStockItems();
+
         loadCartItems();
         setupVoucherComboBox();
         setupPaymentComboBox();
         updateOrderSummary();
         updateDeliveryInfoUI();
+    }
+
+    private void checkAndRemoveOutOfStockItems() {
+        List<OrderDetail> cartItems = CartManager.getInstance().getCustomerCart();
+        boolean hasRemovedItem = false;
+        StringBuilder removedItemsMsg = new StringBuilder("Các sản phẩm sau đã hết hàng và bị xóa khỏi giỏ:\n");
+
+        Iterator<OrderDetail> iterator = cartItems.iterator();
+        while (iterator.hasNext()) {
+            OrderDetail item = iterator.next();
+            Product realProduct = ProductBusiness.getProductById(item.getProduct().getProductID());
+
+            if (realProduct == null || realProduct.getQuantity() < 1) {
+                removedItemsMsg.append("- ").append(item.getProduct().getProductName()).append("\n");
+                iterator.remove();
+                hasRemovedItem = true;
+            } else if (item.getQuantity() > realProduct.getQuantity()) {
+                item.setQuantity(realProduct.getQuantity());
+            }
+        }
+
+        if (hasRemovedItem) {
+            int customerId = UserSession.getInstance().isGuest() ? 0 : UserSession.getInstance().getId();
+            CartManager.getInstance().updateCustomerCart(customerId, cartItems);
+
+            Platform.runLater(() -> Others.showAlert(mainPane, removedItemsMsg.toString(), true));
+        }
     }
 
     private void loadCartItems() {
@@ -199,6 +230,31 @@ public class CustomerCartController implements Initializable {
     @FXML private void handleCheckout() {
         if (CartManager.getInstance().getCustomerCart().isEmpty()) {
             Others.showAlert(mainPane, "Giỏ hàng của bạn đang trống!", true);
+            return;
+        }
+
+        List<OrderDetail> cartItems = CartManager.getInstance().getCustomerCart();
+        boolean hasStockIssue = false;
+        StringBuilder stockIssueMsg = new StringBuilder("Không thể thanh toán do thay đổi tồn kho:\n");
+
+        for (OrderDetail item : cartItems) {
+            Product realProduct = ProductBusiness.getProductById(item.getProduct().getProductID());
+            if (realProduct == null || realProduct.getQuantity() < item.getQuantity()) {
+                hasStockIssue = true;
+                if (realProduct == null || realProduct.getQuantity() == 0) {
+                    stockIssueMsg.append("- ").append(item.getProduct().getProductName()).append(" (Đã hết hàng)\n");
+                } else {
+                    stockIssueMsg.append("- ").append(item.getProduct().getProductName())
+                            .append(" (Chỉ còn ").append(realProduct.getQuantity()).append(" cái)\n");
+                }
+            }
+        }
+
+        if (hasStockIssue) {
+            Others.showAlert(mainPane, stockIssueMsg.toString(), true);
+            checkAndRemoveOutOfStockItems();
+            loadCartItems();
+            updateOrderSummary();
             return;
         }
 

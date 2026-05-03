@@ -23,6 +23,15 @@ public class ProductBusiness {
         return list;
     }
 
+    public static Product getProductById (int productId){
+        for (Product p : getAllProducts()) {
+            if (p.getProductID() == productId) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     public static List<Product> getTopBestSellers(int quantity) {
         return ProductData.getTopBestSellers(quantity);
     }

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -219,13 +220,14 @@ public class POS implements Initializable {
                     btnPlus.setStyle("-fx-background-color: #F1F5F9; -fx-background-radius: 5; -fx-font-weight: bold;");
                     btnPlus.setCursor(Cursor.HAND);
                     btnPlus.setOnAction(e -> {
-                        if (currentItem.getQuantity() < currentItem.getProduct().getQuantity()) {
+                        Product realProduct = ProductBusiness.getProductById(currentItem.getProduct().getProductID());
+                        if (realProduct != null && currentItem.getQuantity() < realProduct.getQuantity()) {
                             currentItem.setQuantity(currentItem.getQuantity() + 1);
                             currentItem.setPrice(currentItem.getPrice());
                             tableCart.refresh();
                             calculateTotal();
                         } else {
-                            Others.showAlert(mainPane, "Kho chỉ còn " + currentItem.getProduct().getQuantity() + " sản phẩm!", true);
+                            Others.showAlert(mainPane, "Kho chỉ còn " + (realProduct != null ? realProduct.getQuantity() : 0) + " sản phẩm!", true);
                         }
                     });
 
@@ -278,13 +280,46 @@ public class POS implements Initializable {
             lblCustomerName.setStyle("-fx-text-fill: #16A34A; -fx-font-weight: bold;");
         }
 
-        allProducts = ProductBusiness.getAllProducts();
         cartList = CartManager.getInstance().getPosCart();
+
+        checkAndRemoveOutOfStockItems();
+
+        allProducts = ProductBusiness.getAllProducts();
         tableCart.setItems(cartList);
         loadCategories();
         loadPromoCodes();
         setupSearchAndFilter();
         displayProducts(allProducts);
+    }
+
+    private void checkAndRemoveOutOfStockItems() {
+        if (cartList == null || cartList.isEmpty()) return;
+
+        boolean hasRemovedItem = false;
+        StringBuilder removedItemsMsg = new StringBuilder("Hệ thống đã tự động cập nhật giỏ hàng do thay đổi tồn kho:\n");
+
+        Iterator<OrderDetail> iterator = cartList.iterator();
+        while (iterator.hasNext()) {
+            OrderDetail item = iterator.next();
+            Product realProduct = ProductBusiness.getProductById(item.getProduct().getProductID());
+
+            if (realProduct == null || realProduct.getQuantity() < 1) {
+                removedItemsMsg.append("- ").append(item.getProduct().getProductName()).append(" (Hết hàng)\n");
+                iterator.remove();
+                hasRemovedItem = true;
+            } else if (item.getQuantity() > realProduct.getQuantity()) {
+                item.setQuantity(realProduct.getQuantity());
+                item.setPrice(item.getPrice()); // Update tổng giá dựa trên quantity mới
+                removedItemsMsg.append("- ").append(item.getProduct().getProductName())
+                        .append(" (Chỉ còn ").append(realProduct.getQuantity()).append(")\n");
+                hasRemovedItem = true;
+            }
+        }
+
+        if (hasRemovedItem) {
+            calculateTotal();
+            Platform.runLater(() -> Others.showAlert(mainPane, removedItemsMsg.toString(), true));
+        }
     }
 
     private void loadCategories() {
@@ -339,15 +374,19 @@ public class POS implements Initializable {
     }
 
     private void addToCart(Product selectedProduct) {
-        if (selectedProduct.getQuantity() <= 0 ) {
+        Product realProduct = ProductBusiness.getProductById(selectedProduct.getProductID());
+
+        if (realProduct == null || realProduct.getQuantity() <= 0) {
             Others.showAlert(mainPane, "Sản phẩm này đã hết hàng.", true);
+            allProducts = ProductBusiness.getAllProducts();
+            filterProducts();
             return;
         }
 
         boolean isAlreadyInCart = false;
         for (OrderDetail item : cartList) {
-            if (item.getProduct().getProductID() == selectedProduct.getProductID()) {
-                if (item.getQuantity() == selectedProduct.getQuantity()) {
+            if (item.getProduct().getProductID() == realProduct.getProductID()) {
+                if (item.getQuantity() >= realProduct.getQuantity()) {
                     Others.showAlert(mainPane, "Không đủ số lượng tồn kho.", true);
                     return;
                 }
@@ -361,9 +400,9 @@ public class POS implements Initializable {
 
         if (!isAlreadyInCart) {
             OrderDetail newItem = new OrderDetail();
-            newItem.setProduct(selectedProduct);
+            newItem.setProduct(realProduct);
             newItem.setQuantity(1);
-            newItem.setPrice(selectedProduct.getProductPrice());
+            newItem.setPrice(realProduct.getProductPrice());
 
             cartList.add(newItem);
         }
@@ -470,6 +509,7 @@ public class POS implements Initializable {
         CartManager.getInstance().setCurrentCustomer(currentCustomer);
         calculateTotal();
     }
+
     @FXML
     void handleAddCustomer(ActionEvent event) {
         try {
@@ -523,6 +563,23 @@ public class POS implements Initializable {
     void handlePayment(ActionEvent event) {
         if (cartList.isEmpty()) {
             Others.showAlert(mainPane, "Giỏ hàng đang trống, không thể thanh toán!", true);
+            return;
+        }
+
+        boolean hasStockIssue = false;
+        for (OrderDetail item : cartList) {
+            Product realProduct = ProductBusiness.getProductById(item.getProduct().getProductID());
+            if (realProduct == null || realProduct.getQuantity() < item.getQuantity()) {
+                hasStockIssue = true;
+                break;
+            }
+        }
+
+        if (hasStockIssue) {
+            checkAndRemoveOutOfStockItems();
+            tableCart.refresh();
+            allProducts = ProductBusiness.getAllProducts();
+            filterProducts();
             return;
         }
 
@@ -627,7 +684,7 @@ public class POS implements Initializable {
                 discountAmount,
                 finalTotal,
                 ""
-                );
+        );
 
         int newOrderId = OrderBusiness.createOrder(newOrder, null);
 

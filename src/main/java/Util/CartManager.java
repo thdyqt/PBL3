@@ -9,6 +9,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.List;
+
 public class CartManager {
     private static CartManager instance;
 
@@ -79,6 +81,20 @@ public class CartManager {
             DataDAL.CartData.saveCartItem(customerID, product.getProductID(), quantityToAdd);
         }
         return true;
+    }
+
+    public void updateCustomerCart(int customerID, List<OrderDetail> updatedList) {
+        this.customerCart.clear();
+        this.customerCart.addAll(updatedList);
+        updateCustomerTotal();
+
+        if (customerID > 0) {
+            CartData.clearCart(customerID);
+
+            for (OrderDetail item : updatedList) {
+                CartData.saveCartItem(customerID, item.getProduct().getProductID(), item.getQuantity());
+            }
+        }
     }
 
     public void removeCustomerCartItem(int customerID, Product product) {

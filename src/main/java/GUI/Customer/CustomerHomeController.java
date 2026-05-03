@@ -16,6 +16,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -442,12 +443,12 @@ public class CustomerHomeController implements Initializable {
             lblID.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
 
             Label lblDate = new Label(order.getOrderTime().format(
-                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy")
             ));
             lblDate.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B;");
 
-            javafx.scene.layout.Region spacer = new javafx.scene.layout.Region();
-            HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
 
             Label lblTotal = new Label(Others.formatPrice(order.getFinalAmount()));
             lblTotal.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #3B82F6;");
@@ -535,7 +536,7 @@ public class CustomerHomeController implements Initializable {
         mapView.getEngine().loadContent(mapHtml);
 
         mapView.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+            if (newState == Worker.State.SUCCEEDED) {
                 mapView.getEngine().executeScript("map.invalidateSize();");
             }
         });
