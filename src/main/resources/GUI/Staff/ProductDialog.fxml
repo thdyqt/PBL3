@@ -16,16 +16,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="650.0" prefWidth="550.0"
-            style="-fx-background-color: white; -fx-border-color: #E2E8F0;
-                   -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8;"
-            xmlns="http://javafx.com/javafx/25"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="GUI.Staff.ProductDialogController">
+<AnchorPane prefHeight="626.0" prefWidth="550.0" style="-fx-background-color: white; -fx-border-color: #E2E8F0;                    -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.ProductDialogController">
     <children>
-        <VBox spacing="20.0"
-              AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="35.0"
-              AnchorPane.rightAnchor="35.0"  AnchorPane.topAnchor="20.0">
+        <VBox spacing="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="20.0">
             <children>
 
                 <VBox spacing="5.0">
@@ -33,9 +26,7 @@
                         <Label fx:id="lblTitle" text="THÊM SẢN PHẨM MỚI" textFill="#0F172A">
                             <font><Font name="System Bold" size="22.0" /></font>
                         </Label>
-                        <Label fx:id="lblDesc"
-                               text="Vui lòng điền đầy đủ thông tin bên dưới để tiếp tục."
-                               textFill="#64748B">
+                        <Label fx:id="lblDesc" text="Vui lòng điền đầy đủ thông tin bên dưới để tiếp tục." textFill="#64748B">
                             <font><Font size="13.0" /></font>
                         </Label>
                     </children>
@@ -58,42 +49,28 @@
                     <children>
 
                         <Label text="Tên sản phẩm:" textFill="#334155" />
-                        <TextField fx:id="txtProductName" prefHeight="38.0" promptText="VD: Bánh mì thịt nướng"
-                                   style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;"
-                                   GridPane.columnIndex="1" />
+                        <TextField fx:id="txtProductName" prefHeight="38.0" promptText="VD: Bánh mì thịt nướng" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" />
 
                         <Label text="Danh mục:" textFill="#334155" GridPane.rowIndex="1" />
-                        <ComboBox fx:id="cbCategory" prefHeight="38.0" prefWidth="350.0" promptText="Chọn danh mục"
-                                  style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;"
-                                  GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="cbCategory" prefHeight="38.0" prefWidth="350.0" promptText="Chọn danh mục" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
                         <Label text="Giá (VNĐ):" textFill="#334155" GridPane.rowIndex="2" />
-                        <TextField fx:id="txtPrice" prefHeight="38.0" promptText="VD: 20000"
-                                   style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;"
-                                   GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtPrice" prefHeight="38.0" promptText="VD: 20000" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                         <Label text="Số lượng:" textFill="#334155" GridPane.rowIndex="3" />
-                        <TextField fx:id="txtQuantity" prefHeight="38.0" promptText="VD: 50"
-                                   style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;"
-                                   GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtQuantity" prefHeight="38.0" promptText="VD: 50" style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6; -fx-padding: 0 10;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                         <Label text="Mô tả:" textFill="#334155" GridPane.rowIndex="4" />
-                        <TextArea fx:id="txtDescription" prefHeight="65.0" wrapText="true" promptText="Mô tả hương vị, đặc điểm bánh..."
-                                  style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;"
-                                  GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <TextArea fx:id="txtDescription" prefHeight="65.0" promptText="Mô tả hương vị, đặc điểm bánh..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
                         <Label text="Nguyên liệu:" textFill="#334155" GridPane.rowIndex="5" />
-                        <TextArea fx:id="txtIngredients" prefHeight="65.0" wrapText="true" promptText="Các thành phần chính..."
-                                  style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;"
-                                  GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <TextArea fx:id="txtIngredients" prefHeight="65.0" promptText="Các thành phần chính..." style="-fx-background-color: #F8FAFC; -fx-background-radius: 6; -fx-border-color: #CBD5E1; -fx-border-radius: 6;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
                         <Label text="Hình ảnh:" textFill="#334155" GridPane.rowIndex="6" />
-                        <HBox spacing="15" alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                        <HBox alignment="CENTER_LEFT" spacing="15" GridPane.columnIndex="1" GridPane.rowIndex="6">
                             <children>
-                                <ImageView fx:id="imgPreview" fitHeight="65.0" fitWidth="65.0" preserveRatio="true"
-                                           style="-fx-border-color: #CBD5E1; -fx-border-width: 1;" />
-                                <Button fx:id="btnChooseImage" text="📁 Chọn ảnh" onAction="#handleChooseImage" prefHeight="38.0"
-                                        style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-background-radius: 6; -fx-font-size: 13px;">
+                                <ImageView fx:id="imgPreview" fitHeight="65.0" fitWidth="65.0" preserveRatio="true" style="-fx-border-color: #CBD5E1; -fx-border-width: 1;" />
+                                <Button fx:id="btnChooseImage" onAction="#handleChooseImage" prefHeight="38.0" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-background-radius: 6; -fx-font-size: 13px;" text="📁 Chọn ảnh">
                                     <cursor><Cursor fx:constant="HAND" /></cursor>
                                 </Button>
                             </children>
@@ -104,12 +81,10 @@
 
                 <HBox alignment="CENTER_RIGHT" spacing="15.0">
                     <children>
-                        <Button fx:id="btnCancel" text="Hủy bỏ" onAction="#handleCancel" prefHeight="40.0" prefWidth="110.0"
-                                style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-background-radius: 6; -fx-font-size: 14px;">
+                        <Button fx:id="btnCancel" onAction="#handleCancel" prefHeight="21.0" prefWidth="111.0" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-background-radius: 6; -fx-font-size: 14px;" text="Hủy bỏ">
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                         </Button>
-                        <Button fx:id="btnSave" text="Lưu thông tin" onAction="#handleSave" prefHeight="40.0" prefWidth="130.0"
-                                style="-fx-background-color: #D4891A; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-font-size: 14px;">
+                        <Button fx:id="btnSave" onAction="#handleSave" prefHeight="4.0" prefWidth="131.0" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-font-size: 14px;" text="Lưu thông tin">
                             <cursor><Cursor fx:constant="HAND" /></cursor>
                         </Button>
                     </children>

@@ -3,6 +3,7 @@ package BusinessBLL;
 import DataDAL.ProductData;
 import EntityDTO.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static BusinessBLL.LogBusiness.saveLog;
@@ -10,6 +11,16 @@ import static BusinessBLL.LogBusiness.saveLog;
 public class ProductBusiness {
     public static List<Product> getAllProducts(){
         return ProductData.getAllProduct();
+    }
+
+    public static List<Product> getAllProductsByCategory(int categoryId){
+        List<Product> list = new ArrayList<>();
+        for (Product p : getAllProducts()) {
+            if (p.getCategoryID() == categoryId) {
+                list.add(p);
+            }
+        }
+        return list;
     }
 
     public static List<Product> getTopBestSellers(int quantity) {

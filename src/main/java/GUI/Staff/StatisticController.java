@@ -54,6 +54,12 @@ public class StatisticController implements Initializable {
     @FXML private TableColumn<CustomerStat, String> colCusName;
     @FXML private TableColumn<CustomerStat, String> colCusTotal;
 
+    @FXML private TableView<StaffStat> tableStaff;
+    @FXML private TableColumn<StaffStat, Integer> colStaffSTT;
+    @FXML private TableColumn<StaffStat, String> colStaffName;
+    @FXML private TableColumn<StaffStat, Integer> colStaffOrders;
+    @FXML private TableColumn<StaffStat, String> colStaffRevenue;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setupTimeFilters();
@@ -106,6 +112,11 @@ public class StatisticController implements Initializable {
         colCusSTT.setCellValueFactory(data -> new SimpleIntegerProperty(tableTopCustomers.getItems().indexOf(data.getValue()) + 1).asObject());
         colCusName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
         colCusTotal.setCellValueFactory(data -> new SimpleStringProperty(Others.formatPrice(data.getValue().getTotalSpent())));
+
+        colStaffSTT.setCellValueFactory(data -> new SimpleIntegerProperty(tableStaff.getItems().indexOf(data.getValue()) + 1).asObject());
+        colStaffName.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
+        colStaffOrders.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getTotalOrders()).asObject());
+        colStaffRevenue.setCellValueFactory(data -> new SimpleStringProperty(Others.formatPrice((int) data.getValue().getTotalRevenue())));
     }
 
     private void setupButtons() {
@@ -113,7 +124,6 @@ public class StatisticController implements Initializable {
         Others.playButtonAnimation(btnExport);
 
         btnFilter.setOnAction(e -> loadStatistics());
-
         btnExport.setOnAction(e -> exportToExcel());
     }
 
@@ -155,6 +165,7 @@ public class StatisticController implements Initializable {
         Map<LocalDate, Long> revenueByDate = new TreeMap<>();
         Map<Integer, ProductStat> productStats = new HashMap<>();
         Map<Integer, CustomerStat> customerStats = new HashMap<>();
+        Map<Integer, StaffStat> staffStats = new HashMap<>();
 
         for (Order o : filteredOrders) {
             if (o.getStatus() == Order.OrderStatus.Cancelled) {
@@ -179,6 +190,13 @@ public class StatisticController implements Initializable {
                     customerStats.put(cusId, cs);
                 }
 
+                if (o.getStaff() != null && o.getStaff().getId() > 0) {
+                    int staffId = o.getStaff().getId();
+                    StaffStat ss = staffStats.getOrDefault(staffId, new StaffStat(staffId, o.getStaff().getName(), 0, 0));
+                    ss.addOrder(o.getFinalAmount());
+                    staffStats.put(staffId, ss);
+                }
+
                 List<OrderDetail> details = OrderDetailBusiness.getDetailsByOrderId_BLL(o.getId());
                 for (OrderDetail d : details) {
                     totalProductsSold += d.getQuantity();
@@ -198,7 +216,7 @@ public class StatisticController implements Initializable {
         lblCancelRate.setText(String.format("%.1f%%", cancelRate));
 
         updateCharts(revenueByDate, onlineCount, offlineCount);
-        updateTables(productStats, customerStats);
+        updateTables(productStats, customerStats, staffStats);
     }
 
     private void updateCharts(Map<LocalDate, Long> revenueByDate, int onlineCount, int offlineCount) {
@@ -219,7 +237,7 @@ public class StatisticController implements Initializable {
         }
     }
 
-    private void updateTables(Map<Integer, ProductStat> productStats, Map<Integer, CustomerStat> customerStats) {
+    private void updateTables(Map<Integer, ProductStat> productStats, Map<Integer, CustomerStat> customerStats, Map<Integer, StaffStat> staffStats) {
         List<ProductStat> topProducts = productStats.values().stream()
                 .sorted((p1, p2) -> Integer.compare(p2.getQuantity(), p1.getQuantity()))
                 .limit(10)
@@ -231,6 +249,11 @@ public class StatisticController implements Initializable {
                 .limit(10)
                 .collect(Collectors.toList());
         tableTopCustomers.setItems(FXCollections.observableArrayList(topCustomers));
+
+        List<StaffStat> allStaffStats = staffStats.values().stream()
+                .sorted((s1, s2) -> Long.compare(s2.getTotalRevenue(), s1.getTotalRevenue()))
+                .collect(Collectors.toList());
+        tableStaff.setItems(FXCollections.observableArrayList(allStaffStats));
     }
 
     public static class ProductStat {
@@ -263,6 +286,28 @@ public class StatisticController implements Initializable {
         public String getName() { return name; }
         public int getTotalSpent() { return totalSpent; }
         public void addSpent(int amount) { this.totalSpent += amount; }
+    }
+
+    public static class StaffStat {
+        private int id;
+        private String name;
+        private int totalOrders;
+        private long totalRevenue;
+
+        public StaffStat(int id, String name, int totalOrders, long totalRevenue) {
+            this.id = id;
+            this.name = name;
+            this.totalOrders = totalOrders;
+            this.totalRevenue = totalRevenue;
+        }
+
+        public String getName() { return name; }
+        public int getTotalOrders() { return totalOrders; }
+        public long getTotalRevenue() { return totalRevenue; }
+        public void addOrder(long amount) {
+            this.totalOrders++;
+            this.totalRevenue += amount;
+        }
     }
 
     private void exportToExcel() {
@@ -301,6 +346,14 @@ public class StatisticController implements Initializable {
                 for (int i = 0; i < tableTopCustomers.getItems().size(); i++) {
                     CustomerStat c = tableTopCustomers.getItems().get(i);
                     writer.println((i + 1) + ",\"" + c.getName() + "\",\"" + Others.formatPrice(c.getTotalSpent()) + "\"");
+                }
+                writer.println();
+
+                writer.println("THỐNG KÊ HIỆU SUẤT NHÂN VIÊN");
+                writer.println("STT,Tên nhân viên,Đơn hoàn thành,Tổng doanh thu");
+                for (int i = 0; i < tableStaff.getItems().size(); i++) {
+                    StaffStat s = tableStaff.getItems().get(i);
+                    writer.println((i + 1) + ",\"" + s.getName() + "\"," + s.getTotalOrders() + ",\"" + Others.formatPrice((int) s.getTotalRevenue()) + "\"");
                 }
 
                 Others.showAlert(rootPane, "Xuất báo cáo thành công!", false);

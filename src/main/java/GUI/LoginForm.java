@@ -98,8 +98,8 @@ public class LoginForm implements Initializable {
                         delay.setOnFinished(actionEvent -> {
                             try {
                                 FXMLLoader loader = null;
-                                if (rbStaff.isSelected()) loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffDashboard.fxml"));
-                                else loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerDashboard.fxml"));
+                                if (rbStaff.isSelected()) loader = new FXMLLoader(getClass().getResource("/GUI/Staff/StaffFrame.fxml"));
+                                else loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerFrame.fxml"));
                                 Parent root = loader.load();
 
                                 btnLogin.getScene().setRoot(root);
@@ -153,7 +153,7 @@ public class LoginForm implements Initializable {
         Util.UserSession.getInstance().setGuest();
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerDashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerFrame.fxml"));
             Parent root = loader.load();
 
             btnGuest.getScene().setRoot(root);

@@ -171,10 +171,10 @@ public class CustomerCartController implements Initializable {
 
     @FXML private void handleEditDeliveryInfo() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/GuestDeliveryDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Customer/CustomerDeliveryInfoDialog.fxml"));
             Parent root = loader.load();
 
-            GuestDeliveryDialogController controller = loader.getController();
+            CustomerDeliveryInfoDialogController controller = loader.getController();
 
             controller.setData(deliveryName, deliveryPhone, deliveryAddress);
 
@@ -290,11 +290,11 @@ public class CustomerCartController implements Initializable {
             stage.showAndWait();
 
             if (controller.isViewOrderSelected()) {
-                CustomerDashboardForm.instance.switchForm("/GUI/Customer/MyOrderView.fxml");
-                CustomerDashboardForm.instance.setActiveMenu(CustomerDashboardForm.instance.getBtnOrders());
+                CustomerFrameController.instance.switchForm("/GUI/Customer/MyOrderView.fxml");
+                CustomerFrameController.instance.setActiveMenu(CustomerFrameController.instance.getBtnOrders());
             } else {
-                CustomerDashboardForm.instance.switchForm("/GUI/Customer/CustomerProduct.fxml");
-                CustomerDashboardForm.instance.setActiveMenu(CustomerDashboardForm.instance.getBtnProducts());
+                CustomerFrameController.instance.switchForm("/GUI/Customer/CustomerProduct.fxml");
+                CustomerFrameController.instance.setActiveMenu(CustomerFrameController.instance.getBtnProducts());
             }
 
         } catch (IOException e) {

@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GuestDeliveryDialogController implements Initializable {
+public class CustomerDeliveryInfoDialogController implements Initializable {
     @FXML private AnchorPane mainPane;
     @FXML private TextField txtName;
     @FXML private TextField txtPhone;

@@ -184,16 +184,16 @@ public class StaffHomeController implements Initializable {
 
     private void setupButtons() {
         btnPOS.setOnAction(e -> {
-            StaffDashboardForm.instance.switchForm("/GUI/Staff/POS.fxml");
-            StaffDashboardForm.instance.setActiveMenu(StaffDashboardForm.instance.getBtnOrder());
+            StaffFrameController.instance.switchForm("/GUI/Staff/POS.fxml");
+            StaffFrameController.instance.setActiveMenu(StaffFrameController.instance.getBtnOrder());
         });
         btnOnlineOrder.setOnAction(e -> {
-            StaffDashboardForm.instance.switchForm("/GUI/Staff/OrderOnlineManagement.fxml");
-            StaffDashboardForm.instance.setActiveMenu(StaffDashboardForm.instance.getBtnOnline());
+            StaffFrameController.instance.switchForm("/GUI/Staff/OrderOnlineManagement.fxml");
+            StaffFrameController.instance.setActiveMenu(StaffFrameController.instance.getBtnOnline());
         });
         btnInventory.setOnAction(e -> {
-            StaffDashboardForm.instance.switchForm("/GUI/Staff/ProductView.fxml");
-            StaffDashboardForm.instance.setActiveMenu(StaffDashboardForm.instance.getBtnProduct());
+            StaffFrameController.instance.switchForm("/GUI/Staff/ProductManagement.fxml");
+            StaffFrameController.instance.setActiveMenu(StaffFrameController.instance.getBtnProduct());
         });
     }
 }

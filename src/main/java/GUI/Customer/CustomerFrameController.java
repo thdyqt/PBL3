@@ -29,7 +29,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class CustomerDashboardForm implements Initializable {
+public class CustomerFrameController implements Initializable {
     @FXML
     private Button btnCart;
 
@@ -83,7 +83,7 @@ public class CustomerDashboardForm implements Initializable {
     @FXML
     private StackPane cartContainer;
 
-    public static CustomerDashboardForm instance;
+    public static CustomerFrameController instance;
     private Button[] menuButtons;
 
     public Button getBtnHome() {

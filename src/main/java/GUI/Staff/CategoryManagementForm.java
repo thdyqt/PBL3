@@ -1,12 +1,10 @@
 package GUI.Staff;
 
-
 import BusinessBLL.CategoryBusiness;
+import BusinessBLL.ProductBusiness;
 import DataDAL.CategoryData;
-import DataDAL.ProductData;
 import EntityDTO.Category;
 import EntityDTO.Product;
-import Util.IContentArea;
 import Util.Others;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,53 +13,38 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class CategoryController implements Initializable, IContentArea {
-    private StackPane contentArea;
-
-
-
-    // ===== FXML COMPONENTS =====
-    @FXML private Button   btnBack;
-    @FXML private Button   btnAddCategory;
-    @FXML private Button   btnEditCategory;
-    @FXML private Button   btnStopCategory;
-
-    @FXML private TextField        txtSearchCategory;
+public class CategoryManagementForm implements Initializable {
+    @FXML private BorderPane mainPane;
+    @FXML private Button btnBack, btnAddCategory, btnEditCategory, btnStopCategory;
+    @FXML private TextField txtSearchCategory;
     @FXML private ListView<Category> lvCategory;
-
-    @FXML private Label   lblCategoryTitle;
-    @FXML private Label   lblProductCount;
-    @FXML private Label   lblStatus;
-    @FXML private Label   lblCount;
+    @FXML private Label lblCategoryTitle, lblProductCount, lblStatus, lblCount;
     @FXML private CheckBox chkShowInactive;
-    @FXML private TableView<Product>           tblProduct;
-    @FXML private TableColumn<Product, Integer> colSTT;
-    @FXML private TableColumn<Product, Integer> colProductID;
-    @FXML private TableColumn<Product, String>  colProductName;
-    @FXML private TableColumn<Product, Integer> colProductPrice;
-    @FXML private TableColumn<Product, Integer> colQuantity;
+
+    @FXML private TableView<Product> tblProduct;
+    @FXML private TableColumn<Product, Integer> colSTT, colProductID, colProductPrice, colQuantity;
+    @FXML private TableColumn<Product, String> colProductName, colImage;
     @FXML private TableColumn<Product, Boolean> colIsAvailable;
-    @FXML private TableColumn<Product, String>  colImage;
 
     // ===== DATA =====
     private ObservableList<Category> masterCategory = FXCollections.observableArrayList();
-    private FilteredList<Category>   filteredCategory;
-    private ObservableList<Product>  productList    = FXCollections.observableArrayList();
+    private FilteredList<Category> filteredCategory;
+    private ObservableList<Product> productList = FXCollections.observableArrayList();
     private boolean showingInactive = false;
+
     // ===== INITIALIZE =====
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -70,9 +53,13 @@ public class CategoryController implements Initializable, IContentArea {
         loadCategories();
         setupSearch();
         setupCategoryClick();
+
+        if (btnAddCategory != null) Others.playButtonAnimation(btnAddCategory);
+        if (btnEditCategory != null) Others.playButtonAnimation(btnEditCategory);
+        if (btnStopCategory != null) Others.playButtonAnimation(btnStopCategory);
+        if (btnBack != null) Others.playButtonAnimation(btnBack);
     }
 
-    // ===== SETUP LISTVIEW DANH MỤC =====
     private void setupCategoryList() {
         lvCategory.setCellFactory(lv -> new ListCell<>() {
             @Override
@@ -83,19 +70,16 @@ public class CategoryController implements Initializable, IContentArea {
                     setStyle("");
                 } else {
                     setText("📁  " + item.getCategoryName());
-                    setStyle("-fx-font-size: 13px; -fx-text-fill: #F5DEB3;" +
-                            "-fx-font-family: 'Serif'; -fx-padding: 10 15;" +
-                            "-fx-background-color: transparent; -fx-cursor: hand;");
+                    setStyle("-fx-font-size: 14px; -fx-text-fill: #1E293B; -fx-font-weight: bold; -fx-padding: 10 15; -fx-background-color: transparent; -fx-cursor: hand;");
                 }
             }
         });
     }
 
-    // ===== LOAD DANH MỤC =====
     private void loadCategories() {
         List<Category> listFromDB = showingInactive
-                ? CategoryData.getInactiveCategories()  // ← danh mục đã ngừng
-                : CategoryData.getAll();                 // ← danh mục đang hoạt động
+                ? CategoryData.getInactiveCategories()
+                : CategoryData.getAll();
 
         masterCategory.setAll(listFromDB);
         filteredCategory = new FilteredList<>(masterCategory, b -> true);
@@ -103,36 +87,40 @@ public class CategoryController implements Initializable, IContentArea {
         lvCategory.setItems(sortedData);
         lblCount.setText(masterCategory.size() + " danh mục");
     }
+
     @FXML
     private void handleShowInactive() {
         showingInactive = chkShowInactive.isSelected();
 
         if (showingInactive) {
             btnStopCategory.setText("✅ Bán lại");
+            btnStopCategory.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10; -fx-cursor: hand;");
         } else {
             btnStopCategory.setText("⛔ Ngừng");
+            btnStopCategory.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 5 10; -fx-cursor: hand;");
         }
 
         loadCategories();
     }
-    // ===== TÌM KIẾM DANH MỤC =====
+
     private void setupSearch() {
         txtSearchCategory.textProperty().addListener((obs, oldVal, newVal) -> {
             String keyword = newVal.toLowerCase().trim();
-            filteredCategory.setPredicate(category ->
-                    category.getCategoryName().toLowerCase().contains(keyword)
-            );
+            filteredCategory.setPredicate(category -> {
+                if (keyword.isEmpty()) return true;
+
+                String cateName = category.getCategoryName().toLowerCase();
+                String cateID = String.valueOf(category.getCategoryID());
+
+                return cateName.contains(keyword) || cateID.contains(keyword);
+            });
             lblCount.setText(filteredCategory.size() + " danh mục");
         });
     }
 
-    // ===== CLICK VÀO DANH MỤC → HIỆN SẢN PHẨM =====
     private void setupCategoryClick() {
-        // Thay listener bằng mouse click trực tiếp
         lvCategory.setOnMouseClicked(event -> {
             Category selected = lvCategory.getSelectionModel().getSelectedItem();
-            System.out.println("Mouse clicked, selected: " +
-                    (selected == null ? "null" : selected.getCategoryName()));
             if (selected != null) {
                 loadProductsByCategory(selected);
             }
@@ -140,10 +128,7 @@ public class CategoryController implements Initializable, IContentArea {
     }
 
     private void loadProductsByCategory(Category category) {
-        System.out.println("=== CLICK DANH MỤC ===");
-        System.out.println("Category ID: " + category.getCategoryID());
-        System.out.println("Category Name: " + category.getCategoryName());
-        List<Product> products = ProductData.getByCategory(category.getCategoryID());
+        List<Product> products = ProductBusiness.getAllProductsByCategory(category.getCategoryID());
         productList.setAll(products);
 
         SortedList<Product> sortedProducts = new SortedList<>(productList);
@@ -156,7 +141,6 @@ public class CategoryController implements Initializable, IContentArea {
         lblStatus.setText("Đang xem: " + category.getCategoryName());
     }
 
-    // ===== SETUP TABLE COLUMNS =====
     private void setupTableColumns() {
         colSTT.setCellValueFactory(col ->
                 new javafx.beans.property.SimpleIntegerProperty(
@@ -166,21 +150,38 @@ public class CategoryController implements Initializable, IContentArea {
 
         colProductID.setCellValueFactory(new PropertyValueFactory<>("productID"));
         colProductName.setCellValueFactory(new PropertyValueFactory<>("productName"));
-        colProductPrice.setCellValueFactory(new PropertyValueFactory<>("productPrice"));
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
-        // Trạng thái
+        colProductPrice.setCellValueFactory(new PropertyValueFactory<>("productPrice"));
+        colProductPrice.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer price, boolean empty) {
+                super.updateItem(price, empty);
+                if (empty || price == null) setText(null);
+                else setText(Others.formatPrice(price));
+            }
+        });
+
         colIsAvailable.setCellValueFactory(new PropertyValueFactory<>("available"));
         colIsAvailable.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) setText(null);
-                else setText(item ? "✅ Còn hàng" : "❌ Hết hàng");
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    if (item) {
+                        setText("✅ Còn hàng");
+                        setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                    } else {
+                        setText("❌ Hết hàng");
+                        setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                    }
+                }
             }
         });
 
-        // Hình ảnh
         colImage.setCellValueFactory(new PropertyValueFactory<>("image"));
         colImage.setCellFactory(col -> new TableCell<>() {
             private final ImageView imageView = new ImageView();
@@ -213,13 +214,9 @@ public class CategoryController implements Initializable, IContentArea {
         });
     }
 
-    // ===== XỬ LÝ THÊM DANH MỤC =====
-    // ===== MỞ DIALOG =====
     private void openDialog(Category category) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/GUI/Staff/CategoryDialog.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/CategoryDialog.fxml"));
             AnchorPane pane = loader.load();
 
             if (category != null) {
@@ -233,7 +230,7 @@ public class CategoryController implements Initializable, IContentArea {
             stage.setResizable(false);
             stage.showAndWait();
 
-            loadCategories(); // Reload lại ListView sau khi đóng dialog
+            loadCategories();
 
         } catch (Exception e) {
             System.err.println("Lỗi mở dialog: " + e.getMessage());
@@ -242,109 +239,70 @@ public class CategoryController implements Initializable, IContentArea {
 
     @FXML
     private void handleAddCategory() {
-        openDialog(null);      // null = thêm mới
+        openDialog(null);
     }
 
     @FXML
     private void handleEditCategory() {
         Category selected = lvCategory.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("⚠️ Vui lòng chọn danh mục cần sửa!");
+            Others.showAlert(mainPane, "Vui lòng chọn danh mục cần sửa!", true);
             return;
         }
-        openDialog(selected);  // có data = sửa
+        openDialog(selected);
     }
-    // ===== XỬ LÝ NGỪNG KINH DOANH =====
+
     @FXML
     private void handleStopCategory() {
         Category selected = lvCategory.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert(showingInactive ? "⚠️ Vui lòng chọn danh mục cần bán lại!" :
-                    "⚠️ Vui lòng chọn danh mục bán muốn ngừng kinh doanh!");
-
+            Others.showAlert(mainPane, showingInactive ? "Vui lòng chọn danh mục cần bán lại!" : "Vui lòng chọn danh mục muốn ngừng kinh doanh!", true);
             return;
         }
-        if(showingInactive){
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Xác nhận");
-            confirm.setHeaderText("Kinh doanh lại danh mục?");
-            confirm.setContentText("Bạn có chắc muốn kinh doanh lại: "+ selected.getCategoryName() +" ?");
-            confirm.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    String result = CategoryBusiness.restartBusiness(selected.getCategoryID());
-                    if (result.equals("success")) {
-                        showAlert("✅ Kinh doanh lại thành công!");
-                        productList.clear();
-                        loadCategories();
 
-                        lblCategoryTitle.setText("Chọn danh mục để xem sản phẩm");
-                        lblProductCount.setText("");
+        if (showingInactive) {
+            boolean isConfirm = Others.showCustomConfirm(
+                    "Xác nhận bán lại",
+                    "Bạn có chắc muốn kinh doanh lại danh mục: " + selected.getCategoryName() + "?",
+                    "Đồng ý", "Hủy bỏ"
+            );
 
-                    } else {
-                        showAlert("❌ " + result);
-
-                    }
+            if (isConfirm) {
+                String result = CategoryBusiness.restartBusiness(selected.getCategoryID());
+                if (result.equals("success")) {
+                    Others.showAlert(mainPane, "Kinh doanh lại thành công!", false);
+                    productList.clear();
+                    loadCategories();
+                    lblCategoryTitle.setText("Chọn danh mục để xem sản phẩm");
+                    lblProductCount.setText("0 sản phẩm");
+                } else {
+                    Others.showAlert(mainPane, "Lỗi: " + result, true);
                 }
-            });
-        } else{
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Xác nhận");
-            confirm.setHeaderText("Ngừng kinh doanh danh mục?");
-            confirm.setContentText("Bạn có chắc muốn ngừng: " + selected.getCategoryName() + "?");
-
-            confirm.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    String result = CategoryBusiness.stopBusiness(selected.getCategoryID());
-                    if (result.equals("success")) {
-                        showAlert("✅ Ngừng kinh doanh thành công!");
-                        productList.clear();
-                        loadCategories();
-
-                        lblCategoryTitle.setText("Chọn danh mục để xem sản phẩm");
-                        lblProductCount.setText("");
-                        switchForm("categoryView.fxml");
-                    } else {
-                        showAlert("❌ " + result);
-
-                    }
-                }
-            });}
-
-    }
-
-
-
-
-    // ===== CONTENT AREA =====
-    public void setContentArea(StackPane contentArea) {
-        this.contentArea = contentArea;
-    }
-    // ===== XỬ LÝ QUAY LẠI =====
-    @FXML
-    private void handleBack() {
-       switchForm("productMenu.fxml");
-    }
-    private void switchForm(String fxmlFileName) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
-            Node node = loader.load();
-            Object ctrl = loader.getController();
-            if (ctrl instanceof IContentArea ic) {
-                ic.setContentArea(this.contentArea);
             }
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(node);
-        } catch (Exception e) {
-            System.out.println("Lỗi khi tải trang: " + fxmlFileName);
-            e.printStackTrace();
+        } else {
+            boolean isConfirm = Others.showCustomConfirm(
+                    "Ngừng kinh doanh",
+                    "Bạn có chắc muốn ngừng kinh doanh danh mục: " + selected.getCategoryName() + "?",
+                    "Ngừng KD", "Hủy bỏ"
+            );
+
+            if (isConfirm) {
+                String result = CategoryBusiness.stopBusiness(selected.getCategoryID());
+                if (result.equals("success")) {
+                    Others.showAlert(mainPane, "Ngừng kinh doanh thành công!", false);
+                    productList.clear();
+                    loadCategories();
+                    lblCategoryTitle.setText("Chọn danh mục để xem sản phẩm");
+                    lblProductCount.setText("0 sản phẩm");
+                } else {
+                    Others.showAlert(mainPane, "Lỗi: " + result, true);
+                }
+            }
         }
     }
-    // ===== HELPER =====
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Thông báo");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+
+    @FXML
+    private void handleBack() {
+        StaffFrameController.instance.switchForm("/GUI/Staff/ProductMenu.fxml");
     }
 }

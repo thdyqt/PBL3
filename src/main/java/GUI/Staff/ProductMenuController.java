@@ -32,12 +32,12 @@ public class ProductMenuController implements IContentArea {
 
     @FXML
     void handleCategoryManagement(ActionEvent event) {
-      switchForm("/GUI/Staff/CategoryView.fxml");
+      switchForm("/GUI/Staff/CategoryManagement.fxml");
     }
 
     @FXML
     void handleProductManagement(ActionEvent event) {
-        switchForm("/GUI/Staff/ProductView.fxml");
+        switchForm("/GUI/Staff/ProductManagement.fxml");
     }
 
     private void switchForm(String fxmlFileName) {

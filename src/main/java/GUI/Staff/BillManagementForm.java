@@ -12,7 +12,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -62,8 +65,16 @@ public class BillManagementForm{
         setupTable();
         loadTable();
         search();
-
         setupButtons();
+
+        tbOrder.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
+                if (selectedOrder != null) {
+                    handleOrderDetail();
+                }
+            }
+        });
     }
 
     private void setupButtons() {
@@ -71,7 +82,6 @@ public class BillManagementForm{
         Others.playHoverAnimation(buttonOrderDetail);
         Others.playButtonAnimation(buttonOrderReceipt);
         Others.playHoverAnimation(buttonOrderReceipt);
-
 
         buttonOrderDetail.setOnAction(event -> {
             handleOrderDetail();
@@ -160,7 +170,7 @@ public class BillManagementForm{
     }
 
     private void handleOrderDetail(){
-        EntityDTO.Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
+        Order selectedOrder = tbOrder.getSelectionModel().getSelectedItem();
 
         if (selectedOrder == null){
             Others.showAlert(mainPane, "Vui lòng chọn hóa đơn!", true);

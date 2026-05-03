@@ -56,16 +56,19 @@ public class OrderOnlineManagementForm implements Initializable {
         ));
         cbFilterState.setValue("Tất cả");
 
-        // Cài đặt các cột cho bảng
         setupTable();
-
-        // Tải dữ liệu ban đầu
         loadData();
-
-        //Thêm animation cho nút
         setupButtons();
 
-        // Bắt sự kiện gõ phím để tìm kiếm theo thời gian thực
+        tableOrder.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
+                if (selectedOrder != null) {
+                    btnDetailClick(null);
+                }
+            }
+        });
+
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             Search();
         });
@@ -236,16 +239,23 @@ public class OrderOnlineManagementForm implements Initializable {
     @FXML
     void btnUpdateClick(ActionEvent event) {
         Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
-        Order.OrderStatus newState = null;
-        switch (cbState.getValue()){
-            case "Chờ xác nhận": newState = Order.OrderStatus.Waiting_for_validation; break;
-            case "Đang xử lí": newState = Order.OrderStatus.Processing; break;
-            case "Đang giao hàng": newState = Order.OrderStatus.Delivering; break;
-            case "Đã hoàn thành" : newState = Order.OrderStatus.Finished; break;
+        String selectedStateValue = cbState.getValue();
+
+        if (selectedOrder == null || selectedStateValue == null || selectedStateValue.isEmpty()) {
+            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng và trạng thái cần chuyển!", true);
+            return;
         }
 
-        if (selectedOrder == null || newState == null) {
-            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng và trạng thái cần chuyển!", true);
+        Order.OrderStatus newState = switch (selectedStateValue) {
+            case "Chờ xác nhận" -> Order.OrderStatus.Waiting_for_validation;
+            case "Đang xử lí" -> Order.OrderStatus.Processing;
+            case "Đang giao hàng" -> Order.OrderStatus.Delivering;
+            case "Đã hoàn thành" -> Order.OrderStatus.Finished;
+            default -> null;
+        };
+
+        if (newState == null) {
+            Others.showAlert(rootPane, "Trạng thái không hợp lệ!", true);
             return;
         }
 
@@ -268,11 +278,9 @@ public class OrderOnlineManagementForm implements Initializable {
         }
 
         try {
-            // Mở form OrderDetail
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/OrderOnlineDetail.fxml"));
             Parent root = loader.load();
 
-            // Truyền dữ liệu đơn hàng sang Controller của form Chi tiết
             OrderOnlineDetailController controller = loader.getController();
             controller.setOrderData(selectedOrder);
 
@@ -286,6 +294,4 @@ public class OrderOnlineManagementForm implements Initializable {
             Others.showAlert(rootPane, "Lỗi hệ thống ! Không thể mở Form chi tiết", true);
         }
     }
-
-
 }

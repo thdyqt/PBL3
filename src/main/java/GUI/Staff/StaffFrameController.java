@@ -28,7 +28,7 @@ import java.net.URL;
 import java.sql.Date;
 import java.util.ResourceBundle;
 
-public class StaffDashboardForm implements Initializable {
+public class StaffFrameController implements Initializable {
     @FXML
     private Button btnBill;
 
@@ -98,7 +98,7 @@ public class StaffDashboardForm implements Initializable {
     @FXML
     private VBox sidebar;
 
-    public static StaffDashboardForm instance;
+    public static StaffFrameController instance;
     private Button[] menuButtons;
     private boolean isSidebarVisible = true;
     private Timeline sidebarTimeline;
