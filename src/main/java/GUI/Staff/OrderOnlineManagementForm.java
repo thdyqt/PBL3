@@ -18,10 +18,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class OrderOnlineManagementForm implements Initializable {
@@ -29,6 +29,7 @@ public class OrderOnlineManagementForm implements Initializable {
     @FXML private Button btnDetail;
     @FXML private Button btnUpdate;
     @FXML private ComboBox<String> cbState;
+    @FXML private ComboBox<String> cbFilterState;
 
     @FXML private TableColumn<Order, Integer> colSTT;
     @FXML private TableColumn<Order, String> colID;
@@ -46,10 +47,14 @@ public class OrderOnlineManagementForm implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Khởi tạo các tùy chọn trạng thái cho ComboBox
         cbState.setItems(FXCollections.observableArrayList(
                 "Chờ xác nhận", "Đang xử lí", "Đang giao hàng", "Đã hoàn thành"
         ));
+
+        cbFilterState.setItems(FXCollections.observableArrayList(
+                "Tất cả", "Chờ xác nhận", "Đang xử lí", "Đang giao hàng", "Đã hoàn thành", "Đã hủy"
+        ));
+        cbFilterState.setValue("Tất cả");
 
         // Cài đặt các cột cho bảng
         setupTable();
@@ -57,11 +62,15 @@ public class OrderOnlineManagementForm implements Initializable {
         // Tải dữ liệu ban đầu
         loadData();
 
-        //thêm animation cho nút
+        //Thêm animation cho nút
         setupButtons();
 
         // Bắt sự kiện gõ phím để tìm kiếm theo thời gian thực
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            Search();
+        });
+
+        cbFilterState.valueProperty().addListener((observable, oldValue, newValue) -> {
             Search();
         });
     }
@@ -79,10 +88,9 @@ public class OrderOnlineManagementForm implements Initializable {
         ));
 
         colTotal.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%,d đ", cellData.getValue().getFinalAmount()))
+                new SimpleStringProperty(Others.formatPrice(cellData.getValue().getFinalAmount()))
         );
 
-// CSS cho cột
         colTotal.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -92,14 +100,13 @@ public class OrderOnlineManagementForm implements Initializable {
                     setStyle("");
                 } else {
                     setText(item);
-                    setStyle("-fx-alignment: CENTER; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
+                    setStyle("-fx-alignment: CENTER_RIGHT; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
                 }
             }
         });
 
         colState.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus().name()));
 
-        // ĐỔI MÀU CỘT TRẠNG THÁI (Mỗi trạng thái 1 màu khác nhau)
         colState.setCellFactory(column -> {
             return new TableCell<Order, String>() {
                 @Override
@@ -109,7 +116,6 @@ public class OrderOnlineManagementForm implements Initializable {
                         setText(null);
                         setStyle("");
                     } else {
-                        // Chọn màu dựa trên trạng thái của đơn hàng
                         switch (item) {
                             case "Waiting_for_validation":
                                 setText("Chờ xác nhận");
@@ -143,7 +149,6 @@ public class OrderOnlineManagementForm implements Initializable {
     }
 
     private void loadData() {
-        // GỌI BLL: Lấy danh sách đã được BLL lọc sẵn (chỉ Đơn Online)
         List<Order> onlineOrders = OrderBusiness.getFilteredOrders(Order.OrderType.Online);
 
         if (onlineOrders != null) {
@@ -160,46 +165,68 @@ public class OrderOnlineManagementForm implements Initializable {
 
     }
 
-
-
     @FXML
     void Search() {
         String keyword = txtSearch.getText().toLowerCase().trim();
+        String filterState = cbFilterState.getValue();
+
         filteredData.setPredicate(order -> {
-            if (keyword.isEmpty()) return true;
-            String name = order.getCustomer() != null ? order.getCustomer().getName().toLowerCase() : "";
-            String phone = order.getCustomer() != null ? order.getCustomer().getPhone().toLowerCase() : "";
-            return name.contains(keyword) || phone.contains(keyword) || String.valueOf(order.getId()).contains(keyword);
+            boolean matchFilter = true;
+            if (filterState != null && !filterState.equals("Tất cả")) {
+                String vieStatus = getVietnameseStatus(order.getStatus().name());
+                if (!vieStatus.equals(filterState)) {
+                    matchFilter = false;
+                }
+            }
+
+            boolean matchKeyword = true;
+            if (!keyword.isEmpty()) {
+                String name = order.getCustomer() != null ? order.getCustomer().getName().toLowerCase() : "";
+                String phone = order.getCustomer() != null ? order.getCustomer().getPhone().toLowerCase() : "";
+                String id = String.valueOf(order.getId());
+                String status = getVietnameseStatus(order.getStatus().name()).toLowerCase();
+
+                matchKeyword = name.contains(keyword) || phone.contains(keyword) || id.contains(keyword) || status.contains(keyword);
+            }
+
+            return matchFilter && matchKeyword;
         });
+    }
+
+    private String getVietnameseStatus(String engStatus) {
+        switch (engStatus) {
+            case "Waiting_for_validation": return "Chờ xác nhận";
+            case "Processing": return "Đang xử lí";
+            case "Delivering": return "Đang giao hàng";
+            case "Finished": return "Đã hoàn thành";
+            case "Cancelled": return "Đã hủy";
+            default: return engStatus;
+        }
     }
 
     @FXML
     void btnCancelClick(ActionEvent event) {
         Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
 
-        // Chỉ kiểm tra UI (đã chọn dòng nào chưa)
         if (selectedOrder == null) {
             Others.showAlert(rootPane, "Chưa chọn đơn hàng, vui lòng chọn đơn hàng để Hủy!", true);
             return;
         }
 
-        // Mở popup nhập lý do hủy đơn
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Hủy đơn hàng");
-        dialog.setHeaderText("Xác nhận hủy đơn hàng #" + selectedOrder.getId());
-        dialog.setContentText("Nhập lý do hủy đơn:");
+        if (selectedOrder.getStatus() != Order.OrderStatus.Waiting_for_validation) {
+            Others.showAlert(rootPane, "Không thể hủy đơn hàng nếu đã xác nhận!", true);
+            return;
+        }
 
-        Optional<String> result = dialog.showAndWait();
-        if (result.isPresent() && !result.get().trim().isEmpty()) {
-            String reason = result.get().trim();
+        Window ownerWindow = rootPane.getScene().getWindow();
+        String reason = Others.showCancelReasonDialog(ownerWindow, String.valueOf(selectedOrder.getId()));
 
-            // GỌI BLL: Đẩy toàn bộ trách nhiệm kiểm tra trạng thái và hoàn kho xuống BLL
-            String msg = OrderBusiness.cancelOnlineOrder_BLL(selectedOrder, reason);
+        if (reason != null && !reason.trim().isEmpty()) {
+            String msg = OrderBusiness.cancelOnlineOrder(selectedOrder, reason);
 
-            // Hiển thị kết quả từ BLL
             if (msg.contains("thành công")) {
                 Others.showAlert(rootPane, msg, false);
-                loadData(); // Tải lại bảng để cập nhật trạng thái mới
+                loadData();
             } else {
                 Others.showAlert(rootPane, msg, true);
             }
@@ -209,27 +236,24 @@ public class OrderOnlineManagementForm implements Initializable {
     @FXML
     void btnUpdateClick(ActionEvent event) {
         Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
-        String newState = "";
-                switch (cbState.getValue()){
-            case "Chờ xác nhận": newState = Order.OrderStatus.Waiting_for_validation.name();break;
-            case "Đang xử lí": newState = Order.OrderStatus.Processing.name();break;
-            case "Đang giao hàng": newState = Order.OrderStatus.Delivering.name();break;
-            case "Đã hoàn thành" : newState = Order.OrderStatus.Finished.name();break;
+        Order.OrderStatus newState = null;
+        switch (cbState.getValue()){
+            case "Chờ xác nhận": newState = Order.OrderStatus.Waiting_for_validation; break;
+            case "Đang xử lí": newState = Order.OrderStatus.Processing; break;
+            case "Đang giao hàng": newState = Order.OrderStatus.Delivering; break;
+            case "Đã hoàn thành" : newState = Order.OrderStatus.Finished; break;
         }
 
-        // Kiểm tra UI
         if (selectedOrder == null || newState == null) {
-            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng và trạng thái cần chuyển !", true);
+            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng và trạng thái cần chuyển!", true);
             return;
         }
 
-        // GỌI BLL: Tận dụng lại hàm updateOrder_BLL cũ để kiểm tra và cập nhật trạng thái
-        String msg = OrderBusiness.updateOrder_BLL(selectedOrder, newState);
+        String msg = OrderBusiness.updateOrder(selectedOrder, newState);
 
-        // Hiển thị thông báo
-        if (msg.contains("Order updated successfully")) {
+        if (msg.contains("Đã cập nhật trạng thái đơn hàng thành công.")) {
             Others.showAlert(rootPane, msg, false);
-            loadData(); // Refresh lại bảng
+            loadData();
         } else {
             Others.showAlert(rootPane, msg, true);
         }

@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.effect.GaussianBlur?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
+
 <BorderPane fx:id="mainBorderPane" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.StaffDashboardForm">
 
     <left>
@@ -135,7 +145,7 @@
                                     <padding><Insets left="15.0" /></padding>
                                 </Button>
 
-                                <Button fx:id="btnStatistic" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Thống kê báo cáo">
+                                <Button fx:id="btnStatistic" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="Infinity" mnemonicParsing="false" onAction="#btnStatisticClick" prefHeight="50.0" prefWidth="240.0" style="-fx-background-color: transparent; -fx-text-fill: #DBEAFE; -fx-font-size: 14px; -fx-background-radius: 12;" text="Thống kê báo cáo">
                                     <graphic>
                                         <StackPane minHeight="32.0" minWidth="32.0" prefHeight="32.0" prefWidth="32.0" style="-fx-background-color: #F59E0B; -fx-background-radius: 10;">
                                             <children><Label text="📊" textFill="WHITE"><font><Font size="16.0" /></font></Label></children>

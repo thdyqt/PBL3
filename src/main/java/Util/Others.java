@@ -118,27 +118,27 @@ public class Others {
             String qrUrl = String.format("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
                     bankID, accountNo, amount, addInfo, accountName);
 
-            javafx.scene.image.Image qrImage = new javafx.scene.image.Image(qrUrl, false);
+            Image qrImage = new Image(qrUrl, false);
 
             if (qrImage.isError()) {
                 throw new Exception("Không thể tải ảnh QR từ máy chủ!");
             }
 
-            javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(qrImage);
+            ImageView imageView = new ImageView(qrImage);
             imageView.setFitWidth(500);
             imageView.setFitHeight(500);
             imageView.setPreserveRatio(true);
 
-            javafx.stage.Stage qrStage = new javafx.stage.Stage();
+            Stage qrStage = new Stage();
             qrStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             qrStage.setTitle("Thanh toán Chuyển khoản");
             qrStage.setMaximized(true);
 
-            javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(30);
+            VBox root = new VBox(30);
             root.setAlignment(javafx.geometry.Pos.CENTER);
             root.setStyle("-fx-background-color: #F8FAFC;");
 
-            javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("QUÉT MÃ ĐỂ THANH TOÁN");
+            Label lblTitle = new Label("QUÉT MÃ ĐỂ THANH TOÁN");
             lblTitle.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
 
             javafx.scene.control.Label lblAmount = new javafx.scene.control.Label("Số tiền cần chuyển: " + formatPrice(amount));
@@ -163,7 +163,7 @@ public class Others {
 
             btnConfirm.setOnAction(e -> {
                 qrStage.close();
-                javafx.application.Platform.runLater(onSuccess);
+                Platform.runLater(onSuccess);
             });
 
             qrStage.showAndWait();
@@ -177,7 +177,6 @@ public class Others {
     }
 
     // ANIMATION KHI ẤN NÚT
-    // Resize up and down slightly to make button clicking more tactile
     public static void playButtonAnimation(Node node){
         ScaleTransition scaleDown = new ScaleTransition(Duration.millis(50),node);
         scaleDown.setToX(0.90);
@@ -217,8 +216,6 @@ public class Others {
             scaleUp.playFromStart();
         });
     }
-
-
 
     // ANIMATION KHI FORM HIỂN THỊ
     public static void playFormAnimation(Node formNode) {
@@ -453,5 +450,69 @@ public class Others {
         stage.showAndWait();
 
         return isConfirmed[0];
+    }
+
+    // HỘP THOẠI NHẬP LÝ DO HỦY
+    public static String showCancelReasonDialog(javafx.stage.Window ownerWindow, String orderCode) {
+        final String[] reasonResult = {null};
+
+        javafx.stage.Stage stage = new javafx.stage.Stage(javafx.stage.StageStyle.TRANSPARENT);
+        stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+        if (ownerWindow != null) {
+            stage.initOwner(ownerWindow);
+        }
+
+        javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(12);
+        root.setPadding(new javafx.geometry.Insets(25));
+        root.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #E2E8F0; -fx-border-width: 1;");
+
+        javafx.scene.effect.DropShadow shadow = new javafx.scene.effect.DropShadow(20, new javafx.scene.paint.Color(0, 0, 0, 0.15));
+        root.setEffect(shadow);
+
+        javafx.scene.control.Label lblHeader = new javafx.scene.control.Label("Xác nhận hủy đơn");
+        lblHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+
+        javafx.scene.control.Label lblDesc = new javafx.scene.control.Label("Bạn có chắc muốn hủy đơn " + orderCode + "? Vui lòng cho biết lý do:");
+        lblDesc.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B;");
+
+        javafx.scene.control.TextField txtReason = new javafx.scene.control.TextField();
+        txtReason.setPromptText("Nhập lý do hủy đơn (Không bắt buộc)...");
+        txtReason.setStyle("-fx-font-size: 14px; -fx-padding: 8; -fx-background-radius: 6; -fx-border-radius: 6; -fx-border-color: #CBD5E1; -fx-background-color: #F8FAFC;");
+        txtReason.setPrefWidth(320);
+
+        javafx.scene.control.Button btnCancelPopup = new javafx.scene.control.Button("Quay lại");
+        btnCancelPopup.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+        btnCancelPopup.setOnAction(e -> stage.close());
+
+        javafx.scene.control.Button btnConfirmPopup = new javafx.scene.control.Button("Xác nhận hủy");
+        btnConfirmPopup.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 6; -fx-cursor: hand;");
+
+        Runnable checkAction = () -> {
+            String input = txtReason.getText().trim();
+            if (input.isEmpty()) {
+                reasonResult[0] = "Khách hàng hủy";
+            } else {
+                reasonResult[0] = input;
+            }
+            stage.close();
+        };
+
+        btnConfirmPopup.setOnAction(e -> checkAction.run());
+        txtReason.setOnAction(e -> checkAction.run());
+
+        javafx.scene.layout.HBox buttonBox = new javafx.scene.layout.HBox(10, btnCancelPopup, btnConfirmPopup);
+        buttonBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+        root.getChildren().addAll(lblHeader, lblDesc, txtReason, buttonBox);
+
+        javafx.scene.Scene scene = new javafx.scene.Scene(root);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        stage.setScene(scene);
+
+        javafx.application.Platform.runLater(txtReason::requestFocus);
+        stage.showAndWait();
+
+        return reasonResult[0];
     }
 }

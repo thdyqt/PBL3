@@ -3,17 +3,14 @@
 package BusinessBLL;
 
 import DataDAL.OrderData;
-import EntityDTO.Customer;
-import EntityDTO.Order;
-import EntityDTO.OrderDetail;
-import EntityDTO.PromoCode;
+import EntityDTO.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class OrderBusiness {
-    public static int createOrder(Order order, EntityDTO.DeliveryInfo deliveryInfo) {
+    public static int createOrder(Order order, DeliveryInfo deliveryInfo) {
         if (order == null || order.getOrderDetail() == null || order.getOrderDetail().isEmpty()) {
             return -1;
         }
@@ -42,15 +39,16 @@ public class OrderBusiness {
         return list;
     }
 
-    public static boolean isValidStatus(Order order, String status){
+    public static boolean isValidStatus(Order order, Order.OrderStatus status){
         String type = String.valueOf(order.getType());
 
         if ("Offline".equalsIgnoreCase(type)) {
-            return status.equals("Processing") || status.equals("Finished");
+            return status == Order.OrderStatus.Finished;
         }
         else if ("Online".equalsIgnoreCase(type)) {
-            List<String> validOnlineStates = Arrays.asList(
-                    "Waiting_for_validation", "Processing", "Delivering", "Finished", "Cancelled"
+            List<Order.OrderStatus> validOnlineStates = Arrays.asList(
+                    Order.OrderStatus.Waiting_for_validation, Order.OrderStatus.Processing,
+                    Order.OrderStatus.Delivering, Order.OrderStatus.Finished, Order.OrderStatus.Cancelled
             );
             return validOnlineStates.contains(status);
         }
@@ -58,94 +56,92 @@ public class OrderBusiness {
         return false;
     }
 
-    public static String updateOrder_BLL(Order order, String status){
+    public static String updateOrder(Order order, Order.OrderStatus status){
         if (order == null || order.getId() <= 0){
-            return "Order doesnt exist/ have invalid ID";
+            return "Đơn hàng không tồn tại.";
         }
 
         if (!isValidStatus(order, status)) {
-            return "LỖI: Trạng thái '" + status + "' không hợp lệ cho đơn hàng " + order.getType();
+            return "Trạng thái không hợp lệ cho đơn hàng.";
         }
 
         Order orderToUpdate = OrderData.searchOrder_ByID(order.getId());
         if (orderToUpdate == null){
-            return "The order doesnt exist";
+            return "Đơn hàng không tồn tại.";
         }
 
         return ValidTransition(order,status);
     }
 
-    public static String ValidTransition(Order order, String status) {
+    public static String ValidTransition(Order order, Order.OrderStatus status) {
         switch (order.getStatus().name()) {
             case "Processing":
-                // Processing thì không được về Waiting
-                if (status == "Waiting_for_validation") return "Processing thì không được về Waiting";
+                if (status == Order.OrderStatus.Waiting_for_validation)
+                    return "Không thể chuyển trạng thái đơn hàng.";
                 break;
 
             case "Delivering":
-                // Delivering thì không được về Waiting hoặc Processing
-                if (status == "Waiting_for_validation" || status == "Processing") {
-                    return "Delivering thì không được về Waiting hoặc Processing";
-                }
+                if (status == Order.OrderStatus.Waiting_for_validation || status == Order.OrderStatus.Processing)
+                    return "Không thể chuyển trạng thái đơn hàng.";
                 break;
 
             case "Finished":
-                // Finished thì không được về Waiting, Processing hoặc Delivering
-                if (status == "Waiting_for_validation" || status == "Processing" || status == "Delivering") {
-                    return "Finished thì không được về Waiting, Processing hoặc Delivering";
-                }
+                if (status == Order.OrderStatus.Waiting_for_validation || status == Order.OrderStatus.Processing
+                        || status == Order.OrderStatus.Delivering)
+                    return "Không thể chuyển trạng thái đơn hàng.";
+                break;
+
             case "Cancelled":
-                // Đã kết thúc hoặc hủy thì thường không được chuyển đi đâu nữa
                 return "Không thể chuyển trạng thái đơn hàng đã hủy";
         }
-        order.setStatus(Order.OrderStatus.valueOf(status));
+        order.setStatus(status);
 
-        boolean isUpdated = OrderData.updateOrder(order);
+        boolean isUpdated = DataDAL.OrderData.updateOrder(order);
 
-        if (isUpdated){
-            return "Order updated successfully";
-        }else {
-            return "Order failed to update";
+        if (isUpdated) {
+            // Xử lý cộng điểm ĐỘC LẬP (chỉ chạy khi Finished và có tài khoản)
+            if (order.getStatus() == Order.OrderStatus.Finished && order.getCustomer() != null && order.getCustomer().getId() > 0) {
+                int pointsEarned = order.getFinalAmount() / 1000;
+                if (pointsEarned > 0) {
+                    CustomerBusiness.addRewardPoints_BLL(order.getCustomer().getId(), pointsEarned);
+                }
+            }
+
+            return "Đã cập nhật trạng thái đơn hàng thành công.";
         }
+
+        return "Không thể cập nhật trạng thái đơn hàng.";
     }
 
-    public static String cancelOnlineOrder_BLL(Order order, String reason) {
+    public static String cancelOnlineOrder(Order order, String reason) {
         if (order == null || order.getId() <= 0) {
-            return "Lỗi: Không tìm thấy đơn hàng.";
+            return "Không tìm thấy đơn hàng.";
         }
 
-        // Luật kinh doanh BR-22: Chỉ cho phép hủy khi đơn ở trạng thái Chờ xác nhận hoặc Mới tạo
         if (order.getStatus() != Order.OrderStatus.Waiting_for_validation) {
-            return "Lỗi: Đơn hàng đã được xử lý, đang giao hoặc đã hoàn thành, không thể hủy!";
+            return "Đơn hàng đã được xử lý, đang giao hoặc đã hoàn thành, không thể hủy!";
         }
 
-        // 1. Thay đổi trạng thái thành Hủy
         order.setStatus(Order.OrderStatus.Cancelled);
-
         order.setCancelReason(reason);
 
-        // 2. Gọi hàm DAL để lưu trạng thái mới xuống DB
         boolean isUpdated = OrderData.updateOrder(order);
 
         if (isUpdated) {
-            // 3. Nghiệp vụ bắt buộc: Hoàn trả số lượng tồn kho cho các sản phẩm trong đơn
-            List<OrderDetail> details = order.getOrderDetail();
-            if (details != null) {
+            List<OrderDetail> details = OrderDetailBusiness.getDetailsByOrderId_BLL(order.getId());
+
+            if (details != null && !details.isEmpty()) {
                 for (OrderDetail detail : details) {
                     int productId = detail.getProduct().getProductID();
                     int quantityToRefund = detail.getQuantity();
 
-                    // Gọi sang ProductBusiness để cộng lại số lượng vào kho
-                    // Giả định bạn có hàm updateStock(id, số_lượng_cộng_thêm)
-                    // ProductBusiness.updateStock_BLL(productId, quantityToRefund);
+                    ProductBusiness.addStock(productId, quantityToRefund);
                 }
             }
 
-            // Tùy chọn: Bạn có thể lưu 'reason' (lý do hủy) vào bảng Log hoặc bảng Order nếu CSDL có cột này
-
-            return "Đã hủy đơn hàng và hoàn trả tồn kho thành công!";
+            return "Hủy đơn hàng thành công!";
         } else {
-            return "Lỗi: Không thể hủy đơn hàng do lỗi hệ thống CSDL.";
+            return "Không thể hủy đơn hàng do lỗi kết nối cơ sở dữ liệu.";
         }
     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -12,9 +12,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import java.net.URL?>
 
-<AnchorPane prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.OrderOnlineDetailController">
+<AnchorPane prefHeight="700.0" prefWidth="800.0" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Staff.OrderOnlineDetailController">
 
     <stylesheets>
         <URL value="@../style.css" />
@@ -60,10 +59,10 @@
                                 <Label style="-fx-text-fill: #64748B;" text="Trạng thái:" GridPane.columnIndex="0" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblStatus" style="-fx-text-fill: #D4891A; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
 
-                                <Label style="-fx-text-fill: #64748B;" text="Thanh toán:" GridPane.columnIndex="2" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
-                                <Label fx:id="lblPayment" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="3" GridPane.rowIndex="2"><font><Font size="14.0" /></font></Label>
+                                <Label style="-fx-text-fill: #64748B;" text="Thanh toán:" GridPane.columnIndex="2" GridPane.rowIndex="3"><font><Font size="14.0" /></font></Label>
+                                <Label fx:id="lblPayment" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="3" GridPane.rowIndex="3"><font><Font size="14.0" /></font></Label>
 
-                                <Label style="-fx-text-fill: #64748B;" text="Thời gian:" GridPane.columnIndex="0" GridPane.rowIndex="3"><font><Font size="14.0" /></font></Label>
+                                <Label style="-fx-text-fill: #64748B;" text="Thời gian:" GridPane.rowIndex="3"><font><Font size="14.0" /></font></Label>
                                 <Label fx:id="lblOrderTime" style="-fx-text-fill: #D4891A; -fx-font-weight: bold;" text="N/A" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3"><font><Font size="14.0" /></font></Label>
                             </children>
                         </GridPane>

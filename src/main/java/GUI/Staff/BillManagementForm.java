@@ -30,9 +30,6 @@ public class BillManagementForm{
     private Button buttonOrderReceipt;
 
     @FXML
-    private ComboBox<String> cbbSearchOption;
-
-    @FXML
     private TableColumn<EntityDTO.Order, String> colProcessStaffName;
 
     @FXML
@@ -62,7 +59,6 @@ public class BillManagementForm{
     //methods
     @FXML
     private void initialize() {
-        setupCombobox();
         setupTable();
         loadTable();
         search();
@@ -83,41 +79,6 @@ public class BillManagementForm{
 
         buttonOrderReceipt.setOnAction(actionEvent -> {
             handleOrderReceipt();
-        });
-    }
-
-    private void setupCombobox(){
-        ObservableList<String> searchOptions = FXCollections.observableArrayList(
-                "Chọn tiêu chí tìm kiếm",
-                "Tìm kiếm theo ID order",
-                "Tìm kiếm theo ID nhân viên thực hiện",
-                "Tìm kiếm theo SĐT khách hàng"
-        );
-
-        cbbSearchOption.setItems(searchOptions);
-        cbbSearchOption.getSelectionModel().selectFirst();
-
-        cbbSearchOption.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                txtSearch.clear();
-
-                switch (newValue) {
-                    case "Chọn tiêu chí tìm kiếm":
-                        txtSearch.setPromptText("Chưa chọn tiêu chí tìm kiếm");
-                        break;
-                    case "Tìm kiếm theo ID order":
-                        txtSearch.setPromptText("Nhập ID Đơn hàng");
-                        break;
-                    case "Tìm kiếm theo Tên nhân viên thực hiện":
-                        txtSearch.setPromptText("Nhập Tên Nhân viên");
-                        break;
-                    case "Tìm kiếm theo SĐT khách hàng":
-                        txtSearch.setPromptText("Nhập SĐT Khách hàng");
-                        break;
-                    default:
-                        txtSearch.setPromptText("\uD83D\uDD0D Tìm kiếm đơn hàng...");
-                }
-            }
         });
     }
 
@@ -175,38 +136,26 @@ public class BillManagementForm{
                 }
 
                 String keyword = newValue.toLowerCase().trim();
-                String searchOption = cbbSearchOption.getValue();
 
-                if (searchOption == null){
-                    return true;
+                boolean matchID = String.valueOf(order.getId()).contains(keyword);
+
+                boolean matchStaff = false;
+                if (order.getStaff() != null && order.getStaff().getName() != null){
+                    matchStaff = order.getStaff().getName().toLowerCase().contains(keyword);
                 }
 
-                switch (searchOption){
-                    case "Chưa chọn tiêu chí tìm kiếm":
-                        return true;
-                    case "Tìm kiếm theo ID order":
-                        return String.valueOf(order.getId()).contains(keyword);
-                    case "Tìm kiếm theo Tên nhân viên thực hiện":
-                        if (order.getStaff() != null){
-                            return String.valueOf(order.getStaff().getName()).contains(keyword);
-                        }
-                        return false;
-                    case "Tìm kiếm theo SĐT khách hàng":
-                        if (order.getCustomer() != null && order.getCustomer().getPhone() != null){
-                            return String.valueOf(order.getCustomer().getPhone()).contains(keyword);
-                        }
-                        return false;
-                    default:
-                        return false;
+                boolean matchPhone = false;
+                if (order.getCustomer() != null && order.getCustomer().getPhone() != null){
+                    matchPhone = order.getCustomer().getPhone().contains(keyword);
                 }
 
-            });
+                boolean matchCustomerName = false;
+                if (order.getCustomer() != null && order.getCustomer().getName() != null) {
+                    matchCustomerName = order.getCustomer().getName().toLowerCase().contains(keyword);
+                }
 
+                return matchID || matchStaff || matchPhone || matchCustomerName;
             });
-            cbbSearchOption.valueProperty().addListener((obs, oldVal, newVal) -> {
-            String currentText = txtSearch.getText();
-            txtSearch.setText("");
-            txtSearch.setText(currentText);
         });
     }
 

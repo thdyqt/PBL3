@@ -6,6 +6,7 @@ import Util.CartManager;
 import Util.UserSession;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class CustomerBusiness {
@@ -86,5 +87,18 @@ public class CustomerBusiness {
             case Emerald -> 8;
             default -> 0;
         };
+    }
+
+    public static boolean addRewardPoints_BLL(int customerId, int pointsEarned) {
+        if (pointsEarned <= 0) return false;
+
+        try (java.sql.Connection conn = Util.DBConnection.getConnection()) {
+            CustomerData.addRewardPoints(conn, customerId, pointsEarned);
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

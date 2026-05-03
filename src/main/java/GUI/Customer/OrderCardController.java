@@ -14,10 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
@@ -210,25 +206,22 @@ public class OrderCardController {
     // ===== XEM CHI TIẾT =====
     @FXML
     private void handleDetail() {
+        // TODO: Điền tên file fxml và hàm nhận dữ liệu khi bạn cho biết
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/GUI/Staff/OrderOnlineDetail.fxml")
+                    getClass().getResource("/GUI/Customer/OrderDetail.fxml") // ← sửa đường dẫn
             );
-            Parent root = loader.load();
+            VBox view = loader.load();
 
+            // TODO: Điền tên Controller và hàm nhận Order
             OrderOnlineDetailController ctrl = loader.getController();
             ctrl.setOrderData(currentOrder);
 
-            // ✅ Mở trong Stage mới giống nhân viên
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Chi tiết đơn hàng #" + currentOrder.getId());
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-
+            if (contentArea != null) {
+                contentArea.getChildren().setAll(view);
+            }
         } catch (Exception e) {
             System.err.println("Lỗi mở chi tiết đơn: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
