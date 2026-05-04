@@ -99,13 +99,25 @@
                                 <Label fx:id="lblSubTotal" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="0 đ"><font><Font size="15.0" /></font></Label>
                             </children>
                         </HBox>
+
                         <HBox alignment="CENTER_RIGHT" spacing="20.0">
                             <children>
                                 <Label style="-fx-text-fill: #64748B;" text="Giảm giá (Discount):"><font><Font size="15.0" /></font></Label>
                                 <Label fx:id="lblDiscount" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-text-fill: #10B981; -fx-font-weight: bold;" text="0 đ"><font><Font size="15.0" /></font></Label>
                             </children>
                         </HBox>
+
+                        <!-- ══ DÒNG PHÍ GIAO HÀNG MỚI THÊM ══ -->
+                        <HBox alignment="CENTER_RIGHT" spacing="20.0">
+                            <children>
+                                <Label style="-fx-text-fill: #64748B;" text="Phí giao hàng:"><font><Font size="15.0" /></font></Label>
+                                <Label fx:id="lblShippingFee" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-text-fill: #334155; -fx-font-weight: bold;" text="15.000 đ"><font><Font size="15.0" /></font></Label>
+                            </children>
+                        </HBox>
+                        <!-- ════════════════════════════════ -->
+
                         <Region style="-fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0;" />
+
                         <HBox alignment="CENTER_RIGHT" spacing="20.0">
                             <children>
                                 <Label style="-fx-text-fill: #1E293B; -fx-font-weight: bold;" text="Tổng thanh toán:"><font><Font size="18.0" /></font></Label>
