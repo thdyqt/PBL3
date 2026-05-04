@@ -58,6 +58,9 @@ public class CustomerDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnCancel);
+        Others.playButtonAnimation(btnSave);
+
         Others.setMaxLength(txtPhone, 10);
         Others.setMaxLength(txtUsername, 20);
         Others.setMaxLength(txtName, 100);

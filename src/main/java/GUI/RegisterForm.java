@@ -137,6 +137,7 @@ public class RegisterForm implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Others.playFormAnimation(mainForm);
+        Others.playButtonAnimation(btnSubmitRegister);
 
         Others.setMaxLength(txtPhone, 10);
         Others.setMaxLength(txtUser, 20);

@@ -47,6 +47,10 @@ public class ProductDialogController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Others.playButtonAnimation(btnCancel);
+        Others.playButtonAnimation(btnSave);
+        Others.playButtonAnimation(btnChooseImage);
+
         setupInputValidation();
         loadCategoriesToComboBox();
     }

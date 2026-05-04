@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.Clipboard;
@@ -56,6 +57,7 @@ public class CustomerHomeController implements Initializable {
     @FXML private VBox vboxRecentOrders;
     @FXML private Label  lblViewAllOrders;
     @FXML private WebView mapView;
+    @FXML private Button btnOpenMenu;
 
     private List<String> bannerUrls = new ArrayList<>();
     private int currentBannerIndex = 0;
@@ -69,6 +71,8 @@ public class CustomerHomeController implements Initializable {
         setupBanner();
         setupCategories();
         setupSearchBox();
+
+        Others.playButtonAnimation(btnOpenMenu);
 
         javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle();
         clip.setArcWidth(40);

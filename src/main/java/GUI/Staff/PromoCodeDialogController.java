@@ -30,6 +30,9 @@ public class PromoCodeDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnCancel);
+        Others.playButtonAnimation(btnSave);
+
         cbbDiscountType.setItems(FXCollections.observableArrayList("Percent", "Amount"));
         cbbApplyFor.getItems().addAll("Cả 2", "Online", "Offline");
 

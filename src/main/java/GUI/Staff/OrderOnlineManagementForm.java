@@ -84,8 +84,26 @@ public class OrderOnlineManagementForm implements Initializable {
         colID.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
 
         colName.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().getCustomer() != null ? cellData.getValue().getCustomer().getName() : "Khách vãng lai"
+                cellData.getValue().getCustomer() != null ? cellData.getValue().getCustomer().getName() : "Khách lẻ"
         ));
+
+        colName.setCellFactory(column -> new TableCell<Order, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    if (item.equals("Khách lẻ")) {
+                        setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #EF4444;");
+                    } else {
+                        setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+                    }
+                }
+            }
+        });
 
         colPhone.setCellValueFactory(cellData -> new SimpleStringProperty(
                 cellData.getValue().getCustomer() != null ? cellData.getValue().getCustomer().getPhone() : "N/A"

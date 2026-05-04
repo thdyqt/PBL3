@@ -126,11 +126,27 @@ public class BillManagementForm{
             if (cellData.getValue().getCustomer() != null) {
                 return new SimpleStringProperty(cellData.getValue().getCustomer().getPhone());
             }
-            return new SimpleStringProperty("");
+            return new SimpleStringProperty("N/A");
         });
 
         col_OrderID.setStyle("-fx-alignment: CENTER;");
-        col_CustomerName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+        col_CustomerName.setCellFactory(column -> new javafx.scene.control.TableCell<EntityDTO.Order, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    if (item.equals("Khách lẻ")) {
+                        setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #EF4444; -fx-padding: 0 0 0 15;");
+                    } else {
+                        setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
+                    }
+                }
+            }
+        });
         col_PhoneCustomer.setStyle("-fx-alignment: CENTER;");
         colProcessStaffName.setStyle("-fx-alignment: CENTER_LEFT; -fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-padding: 0 0 0 15;");
         colProcessTime.setStyle("-fx-alignment: CENTER;");

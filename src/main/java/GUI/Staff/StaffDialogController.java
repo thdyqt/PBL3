@@ -39,6 +39,9 @@ public class StaffDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnCancel);
+        Others.playButtonAnimation(btnSave);
+
         dpHireDate.setValue(LocalDate.now());
         cbRole.getItems().addAll("Staff", "Admin");
         cbRole.getSelectionModel().selectFirst();

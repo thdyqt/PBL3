@@ -62,6 +62,9 @@ public class StaffManagementForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnAdd);
+        Others.playButtonAnimation(btnEdit);
+        Others.playButtonAnimation(btnToggleStatus);
         setupTableStyles();
         loadTable();
         setupSearch();

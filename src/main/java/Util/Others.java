@@ -10,10 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -28,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 public class Others {
     private static final Map<String, Image> imageCache = new HashMap<>();
@@ -179,7 +177,7 @@ public class Others {
     }
 
     // ANIMATION KHI ẤN NÚT
-    public static void playButtonAnimation(Node node){
+    public static void playButtonAnimation(Button node){
         ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100),node);
         scaleDown.setToX(0.95);
         scaleDown.setToY(0.95);
@@ -328,26 +326,26 @@ public class Others {
 
     // HIỂN THỊ HỘP THOẠI XÁC NHẬN (YES/NO)
     public static boolean showCustomConfirm(String title, String content, String btnYesText, String btnNoText) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
 
-        javafx.scene.layout.StackPane iconPane = new javafx.scene.layout.StackPane();
-        javafx.scene.shape.Circle bg = new javafx.scene.shape.Circle(22, javafx.scene.paint.Color.web("#FEF3C7"));
-        javafx.scene.control.Label exclamation = new javafx.scene.control.Label("!");
+        StackPane iconPane = new StackPane();
+        javafx.scene.shape.Circle bg = new javafx.scene.shape.Circle(22, Color.web("#FEF3C7"));
+        Label exclamation = new Label("!");
         exclamation.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #D97706;");
         iconPane.getChildren().addAll(bg, exclamation);
         alert.setGraphic(iconPane);
 
         // Tùy chỉnh chữ trên 2 nút bấm
-        javafx.scene.control.ButtonType buttonYes = new javafx.scene.control.ButtonType(btnYesText, javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
-        javafx.scene.control.ButtonType buttonNo = new javafx.scene.control.ButtonType(btnNoText, javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType buttonYes = new ButtonType(btnYesText, javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonNo = new ButtonType(btnNoText, javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
         alert.getButtonTypes().setAll(buttonYes, buttonNo);
 
         // Áp dụng CSS
-        javafx.scene.control.DialogPane dialogPane = alert.getDialogPane();
+        DialogPane dialogPane = alert.getDialogPane();
         try {
             dialogPane.getStylesheets().add(Others.class.getResource("/GUI/style.css").toExternalForm());
             dialogPane.getStyleClass().add("modern-alert");
@@ -356,7 +354,7 @@ public class Others {
         }
 
         // Hiển thị và chờ người dùng bấm, sau đó trả về true/false
-        java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
+        Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == buttonYes;
     }
 

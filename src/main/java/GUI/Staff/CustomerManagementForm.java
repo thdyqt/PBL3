@@ -72,6 +72,10 @@ public class CustomerManagementForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnAdd);
+        Others.playButtonAnimation(btnEdit);
+        Others.playButtonAnimation(btnSort);
+
         setupTableStyles();
         setupRankColumn();
 
@@ -98,7 +102,7 @@ public class CustomerManagementForm implements Initializable {
         colName.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         colPhone.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPhone()));
         colPoint.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPoint()));
-        colUser.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUser()));
+        colUser.setCellValueFactory(cellData -> new SimpleStringProperty(!cellData.getValue().getUser().isEmpty() ? cellData.getValue().getUser() : "N/A"));
 
         colSTT.setCellFactory(column -> new TableCell<Customer, Void>() {
             @Override

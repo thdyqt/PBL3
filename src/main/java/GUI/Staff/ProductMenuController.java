@@ -1,16 +1,21 @@
 package GUI.Staff;
 
 import Util.IContentArea;
+import Util.Others;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import static Util.Others.showAlert;
 
-public class ProductMenuController implements IContentArea {
+public class ProductMenuController implements Initializable, IContentArea {
     @FXML
     private Button btnCategory;
 
@@ -24,6 +29,12 @@ public class ProductMenuController implements IContentArea {
     private StackPane btnProductPane;
 
     private StackPane contentArea;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnProductM);
+        Others.playButtonAnimation(btnCategory);
+    }
 
     @Override
     public void setContentArea(StackPane contentArea) {

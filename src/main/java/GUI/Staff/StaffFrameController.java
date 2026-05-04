@@ -141,6 +141,7 @@ public class StaffFrameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnExit);
         instance = this;
 
         menuInfo.setOnAction(event -> openProfileDialog(true));

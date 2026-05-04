@@ -1,18 +1,20 @@
 package GUI.Staff;
 
 import BusinessBLL.CategoryBusiness;
-import DataDAL.CategoryData;
 import EntityDTO.Category;
+import Util.Others;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class CategoryDialogController implements Initializable {
-
     // ===== FXML COMPONENTS =====
     @FXML private Label     lblTitle;
     @FXML private Label     lblDesc;
@@ -27,7 +29,8 @@ public class CategoryDialogController implements Initializable {
     // ===== INITIALIZE =====
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Không cần load gì thêm vì form chỉ có 1 trường
+        Others.playButtonAnimation(btnCancel);
+        Others.playButtonAnimation(btnSave);
     }
 
     // ===== GỌI TỪ CategoryController KHI MỞ FORM SỬA =====

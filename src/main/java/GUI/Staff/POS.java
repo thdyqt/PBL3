@@ -112,6 +112,9 @@ public class POS implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnAddCustomer);
+        Others.playButtonAnimation(btnPayment);
+        Others.playButtonAnimation(btnCancel);
         Others.setMaxLength(txtCustomerPhone, 10);
 
         txtCustomerPhone.textProperty().addListener((observable, oldValue, newValue) -> {

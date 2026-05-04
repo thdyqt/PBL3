@@ -26,7 +26,6 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class StaffHomeController implements Initializable {
-
     @FXML private Label lblGreeting;
     @FXML private Label lblDate;
     @FXML private Label lblTime;
@@ -183,6 +182,10 @@ public class StaffHomeController implements Initializable {
     }
 
     private void setupButtons() {
+        Others.playButtonAnimation(btnPOS);
+        Others.playButtonAnimation(btnOnlineOrder);
+        Others.playButtonAnimation(btnInventory);
+
         btnPOS.setOnAction(e -> {
             StaffFrameController.instance.switchForm("/GUI/Staff/POS.fxml");
             StaffFrameController.instance.setActiveMenu(StaffFrameController.instance.getBtnOrder());

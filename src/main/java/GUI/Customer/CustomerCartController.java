@@ -57,6 +57,8 @@ public class CustomerCartController implements Initializable {
             deliveryAddress = session.getAddress() != null ? session.getAddress() : "";
         }
 
+        Others.playButtonAnimation(btnCheckout);
+
         checkAndRemoveOutOfStockItems();
 
         loadCartItems();

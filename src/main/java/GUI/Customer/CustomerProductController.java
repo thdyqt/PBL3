@@ -48,6 +48,8 @@ public class CustomerProductController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Others.playButtonAnimation(btnClearFilter);
+        Others.playButtonAnimation(btnToggleFilter);
         setupSortOptions();
         setupInputValidation();
         flowProducts.prefWrapLengthProperty().bind(scrollPane.widthProperty().subtract(40));

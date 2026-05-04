@@ -104,6 +104,7 @@ public class CustomerFrameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnExit);
         instance = this;
 
         mainBorderPane.setOpacity(0);

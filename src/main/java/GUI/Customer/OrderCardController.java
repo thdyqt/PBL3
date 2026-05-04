@@ -10,6 +10,7 @@ import Util.Others;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,10 +22,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class OrderCardController {
+public class OrderCardController implements Initializable {
     @FXML private Label  lblOrderID;
     @FXML private Label  lblOrderDate;
     @FXML private Label  lblStatus;
@@ -37,6 +40,12 @@ public class OrderCardController {
 
     private Order      currentOrder;
     private StackPane  contentArea;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        Others.playButtonAnimation(btnCancel);
+        Others.playButtonAnimation(btnDetail);
+    }
 
     public void setOrder(Order order, StackPane contentArea) {
         this.currentOrder = order;
