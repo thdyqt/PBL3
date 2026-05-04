@@ -21,15 +21,17 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
+import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Others {
     private static final Map<String, Image> imageCache = new HashMap<>();
-    private static final NumberFormat priceFormatter = NumberFormat.getNumberInstance(new java.util.Locale("vi", "VN"));
+    private static final NumberFormat priceFormatter = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
 
     // CHUẨN HÓA GIÁ TIỀN
     public static String formatPrice(int price) {
@@ -111,9 +113,9 @@ public class Others {
         try {
             String bankID = "MB";
             String accountNo = "000002907";
-            String accountName = java.net.URLEncoder.encode("PHAN THANH DUY", "UTF-8").replace("+", "%20");
+            String accountName = URLEncoder.encode("PHAN THANH DUY", "UTF-8").replace("+", "%20");
 
-            String addInfo = java.net.URLEncoder.encode(orderInfo, "UTF-8").replace("+", "%20");
+            String addInfo = URLEncoder.encode(orderInfo, "UTF-8").replace("+", "%20");
 
             String qrUrl = String.format("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
                     bankID, accountNo, amount, addInfo, accountName);
@@ -130,33 +132,33 @@ public class Others {
             imageView.setPreserveRatio(true);
 
             Stage qrStage = new Stage();
-            qrStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            qrStage.initModality(Modality.APPLICATION_MODAL);
             qrStage.setTitle("Thanh toán Chuyển khoản");
             qrStage.setMaximized(true);
 
             VBox root = new VBox(30);
-            root.setAlignment(javafx.geometry.Pos.CENTER);
+            root.setAlignment(Pos.CENTER);
             root.setStyle("-fx-background-color: #F8FAFC;");
 
             Label lblTitle = new Label("QUÉT MÃ ĐỂ THANH TOÁN");
             lblTitle.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #0F172A;");
 
-            javafx.scene.control.Label lblAmount = new javafx.scene.control.Label("Số tiền cần chuyển: " + formatPrice(amount));
+            Label lblAmount = new Label("Số tiền cần chuyển: " + formatPrice(amount));
             lblAmount.setStyle("-fx-font-size: 28px; -fx-text-fill: #EF4444; -fx-font-weight: bold;");
 
-            javafx.scene.layout.HBox btnBox = new javafx.scene.layout.HBox(20);
+            HBox btnBox = new HBox(20);
             btnBox.setAlignment(javafx.geometry.Pos.CENTER);
 
-            javafx.scene.control.Button btnCancel = new javafx.scene.control.Button("Đóng / Hủy");
+            Button btnCancel = new Button("Đóng / Hủy");
             btnCancel.setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
 
-            javafx.scene.control.Button btnConfirm = new javafx.scene.control.Button(confirmBtnText);
+            Button btnConfirm = new Button(confirmBtnText);
             btnConfirm.setStyle("-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 15 40; -fx-background-radius: 10; -fx-cursor: hand;");
 
             btnBox.getChildren().addAll(btnCancel, btnConfirm);
             root.getChildren().addAll(lblTitle, lblAmount, imageView, btnBox);
 
-            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            Scene scene = new Scene(root);
             qrStage.setScene(scene);
 
             btnCancel.setOnAction(e -> qrStage.close());
@@ -178,26 +180,6 @@ public class Others {
 
     // ANIMATION KHI ẤN NÚT
     public static void playButtonAnimation(Node node){
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(50),node);
-        scaleDown.setToX(0.90);
-        scaleDown.setToY(0.90);
-
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(50),node);
-        scaleUp.setToX(1);
-        scaleUp.setToY(1);
-
-        node.setOnMousePressed(mouseEvent -> {
-            scaleUp.stop();
-            scaleDown.playFromStart();
-        });
-
-        node.setOnMouseReleased(mouseEvent -> {
-            scaleDown.stop();
-            scaleUp.playFromStart();
-        });
-    }
-
-    public static void playHoverAnimation(Node node){
         ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100),node);
         scaleDown.setToX(0.95);
         scaleDown.setToY(0.95);
@@ -214,6 +196,24 @@ public class Others {
         node.setOnMouseExited(mouseEvent -> {
             scaleDown.stop();
             scaleUp.playFromStart();
+        });
+
+        ScaleTransition scaleDown2 = new ScaleTransition(Duration.millis(50),node);
+        scaleDown2.setToX(0.90);
+        scaleDown2.setToY(0.90);
+
+        ScaleTransition scaleUp2 = new ScaleTransition(Duration.millis(50),node);
+        scaleUp2.setToX(1);
+        scaleUp2.setToY(1);
+
+        node.setOnMousePressed(mouseEvent -> {
+            scaleUp2.stop();
+            scaleDown2.playFromStart();
+        });
+
+        node.setOnMouseReleased(mouseEvent -> {
+            scaleDown2.stop();
+            scaleUp2.playFromStart();
         });
     }
 
