@@ -35,7 +35,7 @@ public class OrderCardController implements Initializable {
     @FXML private HBox   imageContainer;
     @FXML private Label  lblItemCount;
     @FXML private Label  lblTotal;
-    @FXML private Button btnCancel;
+
     @FXML private Button btnDetail;
 
     private Order      currentOrder;
@@ -43,7 +43,7 @@ public class OrderCardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Others.playButtonAnimation(btnCancel);
+
         Others.playButtonAnimation(btnDetail);
     }
 
@@ -60,13 +60,7 @@ public class OrderCardController implements Initializable {
         renderStatus();
         lblTotal.setText(Others.formatPrice(currentOrder.getFinalAmount()));
 
-        if (currentOrder.getStatus() == Order.OrderStatus.Waiting_for_validation) {
-            btnCancel.setVisible(true);
-            btnCancel.setManaged(true);
-        } else {
-            btnCancel.setVisible(false);
-            btnCancel.setManaged(false);
-        }
+
 
         Thread bgThread = new Thread(() -> {
             List<OrderDetail> details = currentOrder.getOrderDetail();
@@ -170,52 +164,6 @@ public class OrderCardController implements Initializable {
         imgThread.start();
     }
 
-    @FXML
-    private void handleCancel() {
-        Order latestOrder = OrderBusiness.getAllOrder().stream()
-                .filter(o -> o.getId() == currentOrder.getId())
-                .findFirst()
-                .orElse(null);
-
-        if (latestOrder == null || latestOrder.getStatus() != Order.OrderStatus.Waiting_for_validation) {
-            StackPane targetPane = this.contentArea;
-            if (targetPane == null && btnCancel.getScene().getRoot() instanceof StackPane) {
-                targetPane = (StackPane) btnCancel.getScene().getRoot();
-            }
-
-            Others.showAlert(targetPane, "Rất tiếc! Đơn hàng này đã được nhân viên tiếp nhận và xử lý, bạn không thể hủy nữa.", true);
-
-            if (latestOrder != null) {
-                currentOrder.setStatus(latestOrder.getStatus());
-                render();
-            }
-            return;
-        }
-
-        Window ownerWindow = btnCancel.getScene().getWindow();
-        String reason = Others.showCancelReasonDialog(ownerWindow, String.valueOf(currentOrder.getId()));
-
-        if (reason != null && !reason.trim().isEmpty()) {
-            String msg = OrderBusiness.cancelOnlineOrder(currentOrder, reason);
-
-            if (msg.contains("thành công")) {
-                currentOrder.setStatus(Order.OrderStatus.Cancelled);
-
-                StackPane targetPane = this.contentArea;
-                if (targetPane == null && btnCancel.getScene().getRoot() instanceof StackPane) {
-                    targetPane = (StackPane) btnCancel.getScene().getRoot();
-                }
-                Others.showAlert(targetPane, msg, false);
-                render();
-            } else {
-                StackPane targetPane = this.contentArea;
-                if (targetPane == null && btnCancel.getScene().getRoot() instanceof StackPane) {
-                    targetPane = (StackPane) btnCancel.getScene().getRoot();
-                }
-                Others.showAlert(targetPane, msg, true);
-            }
-        }
-    }
 
     @FXML
     private void handleDetail() {

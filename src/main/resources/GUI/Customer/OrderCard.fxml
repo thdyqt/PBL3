@@ -66,8 +66,8 @@
 
         <Region prefWidth="10" />
 
-        <!-- Nút Hủy đơn -->
-        <Button fx:id="btnCancel" managed="false" onAction="#handleCancel" prefHeight="36" style="-fx-background-color: #FEF2F2; -fx-text-fill: #DC2626; -fx-font-size: 13px; -fx-font-weight: bold; -fx-border-color: #FECACA; -fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 0 16; -fx-cursor: hand;" text="✕ Hủy đơn" visible="false" />
+
+
 
         <!-- Nút Xem chi tiết -->
         <Button fx:id="btnDetail" onAction="#handleDetail" onMouseClicked="#handleDetail" prefHeight="36" style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 0 20; -fx-cursor: hand;" text="Xem chi tiết →" />
