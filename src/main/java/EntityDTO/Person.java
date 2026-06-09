@@ -4,8 +4,8 @@ public abstract class Person {
     protected int id;
     protected String phone;
     protected String name;
-    private String user;
-    private String password;
+    protected String user;
+    protected String password;
 
     public Person() {}
 

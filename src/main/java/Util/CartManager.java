@@ -128,6 +128,17 @@ public class CartManager {
         customerTotalCount.set(count);
     }
 
+    public int getQuantityInCart(int customerId, int productId) {
+        if (customerCart != null) {
+            for (OrderDetail item : customerCart) {
+                if (item.getProduct() != null && item.getProduct().getProductID() == productId) {
+                    return item.getQuantity();
+                }
+            }
+        }
+        return 0;
+    }
+
     // PHẦN XỬ LÝ CHO NHÂN VIÊN (POS STAFF)
     public Customer getCurrentCustomer() { return currentCustomer; }
 

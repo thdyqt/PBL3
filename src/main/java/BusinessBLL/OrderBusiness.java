@@ -102,7 +102,7 @@ public class OrderBusiness {
             if (order.getStatus() == Order.OrderStatus.Finished && order.getCustomer() != null && order.getCustomer().getId() > 0) {
                 int pointsEarned = order.getFinalAmount() / 1000;
                 if (pointsEarned > 0) {
-                    CustomerBusiness.addRewardPoints_BLL(order.getCustomer().getId(), pointsEarned);
+                    CustomerBusiness.addRewardPoints(order.getCustomer().getId(), pointsEarned);
                 }
             }
 

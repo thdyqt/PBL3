@@ -10,8 +10,6 @@ public class OrderDetail {
     private int quantity;
     private int price;
     private int totalPrice;
-    //price is the price of a singular unit of that product, totalPrice is the value of it * the quantity of it
-    //also you dont arbitrarily set the value of totalPrice, it is calculated via price and quantity
 
     //constructors
     public OrderDetail(){};

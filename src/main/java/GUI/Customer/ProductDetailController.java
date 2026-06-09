@@ -66,9 +66,15 @@ public class ProductDetailController implements Initializable {
             lblStock.setFill(Color.web("#991B1B"));
             boxStock.setStyle("-fx-background-color: #FEE2E2; -fx-background-radius: 8; -fx-padding: 5 15;");
             btnAddToCart.setDisable(true);
-        }
 
-        else lblStock.setText("Còn " + currentProduct.getQuantity() + " sản phẩm");
+            spinQuantity.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0));
+        }
+        else {
+            lblStock.setText("Còn " + currentProduct.getQuantity() + " sản phẩm");
+
+            SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, currentProduct.getQuantity(), 1);
+            spinQuantity.setValueFactory(valueFactory);
+        }
 
         checkUserReviewPermission();
         loadExistingReviews();
@@ -217,18 +223,44 @@ public class ProductDetailController implements Initializable {
 
     @FXML
     void handleAddToCart(ActionEvent event) {
-        int quantity = spinQuantity.getValue();
+        spinQuantity.increment(0);
+        int requestedQuantity = spinQuantity.getValue();
+
         int customerId = 0;
         if (!Util.UserSession.getInstance().isGuest()) {
             customerId = Util.UserSession.getInstance().getId();
         }
 
-        boolean success = CartManager.getInstance().addToCustomerCart(customerId, currentProduct, quantity);
+        int quantityInCart = CartManager.getInstance().getQuantityInCart(customerId, currentProduct.getProductID());
+
+        int maxAddable = currentProduct.getQuantity() - quantityInCart;
+
+        if (maxAddable <= 0) {
+            Others.showAlert(lblProductName, "Giỏ hàng của bạn đã chứa tối đa số lượng tồn kho của sản phẩm này!", true);
+            spinQuantity.getValueFactory().setValue(0);
+            return;
+        }
+
+        int finalQuantityToAdd = requestedQuantity;
+
+        if (requestedQuantity > maxAddable) {
+            finalQuantityToAdd = maxAddable;
+
+            Others.showAlert(lblProductName,
+                    "Trong giỏ đã có " + quantityInCart + " sản phẩm. Kho chỉ còn " + currentProduct.getQuantity() +
+                            " nên hệ thống chỉ thêm " + finalQuantityToAdd + " sản phẩm nữa!", false);
+
+            spinQuantity.getValueFactory().setValue(maxAddable);
+        }
+
+        boolean success = CartManager.getInstance().addToCustomerCart(customerId, currentProduct, finalQuantityToAdd);
 
         if (success) {
-            Others.showAlert(lblProductName, "Đã thêm " + quantity + " " + currentProduct.getProductName() + " vào giỏ hàng!", false);
+            if (requestedQuantity <= maxAddable) {
+                Others.showAlert(lblProductName, "Đã thêm " + finalQuantityToAdd + " " + currentProduct.getProductName() + " vào giỏ hàng!", false);
+            }
         } else {
-            Others.showAlert(lblProductName, "Rất tiếc, kho không đủ số lượng bạn yêu cầu!", true);
+            Others.showAlert(lblProductName, "Rất tiếc, có lỗi xảy ra khi thêm vào giỏ hàng!", true);
         }
     }
 

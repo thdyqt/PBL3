@@ -89,7 +89,7 @@ public class CustomerBusiness {
         };
     }
 
-    public static boolean addRewardPoints_BLL(int customerId, int pointsEarned) {
+    public static boolean addRewardPoints(int customerId, int pointsEarned) {
         if (pointsEarned <= 0) return false;
 
         try (java.sql.Connection conn = Util.DBConnection.getConnection()) {
