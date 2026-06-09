@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Order {
 
     public enum OrderStatus {
-        Waiting_for_validation, Processing, Delivering, Finished, Cancelled;
+        Waiting_for_validation, Processing, Delivering, Delivered, Reported, Finished, Cancelled;
     }
 
     public enum OrderType {

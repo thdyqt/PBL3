@@ -48,7 +48,8 @@ public class OrderBusiness {
         else if ("Online".equalsIgnoreCase(type)) {
             List<Order.OrderStatus> validOnlineStates = Arrays.asList(
                     Order.OrderStatus.Waiting_for_validation, Order.OrderStatus.Processing,
-                    Order.OrderStatus.Delivering, Order.OrderStatus.Finished, Order.OrderStatus.Cancelled
+                    Order.OrderStatus.Delivering, Order.OrderStatus.Delivered,
+                    Order.OrderStatus.Reported, Order.OrderStatus.Finished, Order.OrderStatus.Cancelled // Thêm mới
             );
             return validOnlineStates.contains(status);
         }
@@ -87,7 +88,7 @@ public class OrderBusiness {
 
             case "Finished":
                 if (status == Order.OrderStatus.Waiting_for_validation || status == Order.OrderStatus.Processing
-                        || status == Order.OrderStatus.Delivering)
+                        || status == Order.OrderStatus.Delivering || status == Order.OrderStatus.Finished)
                     return "Không thể chuyển trạng thái đơn hàng.";
                 break;
 
@@ -96,7 +97,7 @@ public class OrderBusiness {
         }
         order.setStatus(status);
 
-        boolean isUpdated = DataDAL.OrderData.updateOrder(order);
+        boolean isUpdated = OrderData.updateOrder(order);
 
         if (isUpdated) {
             if (order.getStatus() == Order.OrderStatus.Finished && order.getCustomer() != null && order.getCustomer().getId() > 0) {

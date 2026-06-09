@@ -33,6 +33,7 @@ public class StaffHomeController implements Initializable {
     @FXML private Label lblWaiting;
     @FXML private Label lblProcessing;
     @FXML private Label lblFinished;
+    @FXML private Label lblWarning;
     @FXML private Label lblRevenue;
 
     @FXML private Button btnPOS;
@@ -124,6 +125,22 @@ public class StaffHomeController implements Initializable {
                             setText("Đang giao hàng");
                             setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold; -fx-alignment: CENTER;");
                             break;
+                        case "Delivered":
+                            setText("Đã giao đến");
+                            setStyle("-fx-text-fill: #0284C7; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                            break;
+                        case "Reported":
+                            setText("Đang khiếu nại");
+                            setStyle("-fx-text-fill: #DC2626; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                            break;
+                        case "Finished":
+                            setText("Đã hoàn thành");
+                            setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                            break;
+                        case "Cancelled":
+                            setText("Đã hủy");
+                            setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                            break;
                         default:
                             setText(item);
                             setStyle("-fx-text-fill: #1E293B; -fx-alignment: CENTER;");
@@ -141,6 +158,8 @@ public class StaffHomeController implements Initializable {
         long processing = onlineOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.Processing).count();
         long finished = onlineOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.Finished).count();
 
+        long reported = onlineOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.Reported).count();
+
         List<Order> allOrders = OrderBusiness.getAllOrder();
         long revenue = allOrders.stream()
                 .filter(o -> o.getStatus() == Order.OrderStatus.Finished)
@@ -151,6 +170,15 @@ public class StaffHomeController implements Initializable {
         lblProcessing.setText(String.valueOf(processing));
         lblFinished.setText(String.valueOf(finished));
         lblRevenue.setText(Others.formatPrice((int) revenue));
+
+        if (reported > 0) {
+            lblWarning.setText("⚠ Có " + reported + " đơn hàng đang khiếu nại");
+            lblWarning.setVisible(true);
+            lblWarning.setManaged(true);
+        } else {
+            lblWarning.setVisible(false);
+            lblWarning.setManaged(false);
+        }
     }
 
     private void loadRecentOrders() {
@@ -159,7 +187,9 @@ public class StaffHomeController implements Initializable {
         List<Order> recentOrders = onlineOrders.stream()
                 .filter(o -> o.getStatus() == Order.OrderStatus.Waiting_for_validation ||
                         o.getStatus() == Order.OrderStatus.Processing ||
-                        o.getStatus() == Order.OrderStatus.Delivering)
+                        o.getStatus() == Order.OrderStatus.Delivering ||
+                        o.getStatus() == Order.OrderStatus.Delivered ||
+                        o.getStatus() == Order.OrderStatus.Reported)
                 .sorted(Comparator.comparing(Order::getOrderTime))
                 .collect(Collectors.toList());
 

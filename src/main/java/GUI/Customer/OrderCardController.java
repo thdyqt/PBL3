@@ -20,7 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
@@ -37,9 +36,12 @@ public class OrderCardController implements Initializable {
     @FXML private Label  lblTotal;
 
     @FXML private Button btnDetail;
+    @FXML private Button btnConfirmReceive;
+    @FXML private Button btnReportIssue;
 
     private Order      currentOrder;
     private StackPane  contentArea;
+    private Runnable reloadCallback;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -47,10 +49,29 @@ public class OrderCardController implements Initializable {
         Others.playButtonAnimation(btnDetail);
     }
 
-    public void setOrder(Order order, StackPane contentArea) {
+    public void setOrder(Order order, StackPane contentArea, Runnable reloadCallback) {
         this.currentOrder = order;
         this.contentArea  = contentArea;
+        this.reloadCallback = reloadCallback;
         render();
+
+        if (order.getType() == Order.OrderType.Online && order.getStatus() == Order.OrderStatus.Delivered) {
+            btnConfirmReceive.setVisible(true);
+            btnConfirmReceive.setManaged(true);
+
+            btnReportIssue.setVisible(true);
+            btnReportIssue.setManaged(true);
+
+            lblStatus.setText("Shipper báo đã giao. Vui lòng xác nhận!");
+            lblStatus.setStyle("-fx-text-fill: #EAB308;");
+
+        } else {
+            btnConfirmReceive.setVisible(false);
+            btnConfirmReceive.setManaged(false);
+
+            btnReportIssue.setVisible(false);
+            btnReportIssue.setManaged(false);
+        }
     }
 
     private void render() {
@@ -59,8 +80,6 @@ public class OrderCardController implements Initializable {
                 .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
         renderStatus();
         lblTotal.setText(Others.formatPrice(currentOrder.getFinalAmount()));
-
-
 
         Thread bgThread = new Thread(() -> {
             List<OrderDetail> details = currentOrder.getOrderDetail();
@@ -104,6 +123,14 @@ public class OrderCardController implements Initializable {
             case Delivering -> {
                 text  = "🚗 Đang giao";
                 style = "-fx-background-color: #F3E8FF; -fx-text-fill: #7E22CE; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
+            }
+            case Delivered -> {
+                text  = "📍 Đã giao đến";
+                style = "-fx-background-color: #E0F2FE; -fx-text-fill: #0284C7; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
+            }
+            case Reported -> {
+                text  = "⚠️ Đang khiếu nại";
+                style = "-fx-background-color: #FEF2F2; -fx-text-fill: #991B1B; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 5 14; -fx-background-radius: 20;";
             }
             case Finished -> {
                 text  = "✅ Hoàn thành";
@@ -185,6 +212,37 @@ public class OrderCardController implements Initializable {
         } catch (Exception e) {
             System.err.println("Lỗi mở chi tiết đơn: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleConfirmReceive() {
+        if (Others.showCustomConfirm("Xác nhận nhận hàng", "Bạn đã nhận được hàng? Vui lòng chỉ xác nhận khi bạn đã cầm sản phẩm trên tay.","Xác nhận","Hủy")){
+            String result = OrderBusiness.updateOrder(currentOrder, Order.OrderStatus.Finished);
+
+            if (result.contains("thành công")) {
+                Others.showAlert(lblOrderID, "Cảm ơn bạn! Đơn hàng đã hoàn thành.", false);
+                if (reloadCallback != null) reloadCallback.run();
+            } else {
+                Others.showAlert(lblOrderID, "Lỗi: " + result, true);
+            }
+        }
+    }
+
+    @FXML
+    private void handleReportIssue() {
+        if (Others.showCustomConfirm("Báo cáo sự cố giao hàng", "Hệ thống sẽ tạm ngưng đơn hàng này và nhân viên cửa hàng sẽ gọi điện cho bạn ngay lập tức để hỗ trợ. Bạn có chắc chắn muốn báo cáo?","Xác nhận","Hủy")){
+            String result = OrderBusiness.updateOrder(currentOrder, Order.OrderStatus.Reported);
+
+            if (result.contains("thành công")) {
+                Others.showAlert(lblOrderID, "Đã gửi báo cáo! Nhân viên cửa hàng sẽ liên hệ với bạn trong ít phút tới.", false);
+
+                if (reloadCallback != null) {
+                    reloadCallback.run();
+                }
+            } else {
+                Others.showAlert(lblOrderID, "Lỗi khi gửi báo cáo: " + result, true);
+            }
         }
     }
 }

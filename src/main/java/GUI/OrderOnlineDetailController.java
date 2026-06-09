@@ -45,6 +45,7 @@ public class OrderOnlineDetailController {
     public void setContentArea(StackPane contentArea) {
         this.contentArea = contentArea;
     }
+
     @FXML
     public void initialize() {
         setupTable();
@@ -69,6 +70,7 @@ public class OrderOnlineDetailController {
             }
             return new SimpleStringProperty("");
         });
+
         colImage.setCellFactory(c -> new TableCell<>() {
             private final ImageView iv = new ImageView();
             @Override protected void updateItem(String imgName, boolean empty) {
@@ -125,7 +127,17 @@ public class OrderOnlineDetailController {
             lblStatus.setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold;");
         } else {
             lblStatus.setText(ChangeToVie(order.getStatus().name()));
-            lblStatus.setStyle("-fx-text-fill: #D4891A; -fx-font-weight: bold;");
+            String style = "-fx-font-weight: bold; ";
+            switch(order.getStatus().name()) {
+                case "Waiting_for_validation": style += "-fx-text-fill: #fddc05;"; break;
+                case "Processing": style += "-fx-text-fill: #4c7102;"; break;
+                case "Delivering": style += "-fx-text-fill: #3B82F6;"; break;
+                case "Delivered": style += "-fx-text-fill: #0284C7;"; break;
+                case "Reported": style += "-fx-text-fill: #DC2626;"; break;
+                case "Finished": style += "-fx-text-fill: #10B981;"; break;
+                default: style += "-fx-text-fill: #D4891A;"; break;
+            }
+            lblStatus.setStyle(style);
         }
 
         String paymentStr = order.getPayment().name().equals("Card") ? "Chuyển khoản (Card)" : "Tiền mặt (COD)";
@@ -154,6 +166,8 @@ public class OrderOnlineDetailController {
             case "Waiting_for_validation" : return "Chờ xác nhận";
             case "Processing" : return "Đang xử lý";
             case "Delivering" : return "Đang giao hàng";
+            case "Delivered" : return "Đã giao đến";
+            case "Reported" : return "Đang khiếu nại";
             case "Finished" : return "Đã hoàn thành";
             case "Cancelled" : return "Đã hủy";
             default: return "Không xác định";

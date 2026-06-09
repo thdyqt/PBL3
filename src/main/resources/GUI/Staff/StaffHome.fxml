@@ -18,7 +18,14 @@
             <children>
                 <VBox alignment="CENTER_LEFT" spacing="5.0">
                     <children>
-                        <Label fx:id="lblGreeting" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="Xin chào, Staff Name!" />
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <Label fx:id="lblGreeting" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1E293B;" text="Xin chào, Staff Name!" />
+
+                                <Label fx:id="lblWarning" managed="false" style="-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 5 15; -fx-background-radius: 20; -fx-border-color: #FCA5A5; -fx-border-radius: 20; -fx-border-width: 1;" text="⚠️ Có 0 đơn hàng đang khiếu nại" visible="false" />
+                            </children>
+                        </HBox>
+
                         <Label fx:id="lblDate" style="-fx-font-size: 14px; -fx-text-fill: #64748B;" text="Hôm nay là..." />
                     </children>
                 </VBox>

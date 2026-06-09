@@ -1,6 +1,7 @@
 package GUI.Staff;
 
 import BusinessBLL.OrderBusiness;
+import BusinessBLL.OrderDetailBusiness;
 import EntityDTO.Order;
 import GUI.OrderOnlineDetailController;
 import Util.Others;
@@ -29,6 +30,7 @@ public class OrderOnlineManagementForm implements Initializable {
     @FXML private Button btnCancel;
     @FXML private Button btnDetail;
     @FXML private Button btnUpdate;
+    @FXML private Button btnExportBill;
     @FXML private ComboBox<String> cbState;
     @FXML private ComboBox<String> cbFilterState;
 
@@ -49,11 +51,11 @@ public class OrderOnlineManagementForm implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cbState.setItems(FXCollections.observableArrayList(
-                "Chờ xác nhận", "Đang xử lí", "Đang giao hàng", "Đã hoàn thành"
+                "Chờ xác nhận", "Đang xử lí", "Đang giao hàng", "Đã giao đến"
         ));
 
         cbFilterState.setItems(FXCollections.observableArrayList(
-                "Tất cả", "Chờ xác nhận", "Đang xử lí", "Đang giao hàng", "Đã hoàn thành", "Đã hủy"
+                "Tất cả", "Chờ xác nhận", "Đang xử lí", "Đang giao hàng", "Đã giao đến", "Đang khiếu nại", "Đã hoàn thành", "Đã hủy"
         ));
         cbFilterState.setValue("Tất cả");
 
@@ -80,6 +82,20 @@ public class OrderOnlineManagementForm implements Initializable {
     }
 
     private void setupTable() {
+        tableOrder.setRowFactory(tv -> new TableRow<Order>() {
+            @Override
+            protected void updateItem(Order item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else if (item.getStatus() == Order.OrderStatus.Reported) {
+                    setStyle("-fx-background-color: #FEE2E2;");
+                } else {
+                    setStyle("");
+                }
+            }
+        });
+
         colSTT.setCellValueFactory(cellData -> new SimpleIntegerProperty(tableOrder.getItems().indexOf(cellData.getValue()) + 1).asObject());
         colID.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getId())));
 
@@ -149,19 +165,27 @@ public class OrderOnlineManagementForm implements Initializable {
                                 break;
                             case "Delivering":
                                 setText("Đang giao hàng");
-                                setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Xanh dương (Đang tiến hành)
+                                setStyle("-fx-text-fill: #3B82F6; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                                break;
+                            case "Delivered":
+                                setText("Đã giao đến");
+                                setStyle("-fx-text-fill: #0284C7; -fx-font-weight: bold; -fx-alignment: CENTER;");
+                                break;
+                            case "Reported":
+                                setText("Đang khiếu nại");
+                                setStyle("-fx-text-fill: #DC2626; -fx-font-weight: bold; -fx-alignment: CENTER;");
                                 break;
                             case "Finished":
                                 setText("Đã hoàn thành");
-                                setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Xanh lá (Hoàn thành)
+                                setStyle("-fx-text-fill: #10B981; -fx-font-weight: bold; -fx-alignment: CENTER;");
                                 break;
                             case "Cancelled":
                                 setText("Đã hủy");
-                                setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;"); // Màu Đỏ (Đã hủy)
+                                setStyle("-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;");
                                 break;
                             default:
                                 setText(item);
-                                setStyle("-fx-text-fill: #1E293B; -fx-alignment: CENTER;"); // Màu mặc định
+                                setStyle("-fx-text-fill: #1E293B; -fx-alignment: CENTER;");
                                 break;
                         }
                     }
@@ -184,7 +208,7 @@ public class OrderOnlineManagementForm implements Initializable {
         Others.playButtonAnimation(btnCancel);
         Others.playButtonAnimation(btnDetail);
         Others.playButtonAnimation(btnUpdate);
-
+        Others.playButtonAnimation(btnExportBill);
     }
 
     @FXML
@@ -220,6 +244,8 @@ public class OrderOnlineManagementForm implements Initializable {
             case "Waiting_for_validation": return "Chờ xác nhận";
             case "Processing": return "Đang xử lí";
             case "Delivering": return "Đang giao hàng";
+            case "Delivered": return "Đã giao đến";
+            case "Reported": return "Đang khiếu nại";
             case "Finished": return "Đã hoàn thành";
             case "Cancelled": return "Đã hủy";
             default: return engStatus;
@@ -269,7 +295,7 @@ public class OrderOnlineManagementForm implements Initializable {
             case "Chờ xác nhận" -> Order.OrderStatus.Waiting_for_validation;
             case "Đang xử lí" -> Order.OrderStatus.Processing;
             case "Đang giao hàng" -> Order.OrderStatus.Delivering;
-            case "Đã hoàn thành" -> Order.OrderStatus.Finished;
+            case "Đã giao đến" -> Order.OrderStatus.Delivered;
             default -> null;
         };
 
@@ -311,6 +337,42 @@ public class OrderOnlineManagementForm implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
             Others.showAlert(rootPane, "Lỗi hệ thống ! Không thể mở Form chi tiết", true);
+        }
+    }
+
+    @FXML
+    void btnExportBillClick(ActionEvent event) {
+        Order selectedOrder = tableOrder.getSelectionModel().getSelectedItem();
+
+        if (selectedOrder == null) {
+            Others.showAlert(rootPane, "Vui lòng chọn đơn hàng để xuất hóa đơn!", true);
+            return;
+        }
+
+        if (selectedOrder.getStatus() != Order.OrderStatus.Finished) {
+            Others.showAlert(rootPane, "Chỉ có thể xuất hóa đơn cho các đơn hàng ở trạng thái 'Đã hoàn thành'!", true);
+            return;
+        }
+
+        try {
+            if (selectedOrder.getOrderDetail() == null || selectedOrder.getOrderDetail().isEmpty()) {
+                selectedOrder.setOrderDetail(OrderDetailBusiness.getDetailsByOrderId_BLL(selectedOrder.getId()));
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GUI/Staff/BillReceipt.fxml"));
+            Parent root = loader.load();
+
+            BillReceiptController controller = loader.getController();
+            controller.setData(selectedOrder); // Load các dòng dữ liệu vào bill
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Hóa đơn #" + selectedOrder.getId());
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Others.showAlert(rootPane, "Lỗi hệ thống! Không thể xuất hóa đơn lúc này.", true);
         }
     }
 }

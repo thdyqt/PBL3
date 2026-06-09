@@ -54,6 +54,12 @@
                                     </cursor>
                                 </Button>
 
+                                <Button fx:id="btnExportBill" mnemonicParsing="false" onAction="#btnExportBillClick" style="-fx-background-color: #F59E0B; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 8 15;" text="🖨 Xuất Hóa Đơn">
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                </Button>
+
                                 <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#btnCancelClick" style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 6; -fx-padding: 8 15;" text="🗑 Hủy Đơn">
                                     <cursor>
                                         <Cursor fx:constant="HAND" />

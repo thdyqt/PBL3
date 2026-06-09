@@ -77,7 +77,9 @@ public class MyOrderController implements Initializable, IContentArea {
         long active  = allOrders.stream().filter(o ->
                 o.getStatus() == Order.OrderStatus.Waiting_for_validation ||
                         o.getStatus() == Order.OrderStatus.Processing ||
-                        o.getStatus() == Order.OrderStatus.Delivering
+                        o.getStatus() == Order.OrderStatus.Delivering ||
+                        o.getStatus() == Order.OrderStatus.Delivered ||
+                        o.getStatus() == Order.OrderStatus.Reported
         ).count();
         long cancel  = allOrders.stream().filter(o -> o.getStatus() == Order.OrderStatus.Cancelled).count();
         int  spent   = allOrders.stream()
@@ -111,7 +113,9 @@ public class MyOrderController implements Initializable, IContentArea {
             boolean matchFilter = switch (currentFilter) {
                 case "Chờ xác nhận"   -> o.getStatus() == Order.OrderStatus.Waiting_for_validation;
                 case "Đang chuẩn bị"  -> o.getStatus() == Order.OrderStatus.Processing;
-                case "Đang giao"      -> o.getStatus() == Order.OrderStatus.Delivering;
+                case "Đang giao" -> o.getStatus() == Order.OrderStatus.Delivering ||
+                        o.getStatus() == Order.OrderStatus.Delivered ||
+                        o.getStatus() == Order.OrderStatus.Reported;
                 case "Hoàn thành"     -> o.getStatus() == Order.OrderStatus.Finished;
                 case "Đã hủy"         -> o.getStatus() == Order.OrderStatus.Cancelled;
                 default               -> true; // ALL
@@ -148,7 +152,7 @@ public class MyOrderController implements Initializable, IContentArea {
                 );
                 VBox card = loader.load();
                 OrderCardController ctrl = loader.getController();
-                ctrl.setOrder(order,contentArea);
+                ctrl.setOrder(order,contentArea, this::loadOrders);
                 orderContainer.getChildren().add(card);
             } catch (Exception e) {
                 System.err.println("Lỗi load OrderCard: " + e.getMessage());

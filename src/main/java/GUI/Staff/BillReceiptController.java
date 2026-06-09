@@ -3,6 +3,7 @@ package GUI.Staff;
 import EntityDTO.Order;
 import EntityDTO.OrderDetail;
 import Util.Others;
+import Util.UserSession;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -52,7 +53,13 @@ public class BillReceiptController {
     private VBox vboxContent;
 
     public void setData(Order order) {
-        lblCashierName.setText("Nhân viên: " + order.getStaff().getName());
+        String staffName = "Đơn hàng Online";
+        if (order.getStaff() != null && order.getStaff().getName() != null) {
+            staffName = order.getStaff().getName();
+        } else if (UserSession.getInstance() != null && UserSession.getInstance().getName() != null) {
+            staffName = UserSession.getInstance().getName();
+        }
+        lblCashierName.setText("Nhân viên: " + staffName);
 
         if (order.getCustomer() != null) {
             lblCustomerName.setText("Khách hàng: " + order.getCustomer().getName());
